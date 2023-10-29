@@ -1,0 +1,20 @@
+import 'package:flutter/material.dart';
+
+class AppColors {
+  AppColors._(); // this basically makes it so you can't instantiate this class
+  static const headingTextColor = Color(0xffFCFCFC);
+  static const dotColor = Color(0xff4ECB71);
+  static const elevatedColor = Color(0xff4ECB71);
+  static const loginButtonColor = Color(0xff379050);
+  static const transparent = Colors.transparent;
+  static const allHeadColor = Color(0xff1D1D1F);
+  static const subheadColor = Color(0xff434345);
+  static const Color textInputField = Color(0xffF8F8F8);
+  static const hintColor = Color(0xff7C7C7D);
+  static const forgotpass = Color(0xff71D58D);
+  static const appbarBoarder = Color(0xffD3D3D3);
+  static const nondotcolor = Color(0xffF8F8F8);
+  static const hoverColor = Color(0xffF4F4F4);
+   static const hoverBoarderColor = Color(0xff9D9D9D);
+  
+}
