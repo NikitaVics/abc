@@ -41,6 +41,8 @@ dependencies:
   json_annotation: ^4.8.1
   json_serializable: ^6.7.1
   build_runner: ^2.4.6
+  adaptive_theme: ^3.4.1
+  flutter_svg: ^2.0.8
 
 dev_dependencies:
   flutter_test:

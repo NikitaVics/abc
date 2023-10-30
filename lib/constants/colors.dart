@@ -15,6 +15,7 @@ class AppColors {
   static const appbarBoarder = Color(0xffD3D3D3);
   static const nondotcolor = Color(0xffF8F8F8);
   static const hoverColor = Color(0xffF4F4F4);
-   static const hoverBoarderColor = Color(0xff9D9D9D);
-  
+  static const hoverBoarderColor = Color(0xff9D9D9D);
+  static const lightThemeback = Colors.white;
+  static const darkThemeback = Color(0xff0D0D0D);
 }

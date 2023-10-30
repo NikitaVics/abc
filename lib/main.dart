@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/splash/splash_screen.dart';
+import 'package:tennis_court_booking_app/theme/theme_constants.dart';
+import 'package:tennis_court_booking_app/theme/theme_manager.dart';
 
 void main() {
    WidgetsFlutterBinding.ensureInitialized();
@@ -14,10 +16,15 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-   
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+     
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -30,12 +37,22 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<SignInProvider>(
           create: (context) => SignInProvider(),
         ),
+         ChangeNotifierProvider<ThemeModeNotifier>(
+          create: (context) =>ThemeModeNotifier(initialThemeMode: ThemeMode.light),
+        ),
        ],
-       child: const MaterialApp(
-        debugShowCheckedModeBanner: false,
-      
-      home: SplashScreen(),
-   ));
+       child:Builder(
+        builder: (context) {
+          final themeMode = context.watch<ThemeModeNotifier>().themeMode;
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData.light(),
+            darkTheme: ThemeData.dark(),
+            themeMode: themeMode,
+            home: SplashScreen(),
+          );
+        },
+      ),);
   }
 }
 

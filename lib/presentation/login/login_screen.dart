@@ -6,6 +6,8 @@ import 'package:tennis_court_booking_app/api/api.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
+import 'package:tennis_court_booking_app/presentation/register/register.dart';
+import 'package:tennis_court_booking_app/theme/theme_manager.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
@@ -34,24 +36,28 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordFocusNode = FocusNode();
     provider = Provider.of<SignInProvider>(context, listen: false);
   }
-
+ 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      primary: true,
-      appBar: const CustomAppBar(
-        isBoarder: true,
-        title: "Login",
-      ),
-      body: _buildBody(),
+    return Builder(
+      builder: (context) {
+        return Scaffold(
+          backgroundColor:Theme.of(context).brightness == Brightness.dark? AppColors.darkThemeback:AppColors.lightThemeback,
+          primary: true,
+          appBar: const CustomAppBar(
+            isBoarder: true,
+            title: "Login",
+          ),
+          body: _buildBody(),
+        );
+      }
     );
   }
 
   // body methods:--------------------------------------------------------------
   Widget _buildBody() {
     return Material(
-      color: Colors.white,
+      color: Theme.of(context).brightness == Brightness.dark? AppColors.darkThemeback:AppColors.lightThemeback,
       child: Stack(
         children: <Widget>[
           MediaQuery.of(context).orientation == Orientation.landscape
@@ -109,6 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
             _buildPasswordField(),
             _buildForgotPasswordButton(),
             _buildNotMemberText(),
+            
           ],
         ),
       ),
@@ -129,6 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
             height: 40 / 32,
           ),
         ),
+        
         SizedBox(height: 8.0),
         Row(
           children: [
@@ -150,8 +158,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 fontWeight: FontWeight.w400,
               ),
             ),
+            
           ],
-        )
+        ),
+        
       ],
     );
   }
@@ -245,7 +255,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontFamily: FontFamily.satoshi,
                     fontWeight: FontWeight.w500,
                     height: 24 / 14)),
-            onPressed: () {},
+            onPressed: () {
+               Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (context) =>  RegisterScreen(),
+    ),
+  );
+            },
           ),
         ],
       ),

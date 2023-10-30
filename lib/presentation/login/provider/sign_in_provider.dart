@@ -24,15 +24,25 @@ class SignInProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future loginApi() async {
-    updateLoginLoader(true);
-    var body = {
-      'userName': userEmailController.text,
-      'password': passwordController.text,
-    };
+ Future loginApi() async {
+  updateLoginLoader(true);
+  var body = {
+    'userName': userEmailController.text,
+    'password': passwordController.text,
+  };
+  
+  try {
     var res = await Api.login(body);
-    print(body);
+    print('Response: $res');
+    // Parse the 'res' here, if needed.
     updateLoginLoader(false);
     return res;
+  } catch (e) {
+    print('Error while decoding JSON: $e');
+    // Handle the error appropriately.
+    updateLoginLoader(false);
+    return null; // Or throw an exception, depending on your requirements.
   }
+}
+
 }
