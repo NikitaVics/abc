@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/presentation/register/pageview/register_as_member.dart';
+import 'package:tennis_court_booking_app/presentation/register/pageview/register_form.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 
 class RegisterScreen extends StatefulWidget {
+  
+
+  const RegisterScreen({super.key});
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
@@ -30,7 +34,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String currentTitle = "Register as Member"; 
   List<Widget> pages = [
   RegisterAsMember(), 
-   RegisterAsMember(), 
+   RegisterForm(), 
     RegisterAsMember(), 
      RegisterAsMember(), 
 ];
@@ -39,6 +43,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void initState() {
     super.initState();
     
+  }
+   void openSecondPage() {
+    _pageController.jumpToPage(1);
+    setState(() {
+      _currentPage = 1;
+      currentTitle = pageTitles[1];
+    });
   }
 
   @override

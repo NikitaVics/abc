@@ -43,7 +43,14 @@ class LoginScreenState extends State<LoginScreen> {
     _passwordFocusNode = FocusNode();
     provider = Provider.of<SignInProvider>(context, listen: false);
   }
-
+ @override
+  void dispose() {
+    // Clean up the controller when the Widget is removed from the Widget tree
+    provider!.userEmailController.clear(); // Clear email text
+    provider!.passwordController.clear();   // Clear password text
+    _passwordFocusNode.dispose();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
@@ -185,9 +192,10 @@ class LoginScreenState extends State<LoginScreen> {
       // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
       textController: provider!.userEmailController,
       inputAction: TextInputAction.next,
+       defaultBoarder: AppColors.textInputField,
       errorBorderColor: emailError
           ? AppColors.errorColor // Border color for validation error
-          : AppColors.textInputField,
+          : AppColors.confirmValid,
       focusBorderColor:
           emailError ? AppColors.errorColor : AppColors.focusTextBoarder,
       autoFocus: false,
@@ -364,14 +372,7 @@ class LoginScreenState extends State<LoginScreen> {
 
   // General Methods:-----------------------------------------------------------
 
-  // dispose:-------------------------------------------------------------------
-  @override
-  void dispose() {
-    // Clean up the controller when the Widget is removed from the Widget tree
-
-    _passwordFocusNode.dispose();
-    super.dispose();
-  }
+  
 
   Future<bool> validate() async {
     var provider = Provider.of<SignInProvider>(context, listen: false);

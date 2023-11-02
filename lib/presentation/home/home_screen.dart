@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
+import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -105,8 +108,8 @@ class HomeScreenState extends State<HomeScreen> {
             _buildLoginText(),
             const SizedBox(height: 24.0),
            
-            _buildForgotPasswordButton(),
-            _buildNotMemberText(),
+           // _buildForgotPasswordButton(),
+           
           ],
         ),
       ),
@@ -158,68 +161,8 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildForgotPasswordButton() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        MaterialButton(
-          padding: const EdgeInsets.all(0.0),
-          child: const Text("Forgot Passward?",
-              style: TextStyle(
-                  color: AppColors.forgotpass,
-                  fontSize: 14,
-                  fontFamily: FontFamily.satoshi,
-                  fontWeight: FontWeight.w500,
-                  height: 24 / 14)),
-          onPressed: () {},
-        ),
-        MaterialButton(
-          padding: const EdgeInsets.all(0.0),
-          child: const Text("Login with OTP",
-              style: TextStyle(
-                  color: AppColors.forgotpass,
-                  fontSize: 14,
-                  fontFamily: FontFamily.satoshi,
-                  fontWeight: FontWeight.w500,
-                  height: 24 / 14)),
-          onPressed: () {},
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNotMemberText() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 32),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "Not a member ?",
-            style: TextStyle(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.darkSubHead
-                  : AppColors.subheadColor,
-              fontSize: 14,
-              fontFamily: FontFamily.satoshi,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          MaterialButton(
-            padding: const EdgeInsets.all(0.0),
-            child: const Text("Register now",
-                style: TextStyle(
-                    color: AppColors.forgotpass,
-                    fontSize: 14,
-                    fontFamily: FontFamily.satoshi,
-                    fontWeight: FontWeight.w500,
-                    height: 24 / 14)),
-            onPressed: () {},
-          ),
-        ],
-      ),
-    );
-  }
+ 
+  
 
   // General Methods:-----------------------------------------------------------
 

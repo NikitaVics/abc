@@ -6,6 +6,7 @@ import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
+import 'package:tennis_court_booking_app/presentation/register/verifyemail/verify_email.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
 
@@ -123,11 +124,14 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
       // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
       textController: provider!.signUpName,
       inputAction: TextInputAction.next,
-      errorBorderColor: nameError
+     defaultBoarder: AppColors.textInputField,
+      errorBorderColor: emailError
           ? AppColors.errorColor // Border color for validation error
           : AppColors.textInputField,
       focusBorderColor:
-          nameError ? AppColors.errorColor : AppColors.focusTextBoarder,
+          emailError ? AppColors.errorColor : AppColors.focusTextBoarder,
+     
+    
       autoFocus: false,
       onChanged: (value) {
         setState(() {
@@ -278,9 +282,11 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
                   if (v == true) {
                     value.registerApi().then((val) {
                       if (val['statusCode'] == 200) {
-                        setState(() {
-                          loginError = false;
-                        });
+                       Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => VerifyEmailScreen(email: provider!.signUpEmail.text)
+                      ),
+                    );
                       } else {
                         setState(() {
                           loginError = true;

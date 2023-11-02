@@ -21,6 +21,7 @@ class TextFieldWidget extends StatefulWidget {
   final Color? focusBorderColor;
   final Color? defaultBoarder;
 
+
   const TextFieldWidget(
       {Key? key,
       required this.errorText,
@@ -38,7 +39,9 @@ class TextFieldWidget extends StatefulWidget {
       this.inputAction,
       this.showPassword = false,
       this.errorBorderColor, // Initialize showPassword
-      this.focusBorderColor,this.defaultBoarder})
+      this.focusBorderColor,
+      this.defaultBoarder,
+     })
       : super(key: key);
 
   @override
@@ -55,7 +58,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
       borderSide: BorderSide(
         color: Theme.of(context).brightness == Brightness.dark
             ? AppColors.darkTextInput
-            :AppColors.textInputField, // Customize border color
+            : AppColors.textInputField, // Customize border color
         width: 1.0,
       ),
     );
@@ -63,15 +66,22 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
     OutlineInputBorder focusedOutlineInputBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(8.0),
       borderSide: BorderSide(
-        color: widget.focusBorderColor!, 
-          width: 1.0,// Customize focused border color
+        color: widget.focusBorderColor!,
+        width: 1.0, // Customize focused border color
       ),
     );
     OutlineInputBorder errorOutlineInputBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(8.0),
       borderSide: BorderSide(
         color: widget.errorBorderColor!,
-          width: 1.0, // Customize error border color
+        width: 1.0, // Customize error border color
+      ),
+    );
+    OutlineInputBorder focusederrorOutlineInputBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(8.0),
+      borderSide: BorderSide(
+        color:AppColors.focusTextBoarder,
+        width: 1.0, // Customize error border color
       ),
     );
     return Padding(
@@ -110,7 +120,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
               border: InputBorder.none,
               focusedBorder: focusedOutlineInputBorder,
               errorBorder: errorOutlineInputBorder,
-              focusedErrorBorder: errorOutlineInputBorder,
+              focusedErrorBorder: focusederrorOutlineInputBorder,
               contentPadding:
                   const EdgeInsets.symmetric(vertical: 19.0, horizontal: 14.0),
               // Add suffixIcon to toggle password visibility
@@ -133,7 +143,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
                   : null,
             ),
           ),
-            Visibility(
+          Visibility(
             visible: widget.errorText != null,
             child: Text(
               widget.errorText ?? '',
