@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/splash/splash_screen.dart';
-import 'package:tennis_court_booking_app/theme/theme_constants.dart';
+
 import 'package:tennis_court_booking_app/theme/theme_manager.dart';
 
 void main() {

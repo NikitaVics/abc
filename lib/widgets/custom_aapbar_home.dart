@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+
 import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/theme/theme_manager.dart';
 
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBarHome extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool isBoarder;
 
-  const CustomAppBar({Key? key, required this.title, required this.isBoarder})
+  const CustomAppBarHome({Key? key, required this.title, required this.isBoarder})
       : super(key: key);
 
   @override

@@ -18,4 +18,12 @@ class AppColors {
   static const hoverBoarderColor = Color(0xff9D9D9D);
   static const lightThemeback = Colors.white;
   static const darkThemeback = Color(0xff0D0D0D);
+  static const darkSubHead = Color(0xffE0E0E2);
+  static const darkTextInput = Color(0xff181818);
+  static const darkhint = Color(0xff7C7C7D);
+  static const darkAppBarboarder = Color(0xff393939);
+  static const focusTextBoarder = Color(0xffAEE7BE);
+  static const focusCursorColor = Color(0xff313131);
+  static const errorColor = Color(0xffEB5757);
+  static const confirmValid = Color(0xff27AE60);
 }

@@ -43,6 +43,7 @@ dependencies:
   build_runner: ^2.4.6
   adaptive_theme: ^3.4.1
   flutter_svg: ^2.0.8
+  flutter_countdown_timer: ^4.1.0
 
 dev_dependencies:
   flutter_test:

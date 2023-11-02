@@ -1,28 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tennis_court_booking_app/api/api.dart';
+
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/model/login/login_response_model.dart';
+import 'package:tennis_court_booking_app/presentation/forgotPassword/forgot_pass_using_otp.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/presentation/register/register.dart';
-import 'package:tennis_court_booking_app/theme/theme_manager.dart';
+
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  LoginScreenState createState() => LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class LoginScreenState extends State<LoginScreen> {
   //text controllers:-----------------------------------------------------------
 
   //predefine bool value for error:---------------------------------------------
   bool emailError = false, passwordError = false, loginError = false;
   String emailErrorText = '', loginErrorMessage = '';
+  bool isEmailValidationSuccessful = false;
+  bool isPasswordValidationSuccessful = false;
+  LoginResponse? loginResponse;
 
   //stores:---------------------------------------------------------------------
 
@@ -36,28 +43,30 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordFocusNode = FocusNode();
     provider = Provider.of<SignInProvider>(context, listen: false);
   }
- 
+
   @override
   Widget build(BuildContext context) {
-    return Builder(
-      builder: (context) {
-        return Scaffold(
-          backgroundColor:Theme.of(context).brightness == Brightness.dark? AppColors.darkThemeback:AppColors.lightThemeback,
-          primary: true,
-          appBar: const CustomAppBar(
-            isBoarder: true,
-            title: "Login",
-          ),
-          body: _buildBody(),
-        );
-      }
-    );
+    return Builder(builder: (context) {
+      return Scaffold(
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.darkThemeback
+            : AppColors.lightThemeback,
+        primary: true,
+        appBar: const CustomAppBar(
+          isBoarder: true,
+          title: "Login",
+        ),
+        body: _buildBody(),
+      );
+    });
   }
 
   // body methods:--------------------------------------------------------------
   Widget _buildBody() {
     return Material(
-      color: Theme.of(context).brightness == Brightness.dark? AppColors.darkThemeback:AppColors.lightThemeback,
+      color: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkThemeback
+          : AppColors.lightThemeback,
       child: Stack(
         children: <Widget>[
           MediaQuery.of(context).orientation == Orientation.landscape
@@ -106,8 +115,8 @@ class _LoginScreenState extends State<LoginScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.center,
+          //crossAxisAlignment: CrossAxisAlignment.stretch,
+          //mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             _buildLoginText(),
             const SizedBox(height: 24.0),
@@ -115,7 +124,6 @@ class _LoginScreenState extends State<LoginScreen> {
             _buildPasswordField(),
             _buildForgotPasswordButton(),
             _buildNotMemberText(),
-            
           ],
         ),
       ),
@@ -123,33 +131,36 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildLoginText() {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Log In",
+          "Log in",
           style: TextStyle(
-            color: AppColors.allHeadColor,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.headingTextColor
+                : AppColors.allHeadColor,
             fontSize: 32,
             fontFamily: FontFamily.satoshi,
             fontWeight: FontWeight.w700,
             height: 40 / 32,
           ),
         ),
-        
-        SizedBox(height: 8.0),
+        const SizedBox(height: 8.0),
         Row(
           children: [
             Text(
-              "If you need any support",
+              "If You Need Any Support",
               style: TextStyle(
-                color: AppColors.subheadColor,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkSubHead
+                    : AppColors.subheadColor,
                 fontSize: 12,
                 fontFamily: FontFamily.satoshi,
                 fontWeight: FontWeight.w400,
               ),
             ),
-            Text(
+            const Text(
               " Click Here",
               style: TextStyle(
                 color: AppColors.dotColor,
@@ -158,28 +169,33 @@ class _LoginScreenState extends State<LoginScreen> {
                 fontWeight: FontWeight.w400,
               ),
             ),
-            
           ],
         ),
-        
       ],
     );
   }
 
   Widget _buildUserIdField() {
     return TextFieldWidget(
-      hint: 'E-mail',
+      hint: 'E-Mail',
       inputType: TextInputType.emailAddress,
-
+      hintColor: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkhint
+          : AppColors.hintColor,
       // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
       textController: provider!.userEmailController,
       inputAction: TextInputAction.next,
+      errorBorderColor: emailError
+          ? AppColors.errorColor // Border color for validation error
+          : AppColors.textInputField,
+      focusBorderColor:
+          emailError ? AppColors.errorColor : AppColors.focusTextBoarder,
       autoFocus: false,
       onChanged: (value) {
-        // _formStore.setUserId(_userEmailController.text);
-      },
-      onFieldSubmitted: (value) {
-        FocusScope.of(context).requestFocus(_passwordFocusNode);
+        setState(() {
+          emailError = false; // Reset the error flag
+        });
+        //validateEmail(); // Trigger validation on text change
       },
       errorText: emailError ? emailErrorText : " ",
     );
@@ -187,16 +203,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildPasswordField() {
     return TextFieldWidget(
-      hint: "",
-      //AppLocalizations.of(context).translate('login_et_user_password'),
+      hint: "Password",
+      hintColor: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkhint
+          : AppColors.hintColor,
       isObscure: true,
-      padding: const EdgeInsets.only(top: 8.0),
+     
       textController: provider!.passwordController,
       focusNode: _passwordFocusNode,
       errorText: passwordError ? "please enter your password" : " ",
-
+      defaultBoarder: AppColors.textInputField,
+      errorBorderColor: AppColors.errorColor,
+      focusBorderColor:
+          passwordError ? AppColors.errorColor : AppColors.focusTextBoarder,
       onChanged: (value) {
-        // _formStore.setPassword(_passwordController.text);
+        setState(() {
+          passwordError = false; // Reset the error flag
+        });
+        //validatePassword(); // Trigger validation on text change
       },
     );
   }
@@ -214,7 +238,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   fontFamily: FontFamily.satoshi,
                   fontWeight: FontWeight.w500,
                   height: 24 / 14)),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const ForgotPassUsingOtpScreen(),
+              ),
+            );
+          },
         ),
         MaterialButton(
           padding: const EdgeInsets.all(0.0),
@@ -237,10 +267,12 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text(
+          Text(
             "Not a member ?",
             style: TextStyle(
-              color: AppColors.allHeadColor,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkSubHead
+                  : AppColors.subheadColor,
               fontSize: 14,
               fontFamily: FontFamily.satoshi,
               fontWeight: FontWeight.w500,
@@ -256,11 +288,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontWeight: FontWeight.w500,
                     height: 24 / 14)),
             onPressed: () {
-               Navigator.of(context).push(
-    MaterialPageRoute(
-      builder: (context) =>  RegisterScreen(),
-    ),
-  );
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => RegisterScreen(),
+                ),
+              );
             },
           ),
         ],
@@ -276,6 +308,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: FocusScope(
           // Manage keyboard focus
           child: Consumer<SignInProvider>(builder: (context, value, child) {
+            
             return CustomElevatedButton(
               height: 60,
               width: MediaQuery.of(context).orientation == Orientation.landscape
@@ -291,22 +324,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 validate().then((v) {
                   if (v == true) {
                     value.loginApi().then((val) {
-                      if (val['statusCode'] == 200) {
+                      if (val["statusCode"] == 200) {
                         setState(() {
                           loginError = false;
                         });
                         pref.setString('authToken', val['result']['token']);
+                        pref.setString('email', val['result']['user']['email']);
                         String? authToken = pref.getString('authToken');
-if (authToken != null) {
-  print("Auth Token: $authToken");
-} else {
-  print("Auth Token is not set.");
-}
-
+                        if (authToken != null) {
+                          print("Auth Token: $authToken");
+                        } else {
+                          print("Auth Token is not set.");
+                        }
                       } else {
                         setState(() {
                           loginError = true;
-                          loginErrorMessage = val['message'];
+                         loginErrorMessage = val['errorMeassage'];
                         });
                       }
                     });

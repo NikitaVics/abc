@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tennis_court_booking_app/model/login/login_response_model.dart';
 
 
 class Api {
@@ -12,6 +13,83 @@ class Api {
   static Future login(body) async {
   
     var url = "$baseUrl/api/UsersAuth/login";
+
+    // Convert the model to a JSON string
+    Map<String, String> headers = {
+      "content-Type": "application/json;  charset=UTF-8",
+    };
+
+    // Set the request headers if needed
+   
+
+    http.Response response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    print(response.body);
+
+    final jsonData = json.decode(response.body);
+      // Add this line to print the received data
+      return jsonData;
+   
+  }
+
+  static Future forgotPassword(body) async {
+    var url = "$baseUrl/api/UsersAuth/Send OTP";
+    Map<String, String> headers = {
+      "content-Type": "application/json;  charset=UTF-8",
+    };
+   http.Response response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    print(response.body);
+
+   // final jsonData = json.decode(response.body);
+    return jsonDecode(response.body);
+  }
+
+static Future emaiVerificationForgotPassword(body) async {
+    var url = "$baseUrl/api/UsersAuth/Verify Email";
+    Map<String, String> headers = {
+      "content-Type": "application/json;  charset=UTF-8",
+    };
+   http.Response response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    print(response.body);
+
+   // final jsonData = json.decode(response.body);
+    return jsonDecode(response.body);
+  }
+
+static Future resetPassword(body) async {
+    var url = "$baseUrl/api/UsersAuth/Reset Password";
+    Map<String, String> headers = {
+      "content-Type": "application/json;  charset=UTF-8",
+    };
+   http.Response response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    print(response.body);
+
+   // final jsonData = json.decode(response.body);
+    return jsonDecode(response.body);
+  }
+
+  static Future register(body) async {
+  
+    var url = "$baseUrl/api/UsersAuth/register";
 
     // Convert the model to a JSON string
     Map<String, String> headers = {
