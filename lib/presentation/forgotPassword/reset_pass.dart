@@ -65,6 +65,8 @@ class ResetPassScreenState extends State<ResetPassScreen> {
         appBar: const CustomAppBar(
           isBoarder: true,
           title: "Forgot Password",
+            isProgress: false,
+               step: 0,
         ),
         body: _buildBody(),
       );

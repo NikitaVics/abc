@@ -42,6 +42,8 @@ class HomeScreenState extends State<HomeScreen> {
         appBar: const CustomAppBar(
           isBoarder: true,
           title: "Login",
+            isProgress: false,
+               step: 0,
         ),
         body: _buildBody(),
       );

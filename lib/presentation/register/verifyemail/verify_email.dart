@@ -11,6 +11,7 @@ import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/forgotPassword/reset_pass.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
+import 'package:tennis_court_booking_app/presentation/register/pageview/register_form.dart';
 import 'package:tennis_court_booking_app/presentation/register/register.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
@@ -38,7 +39,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
   void initState() {
     startTimer();
     super.initState();
-    autoLogin();
+    
   }
 
   startTimer() {
@@ -71,12 +72,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
     return formattedTime;
   }
 
-  autoLogin() async {
-    SignInProvider signInProvider =
-        Provider.of<SignInProvider>(context, listen: false);
-    signInProvider.forgotPass.text = widget.email;
-    await signInProvider.forgotPasswordApi();
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +84,8 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
       appBar: const CustomAppBar(
         isBoarder: true,
         title: "Verify mail id",
+        isProgress: false,
+        step: 0,
       ),
       body: _buildBody(),
     );
@@ -195,7 +193,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   height: 24 / 14),
             ),
             Text(
-              widget.email ,
+              widget.email,
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.darkSubHead
@@ -279,17 +277,13 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                 });
                 value
                     .verifyEmailForgotPasswordApi(
-                 widget.email,
+                  widget.email,
                   otp!,
                 )
                     .then((val) {
                   if (val["statusCode"] == 200) {
                     Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const RegisterScreen(
- 
-)
-                      ),
+                      MaterialPageRoute(builder: (context) => RegisterForm()),
                     );
                     print(val);
                   } else {

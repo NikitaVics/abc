@@ -7,10 +7,14 @@ import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/presentation/register/verifyemail/verify_email.dart';
+import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
+import 'package:tennis_court_booking_app/widgets/step_progress_indicator.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
 
 class RegisterAsMember extends StatefulWidget {
+  const RegisterAsMember({super.key});
+
   @override
   State<RegisterAsMember> createState() => _RegisterAsMemberState();
 }
@@ -41,35 +45,89 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      _buildLoginText(),
-                      SizedBox(height: 24.0),
-                      _buildUserName(),
-                      _buildUserIdField(),
-                      _buildPasswordField(),
-                      _buildConfirmPasswordField(),
-                      _buildNotMemberText(),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
+    return Builder(builder: (context) {
+      return Scaffold(
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.darkThemeback
+            : AppColors.lightThemeback,
+        primary: true,
+        appBar: const CustomAppBar(
+          isBoarder: false,
+          title: "Register as Member",
+          isProgress: true,
+          step: 1,
         ),
-        _buildSignInButton()
-      ],
+        body: _buildBody(),
+      );
+    });
+  }
+
+  Widget _buildBody() {
+    return Material(
+      color: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkThemeback
+          : AppColors.lightThemeback,
+      child: Stack(
+        children: <Widget>[
+          MediaQuery.of(context).orientation == Orientation.landscape
+              ? Row(
+                  children: <Widget>[
+                    Expanded(child: _buildLeftSide()),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: _buildRightSide(),
+                          ),
+                          _buildSignInButton()
+                        ],
+                      ),
+                    ),
+                  ],
+                )
+              : Column(
+                  children: [
+                    Expanded(child: Center(child: _buildRightSide())),
+                    _buildSignInButton()
+                  ],
+                ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLeftSide() {
+    return SizedBox(
+      width: 300,
+      child: SizedBox.expand(
+        child: Image.asset(
+          "assets/images/onboard_back_one.png",
+          //Assets.carBackground,
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRightSide() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          //crossAxisAlignment: CrossAxisAlignment.stretch,
+          //mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            _buildLoginText(),
+            SizedBox(height: 24.0),
+            _buildUserName(),
+            _buildUserIdField(),
+            _buildPasswordField(),
+            _buildConfirmPasswordField(),
+            _buildNotMemberText(),
+          ],
+        ),
+      ),
     );
   }
 
@@ -124,14 +182,13 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
       // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
       textController: provider!.signUpName,
       inputAction: TextInputAction.next,
-     defaultBoarder: AppColors.textInputField,
+      defaultBoarder: AppColors.textInputField,
       errorBorderColor: emailError
           ? AppColors.errorColor // Border color for validation error
           : AppColors.textInputField,
       focusBorderColor:
           emailError ? AppColors.errorColor : AppColors.focusTextBoarder,
-     
-    
+
       autoFocus: false,
       onChanged: (value) {
         setState(() {
@@ -275,27 +332,26 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
               onPressed: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
                 //SharedPreferences pref = await SharedPreferences.getInstance();
-                setState(() {
-                  loginError = false;
-                });
-                validate().then((v) {
-                  if (v == true) {
+                bool nameValid = await validateName();
+  bool emailValid = await validateEmail();
+  bool passwordValid = await validatePassword();
+  bool confirmPasswordValid = await validateConfirmPassword();
+
+               
+                  if (nameValid && emailValid && passwordValid && confirmPasswordValid)  {
                     value.registerApi().then((val) {
                       if (val['statusCode'] == 200) {
-                       Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => VerifyEmailScreen(email: provider!.signUpEmail.text)
-                      ),
-                    );
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                              builder: (context) => VerifyEmailScreen(
+                                  email: provider!.signUpEmail.text)),
+                        );
                       } else {
-                        setState(() {
-                          loginError = true;
-                          loginErrorMessage = val['message'];
-                        });
+                        print("false");
                       }
                     });
                   }
-                });
+            
                 /* if (_formStore.canLogin) {
                 DeviceUtils.hideKeyboard(context);
                 _userStore.login(

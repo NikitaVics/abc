@@ -32,22 +32,22 @@ class SignInProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future forgotPasswordApi() async {
-    updateForgotPasswordLoader(true);
+  Future forgotPasswordApi(String email) async {
+   // updateForgotPasswordLoader(true);
     var body = {
-      'email':forgotPass.text,
+      'email':email,
     };
     try {
       var res = await Api.forgotPassword(body);
       print('Response: $res');
     
       // Parse the 'res' here, if needed.
-      updateForgotPasswordLoader(false);
+      //updateForgotPasswordLoader(false);
       return res;
     } catch (e) {
       print('Error while decoding JSON: $e');
       // Handle the error appropriately.
-      updateForgotPasswordLoader(false);
+      //updateForgotPasswordLoader(false);
       return null; // Or throw an exception, depending on your requirements.
     }
   }

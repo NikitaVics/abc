@@ -3,6 +3,7 @@ import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/constants/onboarding_data.dart';
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
+import 'package:tennis_court_booking_app/presentation/register/register.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -76,13 +77,13 @@ class OnboardingScreenState extends State<OnboardingScreen> {
           ),
           Positioned(
               top: 36,
-              left: 319,
+             // left: 319,
               right: 24,
               child: _currentPage < OnboardingData.onboardingData.length - 1
                   ? TextButton(
                       onPressed: () {
                         _pageController.animateToPage(
-                          _currentPage + 1,
+                          _currentPage + 2,
                           duration: const Duration(milliseconds: 500),
                           curve: Curves.ease,
                         );
@@ -127,7 +128,11 @@ class OnboardingScreenState extends State<OnboardingScreen> {
                     width: 153,
                     text: 'Register Now',
                     onPressed: () {
-                     
+                      Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (context) => RegisterScreen(),
+    ),
+  );
                     },
                     buttonColor: AppColors.elevatedColor,
                     textColor: Colors.white,
@@ -194,23 +199,25 @@ class OnboardingPage extends StatelessWidget {
             ),
           ),
           Positioned(
-            top: 510, // Adjust the position of the text as needed
+            //top: 510, // Adjust the position of the text as needed
             left: 24,
             right: 53,
+            bottom: 127,
 
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  text,
-                  style: const TextStyle(
-                    color: AppColors.headingTextColor,
-                    fontSize: 32,
-                    fontFamily: FontFamily.satoshi,
-                    fontWeight: FontWeight.w700,
-                    height: 1.25,
-                  ),
+              Text(
+                text,
+                style: const TextStyle(
+                  color: AppColors.headingTextColor,
+                  fontSize: 32,
+                  fontFamily: FontFamily.satoshi,
+                  fontWeight: FontWeight.w700,
+                  height: 1.25,
                 ),
+              )
+,
                 const SizedBox(
                   height: 8,
                 ),

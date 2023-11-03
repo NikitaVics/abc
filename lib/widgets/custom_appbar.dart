@@ -4,13 +4,20 @@ import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/theme/theme_manager.dart';
-
+import 'package:tennis_court_booking_app/widgets/step_progress_indicator.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool isBoarder;
+  final bool isProgress;
+  final int step;
 
-  const CustomAppBar({Key? key, required this.title, required this.isBoarder})
+  const CustomAppBar(
+      {Key? key,
+      required this.title,
+      required this.isBoarder,
+      required this.isProgress,
+      required this.step})
       : super(key: key);
 
   @override
@@ -18,7 +25,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-  final themeNotifier = context.watch<ThemeModeNotifier>();
+    final themeNotifier = context.watch<ThemeModeNotifier>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: MainAxisAlignment.end,
@@ -30,8 +37,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             decoration: BoxDecoration(
                 border: Border(
               bottom: isBoarder
-                  ?  BorderSide(
-                      color: Theme.of(context).brightness == Brightness.dark?AppColors.darkAppBarboarder:AppColors.appbarBoarder,
+                  ? BorderSide(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.darkAppBarboarder
+                          : AppColors.appbarBoarder,
                       width: 2.0,
                     )
                   : BorderSide.none,
@@ -58,7 +67,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     child: Text(
                       title,
                       style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.dark?AppColors.headingTextColor:AppColors.allHeadColor,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.headingTextColor
+                            : AppColors.allHeadColor,
                         fontFamily: FontFamily.satoshi,
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
@@ -67,21 +78,25 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ),
                   ),
                 ),
-             
-                   GestureDetector(
-  child: themeNotifier.themeMode == ThemeMode.dark
-      ? Icon(Icons.sunny, color: Colors.white) // Show "sunny" icon in dark mode
-      : Icon(Icons.star, color: Colors.black), // Show "star" icon in light mode
-  onTap: () {
-    final newMode = themeNotifier.themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
-    themeNotifier.setThemeMode(newMode);
-  },
-),
-
+                GestureDetector(
+                  child: themeNotifier.themeMode == ThemeMode.dark
+                      ? Icon(Icons.sunny,
+                          color: Colors.white) // Show "sunny" icon in dark mode
+                      : Icon(Icons.star,
+                          color:
+                              Colors.black), // Show "star" icon in light mode
+                  onTap: () {
+                    final newMode = themeNotifier.themeMode == ThemeMode.dark
+                        ? ThemeMode.light
+                        : ThemeMode.dark;
+                    themeNotifier.setThemeMode(newMode);
+                  },
+                ),
               ],
             ),
           ),
         ),
+        isProgress ? ExampleStepProgressIndicator(step: step) : SizedBox(),
       ],
     );
   }

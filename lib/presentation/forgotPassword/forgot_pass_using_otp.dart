@@ -17,7 +17,8 @@ import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/otp_input.dart';
 
 class ForgotPassUsingOtpScreen extends StatefulWidget {
-  const ForgotPassUsingOtpScreen({super.key});
+  final String email;
+  const ForgotPassUsingOtpScreen({super.key, required this.email});
 
   @override
   ForgotPassUsingOtpScreenState createState() =>
@@ -37,7 +38,6 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
   void initState() {
     startTimer();
     super.initState();
-    autoLogin();
   }
 
   startTimer() {
@@ -70,19 +70,6 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
     return formattedTime;
   }
 
-  String? email;
-
-  autoLogin() async {
-    pref = await SharedPreferences.getInstance();
-    email = await SharePref.fetchEmail();
-    String emails = await SharePref.fetchEmail();
-    print(emails);
-    SignInProvider signInProvider =
-        Provider.of<SignInProvider>(context, listen: false);
-    signInProvider.forgotPass.text = emails;
-    await signInProvider.forgotPasswordApi();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,6 +80,8 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
       appBar: const CustomAppBar(
         isBoarder: true,
         title: "Forgot password",
+        isProgress: false,
+        step: 0,
       ),
       body: _buildBody(),
     );
@@ -200,7 +189,7 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
                   height: 24 / 14),
             ),
             Text(
-              email ?? " ",
+             widget.email,
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.darkSubHead
@@ -243,7 +232,8 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
       ],
     );
   }
-Widget _buildResendText() {
+
+  Widget _buildResendText() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -274,7 +264,7 @@ Widget _buildResendText() {
                   height: 24 / 14),
             ),
             Text(
-              email ?? " ",
+              widget.email,
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.darkSubHead
@@ -333,8 +323,7 @@ Widget _buildResendText() {
                   : double.infinity,
               text: "Verify Otp",
               onPressed: () async {
-                
-               FocusManager.instance.primaryFocus?.unfocus();
+                FocusManager.instance.primaryFocus?.unfocus();
                 SharedPreferences pref = await SharedPreferences.getInstance();
                 setState(() {
                   otp = _fieldOne.text +
@@ -344,16 +333,18 @@ Widget _buildResendText() {
                 });
                 value
                     .verifyEmailForgotPasswordApi(
-                  email!,
+                  widget.email,
                   otp!,
                 )
                     .then((val) {
                   if (val["statusCode"] == 200) {
-                     Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) =>  ResetPassScreen(email: email!,),
-                ),
-              );
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ResetPassScreen(
+                          email:  widget.email,
+                        ),
+                      ),
+                    );
                     print(val);
                   } else {
                     setState(() {

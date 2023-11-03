@@ -7,7 +7,9 @@ import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/model/login/login_response_model.dart';
 import 'package:tennis_court_booking_app/presentation/forgotPassword/forgot_pass_using_otp.dart';
+import 'package:tennis_court_booking_app/presentation/forgotPassword/otp_send_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
+import 'package:tennis_court_booking_app/presentation/register/pageview/register_as_member.dart';
 import 'package:tennis_court_booking_app/presentation/register/register.dart';
 
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
@@ -62,6 +64,8 @@ class LoginScreenState extends State<LoginScreen> {
         appBar: const CustomAppBar(
           isBoarder: true,
           title: "Login",
+            isProgress: false,
+               step: 0,
         ),
         body: _buildBody(),
       );
@@ -184,7 +188,7 @@ class LoginScreenState extends State<LoginScreen> {
 
   Widget _buildUserIdField() {
     return TextFieldWidget(
-      hint: 'E-Mail',
+      hint: 'E-Mail/UserName',
       inputType: TextInputType.emailAddress,
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
@@ -249,7 +253,7 @@ class LoginScreenState extends State<LoginScreen> {
           onPressed: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => const ForgotPassUsingOtpScreen(),
+                builder: (context) => const OtpSendScreen(),
               ),
             );
           },
@@ -298,7 +302,7 @@ class LoginScreenState extends State<LoginScreen> {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => RegisterScreen(),
+                  builder: (context) => const RegisterAsMember(),
                 ),
               );
             },

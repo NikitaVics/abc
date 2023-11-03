@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
 
@@ -36,37 +37,93 @@ class _RegisterFormState extends State<RegisterForm> {
 
   bool isChecked = false;
 
-  @override
+  
+   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.center,
+    return Builder(builder: (context) {
+      return Scaffold(
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.darkThemeback
+            : AppColors.lightThemeback,
+        primary: true,
+        appBar: const CustomAppBar(
+          isBoarder:false,
+          title: "Registration Form",
+            isProgress: true,
+            step: 2,
+        ),
+        body: _buildBody(),
+      );
+    });
+  }
+
+   Widget _buildBody() {
+    return Material(
+      color: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkThemeback
+          : AppColors.lightThemeback,
+      child: Stack(
+        children: <Widget>[
+          MediaQuery.of(context).orientation == Orientation.landscape
+              ? Row(
                   children: <Widget>[
-                    _buildLoginText(),
-                    SizedBox(height: 24.0),
-                    _buildUserName(),
-                    _buildUserIdField(),
-                    _buildPasswordField(),
-                   
-                    _buildUploadDocumentField(context),
-                    _buildNotMemberText(),
+                    Expanded(child: _buildLeftSide()),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: _buildRightSide(),
+                          ),
+                          _buildSignInButton()
+                        ],
+                      ),
+                    ),
+                  ],
+                )
+              : Column(
+                  children: [
+                    
+                    Expanded(child: Center(child: _buildRightSide())),
+                    _buildSignInButton()
                   ],
                 ),
-              ),
-            ),
-          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLeftSide() {
+    return SizedBox(
+      width: 300,
+      child: SizedBox.expand(
+        child: Image.asset(
+          "assets/images/onboard_back_one.png",
+          //Assets.carBackground,
+          fit: BoxFit.cover,
         ),
-        _buildSignInButton()
-      ],
+      ),
+    );
+  }
+
+Widget _buildRightSide() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          //crossAxisAlignment: CrossAxisAlignment.stretch,
+          //mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+        _buildLoginText(),
+              SizedBox(height: 24.0),
+              _buildUserName(),
+              _buildUserIdField(),
+              _buildPasswordField(),
+              _buildUploadDocumentField(context),
+              _buildNotMemberText(),
+          ],
+        ),
+      ),
     );
   }
 
@@ -157,7 +214,6 @@ class _RegisterFormState extends State<RegisterForm> {
           ? AppColors.darkhint
           : AppColors.hintColor,
       isObscure: true,
-      
       textController: _passwordController,
       errorBorderColor: passwordError
           ? AppColors.errorColor // Border color for validation error
