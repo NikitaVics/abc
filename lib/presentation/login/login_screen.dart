@@ -39,35 +39,44 @@ class LoginScreenState extends State<LoginScreen> {
   late FocusNode _passwordFocusNode;
   SignInProvider? provider;
 
+
   @override
   void initState() {
     super.initState();
     _passwordFocusNode = FocusNode();
+    
     provider = Provider.of<SignInProvider>(context, listen: false);
   }
- @override
+
+  @override
   void dispose() {
     // Clean up the controller when the Widget is removed from the Widget tree
     provider!.userEmailController.clear(); // Clear email text
-    provider!.passwordController.clear();   // Clear password text
+    provider!.passwordController.clear(); // Clear password text
     _passwordFocusNode.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
-      return Scaffold(
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkThemeback
-            : AppColors.lightThemeback,
-        primary: true,
-        appBar: const CustomAppBar(
-          isBoarder: true,
-          title: "Login",
+      return GestureDetector(
+        onTap: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+        child: Scaffold(
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkThemeback
+              : AppColors.lightThemeback,
+          primary: true,
+          appBar: const CustomAppBar(
+            isBoarder: true,
+            title: "Login",
             isProgress: false,
-               step: 0,
+            step: 0,
+          ),
+          body: _buildBody(),
         ),
-        body: _buildBody(),
       );
     });
   }
@@ -133,6 +142,7 @@ class LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 24.0),
             _buildUserIdField(),
             _buildPasswordField(),
+            // _passwordValidator(),
             _buildForgotPasswordButton(),
             _buildNotMemberText(),
           ],
@@ -196,7 +206,7 @@ class LoginScreenState extends State<LoginScreen> {
       // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
       textController: provider!.userEmailController,
       inputAction: TextInputAction.next,
-       defaultBoarder: AppColors.textInputField,
+      defaultBoarder: AppColors.textInputField,
       errorBorderColor: emailError
           ? AppColors.errorColor // Border color for validation error
           : AppColors.confirmValid,
@@ -214,16 +224,16 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildPasswordField() {
+
     return TextFieldWidget(
       hint: "Password",
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
           : AppColors.hintColor,
       isObscure: true,
-     
       textController: provider!.passwordController,
       focusNode: _passwordFocusNode,
-      errorText: passwordError ? "please enter your password" : " ",
+      errorText: passwordError ? "Please enter your password" : " ",
       defaultBoarder: AppColors.textInputField,
       errorBorderColor: AppColors.errorColor,
       focusBorderColor:
@@ -232,10 +242,12 @@ class LoginScreenState extends State<LoginScreen> {
         setState(() {
           passwordError = false; // Reset the error flag
         });
-        //validatePassword(); // Trigger validation on text change
       },
+      
     );
   }
+
+  
 
   Widget _buildForgotPasswordButton() {
     return Row(
@@ -320,51 +332,45 @@ class LoginScreenState extends State<LoginScreen> {
         child: FocusScope(
           // Manage keyboard focus
           child: Consumer<SignInProvider>(builder: (context, value, child) {
-            
+            void loginButtonPressed() async {
+              FocusManager.instance.primaryFocus?.unfocus();
+              SharedPreferences pref = await SharedPreferences.getInstance();
+              setState(() {
+                loginError = false;
+              });
+
+              if (await validate()) {
+                value.loginApi().then((val) {
+                  if (val["statusCode"] == 200) {
+                    setState(() {
+                      loginError = false;
+                    });
+                    pref.setString('authToken', val['result']['token']);
+                    pref.setString('email', val['result']['user']['email']);
+                    String? authToken = pref.getString('authToken');
+                    if (authToken != null) {
+                      print("Auth Token: $authToken");
+                    } else {
+                      print("Auth Token is not set.");
+                    }
+                  } else {
+                    setState(() {
+                      loginError = true;
+                      loginErrorMessage = val['errorMeassage'];
+                    });
+                  }
+                });
+              }
+            }
+
             return CustomElevatedButton(
               height: 60,
               width: MediaQuery.of(context).orientation == Orientation.landscape
                   ? 70
                   : double.infinity,
               text: "Login Now",
-              onPressed: () async {
-                FocusManager.instance.primaryFocus?.unfocus();
-                SharedPreferences pref = await SharedPreferences.getInstance();
-                setState(() {
-                  loginError = false;
-                });
-                validate().then((v) {
-                  if (v == true) {
-                    value.loginApi().then((val) {
-                      if (val["statusCode"] == 200) {
-                        setState(() {
-                          loginError = false;
-                        });
-                        pref.setString('authToken', val['result']['token']);
-                        pref.setString('email', val['result']['user']['email']);
-                        String? authToken = pref.getString('authToken');
-                        if (authToken != null) {
-                          print("Auth Token: $authToken");
-                        } else {
-                          print("Auth Token is not set.");
-                        }
-                      } else {
-                        setState(() {
-                          loginError = true;
-                         loginErrorMessage = val['errorMeassage'];
-                        });
-                      }
-                    });
-                  }
-                });
-                /* if (_formStore.canLogin) {
-                DeviceUtils.hideKeyboard(context);
-                _userStore.login(
-                    _userEmailController.text, _passwordController.text);
-              } else {
-                _showErrorMessage('Please fill in all fields');
-              }*/
-              },
+              onPressed:
+                  passwordError & emailError ? () {} : loginButtonPressed,
               buttonColor: AppColors.elevatedColor,
               textColor: Colors.white,
             );
@@ -376,22 +382,29 @@ class LoginScreenState extends State<LoginScreen> {
 
   // General Methods:-----------------------------------------------------------
 
-  
-
   Future<bool> validate() async {
     var provider = Provider.of<SignInProvider>(context, listen: false);
     bool emailValid = RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+")
         .hasMatch(provider.userEmailController.text);
+    final password = provider.passwordController.text;
+    
     setState(() {
       if (provider.userEmailController.text.isEmpty) {
         emailError = true;
-        emailErrorText = 'Please enter your email address';
+        emailErrorText = 'Please enter your email address or username';
+      } else if (
+        provider.userEmailController.text !=
+              provider.userEmailController.text.toLowerCase()
+          ) {
+        emailError = true;
+        emailErrorText = 'Entered email or username is not valid';
       } else {
         emailError = false;
       }
-      if (provider.passwordController.text.isEmpty) {
+      if (password.isEmpty) {
         passwordError = true;
+        
       } else {
         passwordError = false;
       }

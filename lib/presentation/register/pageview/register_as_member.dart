@@ -21,6 +21,7 @@ class RegisterAsMember extends StatefulWidget {
 
 class _RegisterAsMemberState extends State<RegisterAsMember> {
   late FocusNode _passwordFocusNode;
+  late FocusNode _userNameFocusNode;
   late FocusNode _confirmpasswordFocusNode;
   bool emailError = false,
       passwordError = false,
@@ -34,30 +35,82 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
   bool isEmailValidationSuccessful = false;
   bool isPasswordValidationSuccessful = false;
   SignInProvider? provider;
+  List<bool> isPasswordValid(String password) {
+    // Define regular expressions for each condition
+    final lowercaseRegex = RegExp(r'[a-z]');
+    final uppercaseRegex = RegExp(r'[A-Z]');
+    final digitRegex = RegExp(r'[0-9]');
+    final specialCharRegex = RegExp(r'[!@#\$%^&*()_+{}\[\]:;<>,.?~\\-]');
 
+    final isLengthValid = password.length >= 8;
+    final hasLowercase = lowercaseRegex.hasMatch(password);
+    final hasUppercase = uppercaseRegex.hasMatch(password);
+    final hasDigit = digitRegex.hasMatch(password);
+    final hasSpecialChar = specialCharRegex.hasMatch(password);
+
+    return [
+      isLengthValid,
+      hasLowercase,
+      hasUppercase,
+      hasDigit,
+      hasSpecialChar
+    ];
+  }
+
+  bool isUserNameValid(String name) {
+    // Define regular expressions for each condition
+    final lowercaseRegex = RegExp(r'[a-z]');
+
+    final hasLowercase = lowercaseRegex.hasMatch(name);
+
+    return hasLowercase;
+  }
+
+  bool _isMenuVisible = false;
+  bool isMenu = false;
   @override
   void initState() {
     super.initState();
     _passwordFocusNode = FocusNode();
+    _passwordFocusNode.addListener(() {
+      setState(() {
+        _isMenuVisible = _passwordFocusNode.hasFocus;
+      });
+    });
+    _userNameFocusNode = FocusNode();
+    _userNameFocusNode.addListener(() {
+      setState(() {
+        isMenu = _userNameFocusNode.hasFocus;
+      });
+    });
+
     _confirmpasswordFocusNode = FocusNode();
+    _confirmpasswordFocusNode.addListener(() {
+      validateConfirmPassword();
+    });
     provider = Provider.of<SignInProvider>(context, listen: false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
-      return Scaffold(
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkThemeback
-            : AppColors.lightThemeback,
-        primary: true,
-        appBar: const CustomAppBar(
-          isBoarder: false,
-          title: "Register as Member",
-          isProgress: true,
-          step: 1,
+      return GestureDetector(
+        onTap: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+        child: Scaffold(
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkThemeback
+              : AppColors.lightThemeback,
+          primary: true,
+          appBar: const CustomAppBar(
+            isBoarder: false,
+            title: "Register as Member",
+            isProgress: true,
+            step: 1,
+          ),
+          body: _buildBody(),
         ),
-        body: _buildBody(),
       );
     });
   }
@@ -173,30 +226,86 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
   }
 
   Widget _buildUserName() {
-    return TextFieldWidget(
-      hint: 'User Name',
-      inputType: TextInputType.name,
-      hintColor: Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkhint
-          : AppColors.hintColor,
-      // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
-      textController: provider!.signUpName,
-      inputAction: TextInputAction.next,
-      defaultBoarder: AppColors.textInputField,
-      errorBorderColor: emailError
-          ? AppColors.errorColor // Border color for validation error
-          : AppColors.textInputField,
-      focusBorderColor:
-          emailError ? AppColors.errorColor : AppColors.focusTextBoarder,
+    final name = provider!.signUpName.text;
+    final nameConditions = isUserNameValid(name);
 
-      autoFocus: false,
-      onChanged: (value) {
-        setState(() {
-          nameError = false; // Reset the error flag
-        });
-        validateName(); // Trigger validation on text change
-      },
-      errorText: nameError ? "Please enter name" : " ",
+    return Column(
+      children: [
+        TextFieldWidget(
+          hint: 'User Name',
+          inputType: TextInputType.name,
+          hintColor: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkhint
+              : AppColors.hintColor,
+          focusNode: _userNameFocusNode,
+          // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
+          textController: provider!.signUpName,
+          inputAction: TextInputAction.next,
+          defaultBoarder: AppColors.textInputField,
+          errorBorderColor: emailError
+              ? AppColors.errorColor // Border color for validation error
+              : AppColors.textInputField,
+          focusBorderColor:
+              emailError ? AppColors.errorColor : AppColors.focusTextBoarder,
+
+          autoFocus: false,
+          onChanged: (value) {
+            setState(() {
+              nameError = false; // Reset the error flag
+            });
+            validateName(); // Trigger validation on text change
+          },
+          errorText: nameError ? "Please enter name" : " ",
+        ),
+        if (_userNameFocusNode.hasFocus)
+          Card(
+            color: AppColors.textInputField,
+            child: Column(
+              children: [
+                 const SizedBox(
+                  height: 5,
+                ),
+                Column(
+                  children: [
+                    
+                    Row(
+                      children: [
+                        const SizedBox(width: 5),
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 500),
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            color: nameConditions
+                                ? AppColors.dotColor
+                                : AppColors.errorColor,
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: Center(
+                            child: Icon(
+                              nameConditions ? Icons.check : Icons.clear,
+                              color: Colors.white,
+                              size: 15,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Text("Must be in lowerCase"),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                  ],
+                ),
+const SizedBox(
+                  height: 5,
+                ),
+                // Add your menu items here
+              ],
+            ),
+          ),
+      ],
     );
   }
 
@@ -227,28 +336,95 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
   }
 
   Widget _buildPasswordField() {
-    return TextFieldWidget(
-      hint: "Password",
-      hintColor: Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkhint
-          : AppColors.hintColor,
-      isObscure: true,
-      padding: const EdgeInsets.only(top: 8.0),
-      textController: provider!.signUpPassword,
-      focusNode: _passwordFocusNode,
-      errorBorderColor: passwordError
-          ? AppColors.errorColor // Border color for validation error
-          : AppColors.textInputField,
-      focusBorderColor:
-          passwordError ? AppColors.errorColor : AppColors.focusTextBoarder,
-      onChanged: (value) {
-        setState(() {
-          passwordError = false; // Reset the error flag
-        });
-        validatePassword(); // Trigger validation on text change
-      },
-      errorText: passwordError ? passwordErrorText : " ",
+    final password = provider!.signUpPassword.text;
+    final passwordConditions = isPasswordValid(password);
+    final isPasswordValids = passwordConditions.every((condition) => condition);
+
+    return Column(
+      children: [
+        TextFieldWidget(
+          hint: "Password",
+          hintColor: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkhint
+              : AppColors.hintColor,
+          isObscure: true,
+          textController: provider!.signUpPassword,
+          focusNode: _passwordFocusNode,
+          errorText: passwordError ? "Please enter valid password" : " ",
+          defaultBoarder: AppColors.textInputField,
+          errorBorderColor: AppColors.errorColor,
+          focusBorderColor:
+              passwordError ? AppColors.errorColor : AppColors.focusTextBoarder,
+          onChanged: (value) {
+            setState(() {
+              passwordError = false; // Reset the error flag
+            });
+          },
+        ),
+        if (_passwordFocusNode.hasFocus)
+          Card(
+            color: AppColors.textInputField,
+            child: Column(
+              children: [
+                for (int i = 0; i < 5; i++)
+                  Column(
+                    children: [
+                      Row(
+                        children: [
+                          const SizedBox(width: 5),
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 500),
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              color: passwordConditions[i]
+                                  ? AppColors.dotColor
+                                  : AppColors.errorColor,
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: Center(
+                              child: Icon(
+                                passwordConditions[i]
+                                    ? Icons.check
+                                    : Icons.clear,
+                                color: Colors.white,
+                                size: 15,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Text(_getConditionText(i)),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                    ],
+                  ),
+
+                // Add your menu items here
+              ],
+            ),
+          ),
+      ],
     );
+  }
+
+  String _getConditionText(int index) {
+    switch (index) {
+      case 0:
+        return "At least 8 characters";
+      case 1:
+        return "Contains lowercase letter";
+      case 2:
+        return "Contains uppercase letter";
+      case 3:
+        return "Contains at least 1 number";
+      case 4:
+        return "Contains special character";
+      default:
+        return "";
+    }
   }
 
   Widget _buildConfirmPasswordField() {
@@ -333,25 +509,27 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
                 FocusManager.instance.primaryFocus?.unfocus();
                 //SharedPreferences pref = await SharedPreferences.getInstance();
                 bool nameValid = await validateName();
-  bool emailValid = await validateEmail();
-  bool passwordValid = await validatePassword();
-  bool confirmPasswordValid = await validateConfirmPassword();
+                bool emailValid = await validateEmail();
+                bool passwordValid = await validatePassword();
+                bool confirmPasswordValid = await validateConfirmPassword();
 
-               
-                  if (nameValid && emailValid && passwordValid && confirmPasswordValid)  {
-                    value.registerApi().then((val) {
-                      if (val['statusCode'] == 200) {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                              builder: (context) => VerifyEmailScreen(
-                                  email: provider!.signUpEmail.text)),
-                        );
-                      } else {
-                        print("false");
-                      }
-                    });
-                  }
-            
+                if (nameValid &&
+                    emailValid &&
+                    passwordValid &&
+                    confirmPasswordValid) {
+                  value.registerApi().then((val) {
+                    if (val['statusCode'] == 200) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => VerifyEmailScreen(
+                                email: provider!.signUpEmail.text)),
+                      );
+                    } else {
+                      print("false");
+                    }
+                  });
+                }
+
                 /* if (_formStore.canLogin) {
                 DeviceUtils.hideKeyboard(context);
                 _userStore.login(
@@ -373,15 +551,21 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
   @override
   void dispose() {
     _passwordFocusNode.dispose();
+    _confirmpasswordFocusNode.dispose();
+    _userNameFocusNode.dispose();
 
     super.dispose();
   }
 
   Future<bool> validateName() async {
     var provider = Provider.of<SignInProvider>(context, listen: false);
+    final name = provider.signUpName.text;
+    bool passwordConditions = isUserNameValid(name);
 
     setState(() {
       if (provider.signUpName.text.isEmpty) {
+        nameError = true;
+      } else if (!passwordConditions) {
         nameError = true;
       } else {
         nameError = false;
@@ -414,14 +598,12 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
 
   Future<bool> validatePassword() async {
     var provider = Provider.of<SignInProvider>(context, listen: false);
-
+    final password = provider.signUpPassword.text;
+    final passwordConditions = isPasswordValid(password);
+    bool isPasswordValids = passwordConditions.every((condition) => condition);
     setState(() {
-      if (provider.signUpPassword.text.isEmpty) {
+      if (!isPasswordValids) {
         passwordError = true;
-        passwordErrorText = 'Please enter your password';
-      } else if (provider.signUpPassword.text.length < 8) {
-        passwordError = true;
-        passwordErrorText = 'Password must be at least 8 characters';
       } else {
         passwordError = false;
       }

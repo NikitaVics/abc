@@ -98,7 +98,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
             textInputAction: widget.inputAction,
             obscureText:
                 widget.isObscure && !_isPasswordVisible, // Toggle visibility
-            maxLength: 25,
+            maxLength: 50,
             keyboardType: widget.inputType,
             cursorColor: AppColors.focusCursorColor,
             style: Theme.of(context).textTheme.bodyLarge,

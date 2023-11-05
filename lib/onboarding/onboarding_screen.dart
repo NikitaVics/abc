@@ -3,6 +3,7 @@ import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/constants/onboarding_data.dart';
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
+import 'package:tennis_court_booking_app/presentation/register/pageview/register_as_member.dart';
 import 'package:tennis_court_booking_app/presentation/register/register.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 
@@ -116,7 +117,7 @@ class OnboardingScreenState extends State<OnboardingScreen> {
                     onPressed: () {
                      Navigator.of(context).push(
     MaterialPageRoute(
-      builder: (context) =>  LoginScreen(),
+      builder: (context) =>  const LoginScreen(),
     ),
   );
                     },
@@ -130,7 +131,7 @@ class OnboardingScreenState extends State<OnboardingScreen> {
                     onPressed: () {
                       Navigator.of(context).push(
     MaterialPageRoute(
-      builder: (context) => RegisterScreen(),
+      builder: (context) => const RegisterAsMember(),
     ),
   );
                     },

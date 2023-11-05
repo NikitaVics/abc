@@ -12,8 +12,7 @@ class OtpSendScreen extends StatefulWidget {
   const OtpSendScreen({super.key});
 
   @override
- OtpSendScreenState createState() =>
-      OtpSendScreenState();
+  OtpSendScreenState createState() => OtpSendScreenState();
 }
 
 class OtpSendScreenState extends State<OtpSendScreen> {
@@ -21,15 +20,10 @@ class OtpSendScreenState extends State<OtpSendScreen> {
   bool emailError = false;
   String emailErrorText = '';
 
- 
   @override
   void initState() {
-    
     super.initState();
-    
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -41,8 +35,8 @@ class OtpSendScreenState extends State<OtpSendScreen> {
       appBar: const CustomAppBar(
         isBoarder: true,
         title: "Forgot password",
-          isProgress: false,
-             step: 0,
+        isProgress: false,
+        step: 0,
       ),
       body: _buildBody(),
     );
@@ -139,13 +133,13 @@ class OtpSendScreenState extends State<OtpSendScreen> {
               fontWeight: FontWeight.w400,
               height: 24 / 14),
         ),
-        
       ],
     );
   }
-   Widget _buildUserIdField() {
+
+  Widget _buildUserIdField() {
     return TextFieldWidget(
-      hint: 'E-Mail/UserName',
+      hint: 'E-Mail',
       inputType: TextInputType.emailAddress,
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
@@ -153,7 +147,7 @@ class OtpSendScreenState extends State<OtpSendScreen> {
       // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
       textController: email,
       inputAction: TextInputAction.next,
-       defaultBoarder: AppColors.textInputField,
+      defaultBoarder: AppColors.textInputField,
       errorBorderColor: emailError
           ? AppColors.errorColor // Border color for validation error
           : AppColors.confirmValid,
@@ -170,7 +164,6 @@ class OtpSendScreenState extends State<OtpSendScreen> {
     );
   }
 
-
   Widget _buildforgotPassButton() {
     return Align(
       alignment: Alignment.bottomCenter,
@@ -186,28 +179,25 @@ class OtpSendScreenState extends State<OtpSendScreen> {
                   : double.infinity,
               text: "Get OTP",
               onPressed: () async {
-                
-               FocusManager.instance.primaryFocus?.unfocus();
-               
-                
-                value
-                    .forgotPasswordApi(
-                 email.text
-                )
-                    .then((val) {
-                  if (val["statusCode"] == 200) {
-                     Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) =>   ForgotPassUsingOtpScreen(email: email.text),
-                ),
-              );
-                    print(val);
-                  } else {
-                    setState(() {
-                      print(val['errorMessage']);
-                    });
-                  }
-                });
+                FocusManager.instance.primaryFocus?.unfocus();
+
+                if (await  validateEmail()) {
+                  value.forgotPasswordApi(email.text).then((val) {
+                    if (val["statusCode"] == 200) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              ForgotPassUsingOtpScreen(email: email.text),
+                        ),
+                      );
+                      print(val);
+                    } else {
+                      setState(() {
+                        print(val['errorMessage']);
+                      });
+                    }
+                  });
+                }
                 /* if (_formStore.canLogin) {
                 DeviceUtils.hideKeyboard(context);
                 _userStore.login(
@@ -224,6 +214,7 @@ class OtpSendScreenState extends State<OtpSendScreen> {
       ),
     );
   }
+
   Future<bool> validateEmail() async {
     bool emailValid = RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+")
@@ -243,5 +234,4 @@ class OtpSendScreenState extends State<OtpSendScreen> {
 
     return !emailError;
   }
-
 }

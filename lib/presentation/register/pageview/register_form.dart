@@ -12,23 +12,23 @@ class RegisterForm extends StatefulWidget {
 
 class _RegisterFormState extends State<RegisterForm> {
   bool emailError = false,
-      passwordError = false,
+      phoneError = false,
       loginError = false,
-      confirmPasswordError = false,
+      addressError = false,
       nameError = false;
   String emailErrorText = '',
       loginErrorMessage = '',
-      passwordErrorText = '',
-      confirmPasswordErrorText = '';
+      phoneErrorText = '',
+      addressErrorText = '';
   bool isEmailValidationSuccessful = false;
   bool isPasswordValidationSuccessful = false;
   TextEditingController _userNameController = TextEditingController();
 
   TextEditingController _userEmailController = TextEditingController();
 
-  TextEditingController _passwordController = TextEditingController();
+  TextEditingController _userPhoneController = TextEditingController();
 
-  TextEditingController _confirmPasswordController = TextEditingController();
+  TextEditingController _userAddressController = TextEditingController();
 
   @override
   void initState() {
@@ -37,8 +37,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
   bool isChecked = false;
 
-  
-   @override
+  @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
       return Scaffold(
@@ -47,17 +46,17 @@ class _RegisterFormState extends State<RegisterForm> {
             : AppColors.lightThemeback,
         primary: true,
         appBar: const CustomAppBar(
-          isBoarder:false,
+          isBoarder: false,
           title: "Registration Form",
-            isProgress: true,
-            step: 2,
+          isProgress: true,
+          step: 2,
         ),
         body: _buildBody(),
       );
     });
   }
 
-   Widget _buildBody() {
+  Widget _buildBody() {
     return Material(
       color: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkThemeback
@@ -82,7 +81,6 @@ class _RegisterFormState extends State<RegisterForm> {
                 )
               : Column(
                   children: [
-                    
                     Expanded(child: Center(child: _buildRightSide())),
                     _buildSignInButton()
                   ],
@@ -105,7 +103,7 @@ class _RegisterFormState extends State<RegisterForm> {
     );
   }
 
-Widget _buildRightSide() {
+  Widget _buildRightSide() {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -114,13 +112,14 @@ Widget _buildRightSide() {
           //crossAxisAlignment: CrossAxisAlignment.stretch,
           //mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-        _buildLoginText(),
-              SizedBox(height: 24.0),
-              _buildUserName(),
-              _buildUserIdField(),
-              _buildPasswordField(),
-              _buildUploadDocumentField(context),
-              _buildNotMemberText(),
+            _buildLoginText(),
+            SizedBox(height: 24.0),
+            _buildUserName(),
+            _buildUserIdField(),
+            _buildUserphone(),
+            _buildPasswordField(),
+            _buildUploadDocumentField(context),
+            _buildNotMemberText(),
           ],
         ),
       ),
@@ -128,27 +127,34 @@ Widget _buildRightSide() {
   }
 
   Widget _buildLoginText() {
-    return Column(
+    return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Text(
-          "Registration",
-          style: TextStyle(
-            color: AppColors.allHeadColor,
-            fontSize: 32,
-            fontFamily: FontFamily.satoshi,
-            fontWeight: FontWeight.w700,
-            height: 40 / 32,
+        Align(
+          alignment: Alignment.topLeft,
+          child: Text(
+            "Registration",
+            style: TextStyle(
+              color: AppColors.allHeadColor,
+              fontSize: 32,
+              fontFamily: FontFamily.satoshi,
+              fontWeight: FontWeight.w700,
+              height: 40 / 32,
+            ),
           ),
         ),
-        Text(
-          "form",
-          style: TextStyle(
-            color: AppColors.allHeadColor,
-            fontSize: 32,
-            fontFamily: FontFamily.satoshi,
-            fontWeight: FontWeight.w700,
-            height: 40 / 32,
+        Align(
+          alignment: Alignment.topLeft,
+          child: Text(
+            "form",
+            style: TextStyle(
+              color: AppColors.allHeadColor,
+              fontSize: 32,
+              fontFamily: FontFamily.satoshi,
+              fontWeight: FontWeight.w700,
+              height: 40 / 32,
+            ),
           ),
         ),
       ],
@@ -157,7 +163,7 @@ Widget _buildRightSide() {
 
   Widget _buildUserName() {
     return TextFieldWidget(
-      hint: 'User Name',
+      hint: 'Name',
       inputType: TextInputType.name,
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
@@ -207,26 +213,52 @@ Widget _buildRightSide() {
     );
   }
 
-  Widget _buildPasswordField() {
+  Widget _buildUserphone() {
     return TextFieldWidget(
-      hint: "Password",
+      hint: 'Phone No.',
+      inputType: TextInputType.phone,
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
           : AppColors.hintColor,
-      isObscure: true,
-      textController: _passwordController,
-      errorBorderColor: passwordError
+      // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
+      textController: _userPhoneController,
+      inputAction: TextInputAction.next,
+      errorBorderColor: phoneError
           ? AppColors.errorColor // Border color for validation error
           : AppColors.textInputField,
       focusBorderColor:
-          passwordError ? AppColors.errorColor : AppColors.focusTextBoarder,
+          phoneError ? AppColors.errorColor : AppColors.focusTextBoarder,
+      autoFocus: false,
       onChanged: (value) {
         setState(() {
-          passwordError = false; // Reset the error flag
+          phoneError = false; // Reset the error flag
         });
-        validatePassword(); // Trigger validation on text change
+        validatePhone(); // Trigger validation on text change
       },
-      errorText: passwordError ? passwordErrorText : " ",
+      errorText: phoneError ? phoneErrorText : " ",
+    );
+  }
+
+  Widget _buildPasswordField() {
+    return TextFieldWidget(
+      hint: "Address",
+      hintColor: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkhint
+          : AppColors.hintColor,
+      isObscure: false,
+      textController: _userAddressController,
+      errorBorderColor: addressError
+          ? AppColors.errorColor // Border color for validation error
+          : AppColors.textInputField,
+      focusBorderColor:
+          addressError ? AppColors.errorColor : AppColors.focusTextBoarder,
+      onChanged: (value) {
+        setState(() {
+          addressError = false; // Reset the error flag
+        });
+        validateAddress(); // Trigger validation on text change
+      },
+      errorText: addressError ? addressErrorText : " ",
     );
   }
 
@@ -348,7 +380,17 @@ Widget _buildRightSide() {
                 ? 70
                 : double.infinity,
             text: "Register Now",
-            onPressed: () async {},
+            onPressed: () async {
+              FocusManager.instance.primaryFocus?.unfocus();
+              //SharedPreferences pref = await SharedPreferences.getInstance();
+              bool nameValid = await validateName();
+              bool emailValid = await validateEmail();
+              bool phoneValid = await validatePhone();
+              bool addressValid = await validateAddress();
+              if (nameValid && emailValid && phoneValid && addressValid) {
+                print("yes");
+              }
+            },
             buttonColor: AppColors.elevatedColor,
             textColor: Colors.white,
           ),
@@ -363,7 +405,9 @@ Widget _buildRightSide() {
     // Clean up the controller when the Widget is removed from the Widget tree
     _userNameController.dispose();
     _userEmailController.dispose();
-    _passwordController.dispose();
+    _userPhoneController.dispose();
+    _userAddressController.dispose();
+
     // _passwordFocusNode.dispose();
 
     super.dispose();
@@ -404,21 +448,33 @@ Widget _buildRightSide() {
     return !emailError;
   }
 
-  Future<bool> validatePassword() async {
-    //var provider = Provider.of<SignInProvider>(context, listen: false);
+  Future<bool> validatePhone() async {
+    // var provider = Provider.of<SignInProvider>(context, listen: false);
 
     setState(() {
-      if (_passwordController.text.isEmpty) {
-        passwordError = true;
-        passwordErrorText = 'Please enter your password';
-      } else if (_passwordController.text.length < 8) {
-        passwordError = true;
-        passwordErrorText = 'Password must be at least 8 characters';
+      if (_userPhoneController.text.isEmpty) {
+        phoneError = true;
+        phoneErrorText = 'Please enter your phone number';
       } else {
-        passwordError = false;
+        phoneError = false;
       }
     });
 
-    return !passwordError;
+    return !phoneError;
+  }
+
+  Future<bool> validateAddress() async {
+    // var provider = Provider.of<SignInProvider>(context, listen: false);
+
+    setState(() {
+      if (_userAddressController.text.isEmpty) {
+        addressError = true;
+        addressErrorText = 'Please enter your address';
+      } else {
+        addressError = false;
+      }
+    });
+
+    return !addressError;
   }
 }

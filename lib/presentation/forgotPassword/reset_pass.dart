@@ -17,7 +17,7 @@ import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
 
 class ResetPassScreen extends StatefulWidget {
   final String email;
-  const ResetPassScreen({super.key,required this.email});
+  const ResetPassScreen({super.key, required this.email});
 
   @override
   ResetPassScreenState createState() => ResetPassScreenState();
@@ -45,12 +45,42 @@ class ResetPassScreenState extends State<ResetPassScreen> {
   late FocusNode _passwordFocusNode;
   late FocusNode _confirmpasswordFocusNode;
   SignInProvider? provider;
+  List<bool> isPasswordValid(String password) {
+    // Define regular expressions for each condition
+    final lowercaseRegex = RegExp(r'[a-z]');
+    final uppercaseRegex = RegExp(r'[A-Z]');
+    final digitRegex = RegExp(r'[0-9]');
+    final specialCharRegex = RegExp(r'[!@#\$%^&*()_+{}\[\]:;<>,.?~\\-]');
 
+    final isLengthValid = password.length >= 8;
+    final hasLowercase = lowercaseRegex.hasMatch(password);
+    final hasUppercase = uppercaseRegex.hasMatch(password);
+    final hasDigit = digitRegex.hasMatch(password);
+    final hasSpecialChar = specialCharRegex.hasMatch(password);
+
+    return [
+      isLengthValid,
+      hasLowercase,
+      hasUppercase,
+      hasDigit,
+      hasSpecialChar
+    ];
+  }
+
+  bool _isMenuVisible = false;
   @override
   void initState() {
     super.initState();
     _passwordFocusNode = FocusNode();
+    _passwordFocusNode.addListener(() {
+      setState(() {
+        _isMenuVisible = _passwordFocusNode.hasFocus;
+      });
+    });
     _confirmpasswordFocusNode = FocusNode();
+    _confirmpasswordFocusNode.addListener(() {
+    validateConfirmPassword();
+  });
     provider = Provider.of<SignInProvider>(context, listen: false);
   }
 
@@ -65,8 +95,8 @@ class ResetPassScreenState extends State<ResetPassScreen> {
         appBar: const CustomAppBar(
           isBoarder: true,
           title: "Forgot Password",
-            isProgress: false,
-               step: 0,
+          isProgress: false,
+          step: 0,
         ),
         body: _buildBody(),
       );
@@ -173,27 +203,98 @@ class ResetPassScreenState extends State<ResetPassScreen> {
   }
 
   Widget _buildPasswordField() {
-    return TextFieldWidget(
-      hint: "Password",
-      hintColor: Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkhint
-          : AppColors.hintColor,
-      isObscure: true,
-      textController: provider!.resetsignUpPassword,
-      focusNode: _passwordFocusNode,
-      errorBorderColor: passwordError
-          ? AppColors.errorColor // Border color for validation error
-          : AppColors.textInputField,
-      focusBorderColor:
-          passwordError ? AppColors.errorColor : AppColors.focusTextBoarder,
-      onChanged: (value) {
-        setState(() {
-          passwordError = false; // Reset the error flag
-        });
-        validatePassword(); // Trigger validation on text change
-      },
-      errorText: passwordError ? passwordErrorText : " ",
+    final password = provider!.resetsignUpPassword.text;
+    final passwordConditions = isPasswordValid(password);
+    final isPasswordValids = passwordConditions.every((condition) => condition);
+
+    return Column(
+      children: [
+        TextFieldWidget(
+          hint: "Password",
+          hintColor: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkhint
+              : AppColors.hintColor,
+          isObscure: true,
+          textController: provider!.resetsignUpPassword,
+          focusNode: _passwordFocusNode,
+          errorText: passwordError ? "Please enter valid password" : " ",
+          defaultBoarder: AppColors.textInputField,
+          errorBorderColor: AppColors.errorColor,
+          focusBorderColor:
+              passwordError ? AppColors.errorColor : AppColors.focusTextBoarder,
+          onChanged: (value) {
+            setState(() {
+              passwordError = false; // Reset the error flag
+            });
+          },
+        ),
+        if (_passwordFocusNode.hasFocus)
+          Card(
+            color: AppColors.textInputField,
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 2,
+                ),
+                for (int i = 0; i < 5; i++)
+                  Column(
+                    children: [
+                      Row(
+                        children: [
+                          const SizedBox(width: 5),
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 500),
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              color: passwordConditions[i]
+                                  ? AppColors.dotColor
+                                  : AppColors.errorColor,
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: Center(
+                              child: Icon(
+                                passwordConditions[i]
+                                    ? Icons.check
+                                    : Icons.clear,
+                                color: Colors.white,
+                                size: 15,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Text(_getConditionText(i)),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                    ],
+                  ),
+
+                // Add your menu items here
+              ],
+            ),
+          ),
+      ],
     );
+  }
+
+  String _getConditionText(int index) {
+    switch (index) {
+      case 0:
+        return "At least 8 characters";
+      case 1:
+        return "Contains lowercase letter";
+      case 2:
+        return "Contains uppercase letter";
+      case 3:
+        return "Contains at least 1 number";
+      case 4:
+        return "Contains special character";
+      default:
+        return "";
+    }
   }
 
   Widget _buildConfirmPasswordField() {
@@ -216,7 +317,7 @@ class ResetPassScreenState extends State<ResetPassScreen> {
         setState(() {
           confirmPasswordError = false; // Reset the error flag
         });
-        validatePassword(); // Trigger validation on text change
+        
       },
       errorText: confirmPasswordError ? confirmPasswordErrorText : " ",
     );
@@ -238,25 +339,27 @@ class ResetPassScreenState extends State<ResetPassScreen> {
               text: "Update Password",
               onPressed: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
-              // SharedPreferences pref = await SharedPreferences.getInstance();
-                value
-                    .resetPasswordApi(
-                 widget.email,
-                )
-                    .then((val) {
-                  if (val["statusCode"] == 200) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
-                    print(val);
-                  } else {
-                    setState(() {
-                      print(val['errorMessage']);
-                    });
-                  }
-                });
+                // SharedPreferences pref = await SharedPreferences.getInstance();
+                if (await validate()) {
+                  value
+                      .resetPasswordApi(
+                    widget.email,
+                  )
+                      .then((val) {
+                    if (val["statusCode"] == 200) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
+                      print(val);
+                    } else {
+                      setState(() {
+                        print(val['errorMessage']);
+                      });
+                    }
+                  });
+                }
                 /* if (_formStore.canLogin) {
                 DeviceUtils.hideKeyboard(context);
                 _userStore.login(
@@ -287,14 +390,12 @@ class ResetPassScreenState extends State<ResetPassScreen> {
 
   Future<bool> validatePassword() async {
     var provider = Provider.of<SignInProvider>(context, listen: false);
-
+    final password = provider.resetsignUpPassword.text;
+    final passwordConditions = isPasswordValid(password);
+    bool isPasswordValids = passwordConditions.every((condition) => condition);
     setState(() {
-      if (provider.resetsignUpPassword.text.isEmpty) {
+      if (!isPasswordValids) {
         passwordError = true;
-        passwordErrorText = 'Please enter your password';
-      } else if (provider.resetsignUpPassword.text.length < 8) {
-        passwordError = true;
-        passwordErrorText = 'Password must be at least 8 characters';
       } else {
         passwordError = false;
       }
@@ -311,7 +412,7 @@ class ResetPassScreenState extends State<ResetPassScreen> {
         confirmPasswordError = true;
         confirmPasswordErrorText = 'Please enter confirm password';
       } else if (provider.resetsignUpConfirmPassword.text !=
-          provider.resetsignUpConfirmPassword.text) {
+          provider.resetsignUpPassword.text) {
         confirmPasswordError = true;
         confirmPasswordErrorText = 'Passwords do not match';
       } else {
