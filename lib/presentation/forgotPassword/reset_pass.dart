@@ -25,6 +25,7 @@ class ResetPassScreen extends StatefulWidget {
 
 class ResetPassScreenState extends State<ResetPassScreen> {
   //text controllers:-----------------------------------------------------------
+  
 
   //predefine bool value for error:---------------------------------------------
   bool emailError = false,
@@ -45,6 +46,7 @@ class ResetPassScreenState extends State<ResetPassScreen> {
   late FocusNode _passwordFocusNode;
   late FocusNode _confirmpasswordFocusNode;
   SignInProvider? provider;
+  bool isLoading = false;
   List<bool> isPasswordValid(String password) {
     // Define regular expressions for each condition
     final lowercaseRegex = RegExp(r'[a-z]');
@@ -79,8 +81,8 @@ class ResetPassScreenState extends State<ResetPassScreen> {
     });
     _confirmpasswordFocusNode = FocusNode();
     _confirmpasswordFocusNode.addListener(() {
-    validateConfirmPassword();
-  });
+      validateConfirmPassword();
+    });
     provider = Provider.of<SignInProvider>(context, listen: false);
   }
 
@@ -317,7 +319,6 @@ class ResetPassScreenState extends State<ResetPassScreen> {
         setState(() {
           confirmPasswordError = false; // Reset the error flag
         });
-        
       },
       errorText: confirmPasswordError ? confirmPasswordErrorText : " ",
     );
@@ -337,9 +338,11 @@ class ResetPassScreenState extends State<ResetPassScreen> {
                   ? 70
                   : double.infinity,
               text: "Update Password",
+              isLoading: isLoading,
               onPressed: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
                 // SharedPreferences pref = await SharedPreferences.getInstance();
+                
                 if (await validate()) {
                   value
                       .resetPasswordApi(

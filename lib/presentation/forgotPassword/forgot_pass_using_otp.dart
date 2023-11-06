@@ -34,6 +34,7 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
   int resendTime = 100;
   late Timer countdownTimer;
   String? otp;
+  bool isLoading = false;
   @override
   void initState() {
     startTimer();
@@ -189,7 +190,7 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
                   height: 24 / 14),
             ),
             Text(
-             widget.email,
+              widget.email,
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.darkSubHead
@@ -330,6 +331,7 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
                       _fieldTwo.text +
                       _fieldThree.text +
                       _fieldFour.text;
+                  isLoading = true;
                 });
                 value
                     .verifyEmailForgotPasswordApi(
@@ -341,16 +343,20 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => ResetPassScreen(
-                          email:  widget.email,
+                          email: widget.email,
                         ),
                       ),
                     );
+                   
                     print(val);
                   } else {
                     setState(() {
                       print(val['errorMessage']);
                     });
                   }
+                   setState(() {
+                      isLoading = false;
+                    });
                 });
                 /* if (_formStore.canLogin) {
                 DeviceUtils.hideKeyboard(context);
@@ -360,6 +366,7 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
                 _showErrorMessage('Please fill in all fields');
               }*/
               },
+              isLoading: isLoading,
               buttonColor: AppColors.elevatedColor,
               textColor: Colors.white,
             );

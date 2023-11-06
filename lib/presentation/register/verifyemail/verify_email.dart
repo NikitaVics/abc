@@ -261,6 +261,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
           // Manage keyboard focus
           child: Consumer<SignInProvider>(builder: (context, value, child) {
             return CustomElevatedButton(
+              isLoading: false,
               height: 60,
               width: MediaQuery.of(context).orientation == Orientation.landscape
                   ? 70

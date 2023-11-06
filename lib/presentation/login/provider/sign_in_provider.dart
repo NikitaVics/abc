@@ -96,11 +96,11 @@ class SignInProvider with ChangeNotifier {
     }
   }
 
-  Future loginApi() async {
+  Future loginApi(String email,String password) async {
     updateLoginLoader(true);
     var body = {
-      'userName': userEmailController.text,
-      'password': passwordController.text,
+      'userName': email,
+      'password': password,
     };
 
     try {

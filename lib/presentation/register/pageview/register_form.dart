@@ -375,6 +375,7 @@ class _RegisterFormState extends State<RegisterForm> {
         child: FocusScope(
           // Manage keyboard focus
           child: CustomElevatedButton(
+            isLoading: false,
             height: 60,
             width: MediaQuery.of(context).orientation == Orientation.landscape
                 ? 70

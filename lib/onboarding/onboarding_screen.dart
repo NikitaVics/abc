@@ -63,6 +63,7 @@ class OnboardingScreenState extends State<OnboardingScreen> {
                     height: 60,
                     width: 153,
                     text: 'Next',
+                      isLoading: false,
                     onPressed: () {
                       _pageController.animateToPage(
                         _currentPage + 1,
@@ -114,6 +115,7 @@ class OnboardingScreenState extends State<OnboardingScreen> {
                    height: 60,
                     width: 153,
                     text: 'Login',
+                       isLoading: false,
                     onPressed: () {
                      Navigator.of(context).push(
     MaterialPageRoute(
@@ -128,6 +130,7 @@ class OnboardingScreenState extends State<OnboardingScreen> {
                      height: 60,
                     width: 153,
                     text: 'Register Now',
+                    isLoading: false,
                     onPressed: () {
                       Navigator.of(context).push(
     MaterialPageRoute(

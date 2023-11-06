@@ -19,6 +19,7 @@ class OtpSendScreenState extends State<OtpSendScreen> {
   final TextEditingController email = TextEditingController();
   bool emailError = false;
   String emailErrorText = '';
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -178,10 +179,14 @@ class OtpSendScreenState extends State<OtpSendScreen> {
                   ? 70
                   : double.infinity,
               text: "Get OTP",
+              isLoading: isLoading,
               onPressed: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
 
-                if (await  validateEmail()) {
+                if (await validateEmail()) {
+                  setState(() {
+                    isLoading = true;
+                  });
                   value.forgotPasswordApi(email.text).then((val) {
                     if (val["statusCode"] == 200) {
                       Navigator.of(context).push(
@@ -190,10 +195,14 @@ class OtpSendScreenState extends State<OtpSendScreen> {
                               ForgotPassUsingOtpScreen(email: email.text),
                         ),
                       );
+                      setState(() {
+                        isLoading = false;
+                      });
                       print(val);
                     } else {
                       setState(() {
                         print(val['errorMessage']);
+                        isLoading = false;
                       });
                     }
                   });

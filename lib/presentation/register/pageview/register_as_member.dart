@@ -505,6 +505,7 @@ const SizedBox(
                   ? 70
                   : double.infinity,
               text: "Register Now",
+              isLoading: false,
               onPressed: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
                 //SharedPreferences pref = await SharedPreferences.getInstance();

@@ -1,3 +1,4 @@
+import 'package:another_flushbar/flushbar_helper.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -11,6 +12,7 @@ import 'package:tennis_court_booking_app/presentation/forgotPassword/otp_send_sc
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/presentation/register/pageview/register_as_member.dart';
 import 'package:tennis_court_booking_app/presentation/register/register.dart';
+import 'package:tennis_court_booking_app/widgets/animated_toast.dart';
 
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
@@ -25,35 +27,38 @@ class LoginScreen extends StatefulWidget {
 
 class LoginScreenState extends State<LoginScreen> {
   //text controllers:-----------------------------------------------------------
-
+ final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
   //predefine bool value for error:---------------------------------------------
   bool emailError = false, passwordError = false, loginError = false;
   String emailErrorText = '', loginErrorMessage = '';
   bool isEmailValidationSuccessful = false;
   bool isPasswordValidationSuccessful = false;
   LoginResponse? loginResponse;
+  bool isLoading = false;
 
   //stores:---------------------------------------------------------------------
 
   //focus node:-----------------------------------------------------------------
   late FocusNode _passwordFocusNode;
   SignInProvider? provider;
-
-
+  String? error;
+ 
   @override
   void initState() {
     super.initState();
     _passwordFocusNode = FocusNode();
-    
+
     provider = Provider.of<SignInProvider>(context, listen: false);
   }
 
   @override
   void dispose() {
     // Clean up the controller when the Widget is removed from the Widget tree
-    provider!.userEmailController.clear(); // Clear email text
-    provider!.passwordController.clear(); // Clear password text
+   email.clear(); // Clear email text
+   password.clear(); // Clear password text
     _passwordFocusNode.dispose();
+    provider!.dispose(); // Dispose of the SignInProvider
     super.dispose();
   }
 
@@ -204,7 +209,7 @@ class LoginScreenState extends State<LoginScreen> {
           ? AppColors.darkhint
           : AppColors.hintColor,
       // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
-      textController: provider!.userEmailController,
+      textController:email,
       inputAction: TextInputAction.next,
       defaultBoarder: AppColors.textInputField,
       errorBorderColor: emailError
@@ -224,14 +229,13 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildPasswordField() {
-
     return TextFieldWidget(
       hint: "Password",
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
           : AppColors.hintColor,
       isObscure: true,
-      textController: provider!.passwordController,
+      textController:password,
       focusNode: _passwordFocusNode,
       errorText: passwordError ? "Please enter your password" : " ",
       defaultBoarder: AppColors.textInputField,
@@ -243,11 +247,8 @@ class LoginScreenState extends State<LoginScreen> {
           passwordError = false; // Reset the error flag
         });
       },
-      
     );
   }
-
-  
 
   Widget _buildForgotPasswordButton() {
     return Row(
@@ -340,23 +341,39 @@ class LoginScreenState extends State<LoginScreen> {
               });
 
               if (await validate()) {
-                value.loginApi().then((val) {
+                setState(() {
+                  isLoading = true;
+                });
+                value.loginApi(email.text,password.text).then((val) {
                   if (val["statusCode"] == 200) {
                     setState(() {
                       loginError = false;
                     });
                     pref.setString('authToken', val['result']['token']);
                     pref.setString('email', val['result']['user']['email']);
+                    AnimatedToast.showToastMessage(
+                      context,
+                      "You are loged in successfully",
+                      const Color.fromRGBO(87, 87, 87, 0.93),
+                    );
                     String? authToken = pref.getString('authToken');
                     if (authToken != null) {
                       print("Auth Token: $authToken");
                     } else {
                       print("Auth Token is not set.");
                     }
+                    setState(() {
+                      isLoading = false;
+                    });
                   } else {
                     setState(() {
                       loginError = true;
-                      loginErrorMessage = val['errorMeassage'];
+                      AnimatedToast.showToastMessage(
+                        context,
+                        val["errorMessage"][0],
+                        const Color.fromRGBO(87, 87, 87, 0.93),
+                      );
+                         isLoading = false;
                     });
                   }
                 });
@@ -368,7 +385,8 @@ class LoginScreenState extends State<LoginScreen> {
               width: MediaQuery.of(context).orientation == Orientation.landscape
                   ? 70
                   : double.infinity,
-              text: "Login Now",
+              isLoading: isLoading,
+              text: "Login",
               onPressed:
                   passwordError & emailError ? () {} : loginButtonPressed,
               buttonColor: AppColors.elevatedColor,
@@ -383,28 +401,25 @@ class LoginScreenState extends State<LoginScreen> {
   // General Methods:-----------------------------------------------------------
 
   Future<bool> validate() async {
-    var provider = Provider.of<SignInProvider>(context, listen: false);
+   
     bool emailValid = RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+")
-        .hasMatch(provider.userEmailController.text);
-    final password = provider.passwordController.text;
-    
+        .hasMatch(email.text);
+    final passwords = password.text;
+
     setState(() {
-      if (provider.userEmailController.text.isEmpty) {
+      if (email.text.isEmpty) {
         emailError = true;
         emailErrorText = 'Please enter your email address or username';
-      } else if (
-        provider.userEmailController.text !=
-              provider.userEmailController.text.toLowerCase()
-          ) {
+      } else if (email.text !=
+         email.text.toLowerCase()) {
         emailError = true;
         emailErrorText = 'Entered email or username is not valid';
       } else {
         emailError = false;
       }
-      if (password.isEmpty) {
+      if (passwords.isEmpty) {
         passwordError = true;
-        
       } else {
         passwordError = false;
       }
