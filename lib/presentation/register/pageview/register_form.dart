@@ -1,6 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
+import 'package:tennis_court_booking_app/presentation/register/pageview/congrats_screen.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
@@ -15,7 +23,10 @@ class _RegisterFormState extends State<RegisterForm> {
       phoneError = false,
       loginError = false,
       addressError = false,
-      nameError = false;
+      dobError = false,
+      nameError = false,
+      isLoading = false;
+
   String emailErrorText = '',
       loginErrorMessage = '',
       phoneErrorText = '',
@@ -25,6 +36,8 @@ class _RegisterFormState extends State<RegisterForm> {
   TextEditingController _userNameController = TextEditingController();
 
   TextEditingController _userEmailController = TextEditingController();
+
+  TextEditingController _userDobController = TextEditingController();
 
   TextEditingController _userPhoneController = TextEditingController();
 
@@ -36,6 +49,7 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   bool isChecked = false;
+  File? imageFile;
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +130,7 @@ class _RegisterFormState extends State<RegisterForm> {
             SizedBox(height: 24.0),
             _buildUserName(),
             _buildUserIdField(),
+            _buildUserDOB(),
             _buildUserphone(),
             _buildPasswordField(),
             _buildUploadDocumentField(context),
@@ -184,6 +199,32 @@ class _RegisterFormState extends State<RegisterForm> {
         validateName(); // Trigger validation on text change
       },
       errorText: nameError ? "Please enter name" : " ",
+    );
+  }
+
+  Widget _buildUserDOB() {
+    return TextFieldWidget(
+      hint: 'DOB',
+      inputType: TextInputType.datetime,
+      hintColor: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkhint
+          : AppColors.hintColor,
+      // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
+      textController: _userDobController,
+      inputAction: TextInputAction.next,
+      errorBorderColor: dobError
+          ? AppColors.errorColor // Border color for validation error
+          : AppColors.textInputField,
+      focusBorderColor:
+          dobError ? AppColors.errorColor : AppColors.focusTextBoarder,
+      autoFocus: false,
+      onChanged: (value) {
+        setState(() {
+          dobError = false; // Reset the error flag
+        });
+        validateDOB(); // Trigger validation on text change
+      },
+      errorText: dobError ? "Please enter DOB" : " ",
     );
   }
 
@@ -265,28 +306,68 @@ class _RegisterFormState extends State<RegisterForm> {
   Widget _buildUploadDocumentField(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
-      child: GestureDetector(
-        onTap: () {},
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            color: AppColors.textInputField,
-          ),
-          height: 164,
-          child: Center(
-            child: Text(
-              "Upload Document",
-              style: TextStyle(
-                color: AppColors.hintColor,
-                fontSize: 14,
-                fontFamily: FontFamily.satoshi,
-                fontWeight: FontWeight.w400,
-                height: 24 / 14,
+      child: imageFile != null
+          ? Stack(
+              children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: SizedBox(
+                    height: 164,
+                    child: SingleChildScrollView(
+                      child: Image.file(
+                        imageFile!,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 10, // Adjust the top position as needed
+                  right: 10, // Adjust the right position as needed
+                  child: IconButton(
+                    icon: Icon(Icons.close), // You can choose a different icon
+                    onPressed: () {
+                      // Handle the delete action here
+                      // For example, you can set imageFile to null to remove the image
+                      setState(() {
+                        imageFile = null;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            )
+          : GestureDetector(
+              onTap: () async {
+                Map<Permission, PermissionStatus> statuses = await [
+                  Permission.storage,
+                  Permission.camera,
+                ].request();
+                if (statuses[Permission.storage]!.isGranted &&
+                    statuses[Permission.camera]!.isGranted) {
+                  showImagePicker(context);
+                } else {}
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: AppColors.textInputField,
+                ),
+                height: 164,
+                child: Center(
+                  child: Text(
+                    "Upload Document",
+                    style: TextStyle(
+                      color: AppColors.hintColor,
+                      fontSize: 14,
+                      fontFamily: FontFamily.satoshi,
+                      fontWeight: FontWeight.w400,
+                      height: 24 / 14,
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -374,7 +455,93 @@ class _RegisterFormState extends State<RegisterForm> {
         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 19),
         child: FocusScope(
           // Manage keyboard focus
-          child: CustomElevatedButton(
+          child: Consumer<SignInProvider>(builder: (context, value, child) {
+            return SizedBox(
+              height: 60,
+              width: MediaQuery.of(context).orientation == Orientation.landscape
+                  ? 70
+                  : double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(
+                      width: 1.0,
+                      color: AppColors.elevatedColor,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  disabledBackgroundColor: AppColors.disableButtonColor,
+                  disabledForegroundColor: AppColors.disableButtonTextColor,
+                  backgroundColor: AppColors
+                      .elevatedColor, // Change background color on hover
+                ),
+                onPressed: isChecked
+                    ? () async {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        bool nameValid = await validateName();
+                        bool emailValid = await validateEmail();
+                        bool phoneValid = await validatePhone();
+                        bool addressValid = await validateAddress();
+                        bool dobValid = await validateDOB();
+                        if (nameValid &&
+                            emailValid &&
+                            phoneValid &&
+                            addressValid &&
+                            dobValid &&
+                            isChecked &&
+                            imageFile != null) {
+                          DateTime formattedDate =
+                              DateTime.parse(_userDobController.text);
+                          String formattedDates =
+                              formattedDate.toUtc().toIso8601String();
+                          print(formattedDates);
+                          value
+                              .registerFormApi(
+                                  _userEmailController.text,
+                                  _userNameController.text,
+                                  _userPhoneController.text,
+                                  formattedDates,
+                                  _userAddressController.text,
+                                  imageFile!.path)
+                              .then((val) {
+                            if (val['statusCode'] == 200) {
+                                Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) =>CongratsScreen()),
+                      );
+                              print("yup");
+                            } else {
+                              print("false");
+                            }
+                          });
+                        }
+                      }
+                    : null,
+                child: isLoading
+                    ? const SizedBox(
+                        height: 24,
+                        child: SpinKitThreeBounce(
+                          // Use the spinner from Spinkit you prefer
+
+                          color: Colors.white,
+                          size: 24.0,
+                        ),
+                      )
+                    : const Text(
+                        "Register Now",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontFamily: FontFamily.satoshi,
+                          fontWeight: FontWeight.w700,
+                          height: 24 / 14,
+                        ),
+                      ),
+              ),
+            );
+          }),
+
+          /*CustomElevatedButton(
             isLoading: false,
             height: 60,
             width: MediaQuery.of(context).orientation == Orientation.landscape
@@ -383,18 +550,22 @@ class _RegisterFormState extends State<RegisterForm> {
             text: "Register Now",
             onPressed: () async {
               FocusManager.instance.primaryFocus?.unfocus();
-              //SharedPreferences pref = await SharedPreferences.getInstance();
               bool nameValid = await validateName();
               bool emailValid = await validateEmail();
               bool phoneValid = await validatePhone();
               bool addressValid = await validateAddress();
-              if (nameValid && emailValid && phoneValid && addressValid) {
+              bool dobValid = await validateDOB();
+              if (nameValid &&
+                  emailValid &&
+                  phoneValid &&
+                  addressValid &&
+                  dobValid && isChecked) {
                 print("yes");
               }
             },
             buttonColor: AppColors.elevatedColor,
             textColor: Colors.white,
-          ),
+          ),*/
         ),
       ),
     );
@@ -426,6 +597,20 @@ class _RegisterFormState extends State<RegisterForm> {
     });
 
     return !nameError;
+  }
+
+  Future<bool> validateDOB() async {
+    // var provider = Provider.of<SignInProvider>(context, listen: false);
+
+    setState(() {
+      if (_userDobController.text.isEmpty) {
+        dobError = true;
+      } else {
+        dobError = false;
+      }
+    });
+
+    return !dobError;
   }
 
   Future<bool> validateEmail() async {
@@ -477,5 +662,80 @@ class _RegisterFormState extends State<RegisterForm> {
     });
 
     return !addressError;
+  }
+
+  final picker = ImagePicker();
+
+  void showImagePicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (builder) {
+        return Card(
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height / 5.2,
+            margin: const EdgeInsets.only(top: 8.0),
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: InkWell(
+                    child: Container(
+                        height: 135,
+                        color: const Color(0xffF3F3F3),
+                        padding: const EdgeInsets.all(16.0),
+                        child:
+                            Center(child: Icon(Icons.browse_gallery_outlined))),
+                    onTap: () {
+                      _imgFromGallery();
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+                Container(
+                  height: 135, // Adjust the height as needed
+                  width: 1, // Adjust the width as needed
+                  color: Colors.black,
+                ),
+                Expanded(
+                  child: InkWell(
+                    child: Container(
+                        height: 135,
+                        color: const Color(0xffF3F3F3),
+                        padding: const EdgeInsets.all(16.0),
+                        child: Center(child: Icon(Icons.camera))),
+                    onTap: () {
+                      _imgFromCamera();
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  _imgFromGallery() async {
+    final pickedFile =
+        await picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
+    if (pickedFile != null) {
+      setState(() {
+        imageFile = File(pickedFile.path);
+      });
+    }
+  }
+
+  _imgFromCamera() async {
+    final pickedFile =
+        await picker.pickImage(source: ImageSource.camera, imageQuality: 50);
+    if (pickedFile != null) {
+      setState(() {
+        imageFile = File(pickedFile.path);
+      });
+    }
   }
 }

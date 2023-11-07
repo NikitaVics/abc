@@ -110,4 +110,28 @@ static Future resetPassword(body) async {
    // final jsonData = json.decode(response.body);
     return jsonDecode(response.body);
   }
+
+  static Future registerForm(body) async {
+  
+    var url = "$baseUrl/api/UsersAuth/Form Regisration";
+
+    // Convert the model to a JSON string
+    Map<String, String> headers = {
+      "content-Type": "application/json;  charset=UTF-8",
+    };
+
+    // Set the request headers if needed
+   
+
+    http.Response response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    print(response.body);
+
+   // final jsonData = json.decode(response.body);
+    return jsonDecode(response.body);
+  }
 }

@@ -129,4 +129,19 @@ class SignInProvider with ChangeNotifier {
     updateRegisterLoader(false);
     return res;
   }
+
+  Future registerFormApi(String email,String name,String phoneNumber,String dob,String address,String imageUrl) async {
+    //updateRegisterLoader(true);
+    var body = {
+  "email":email,
+  "name": name,
+  "phoneNumber": phoneNumber,
+  "dob": dob,
+  "address":address,
+  "imageUrl":imageUrl
+    };
+    var res = await Api.registerForm(body);
+    //updateRegisterLoader(false);
+    return res;
+  }
 }

@@ -6,6 +6,8 @@ import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
+import 'package:tennis_court_booking_app/presentation/register/pageview/congrats_screen.dart';
+import 'package:tennis_court_booking_app/presentation/register/pageview/register_form.dart';
 import 'package:tennis_court_booking_app/presentation/register/verifyemail/verify_email.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
@@ -478,6 +480,24 @@ const SizedBox(
             },
             child: Text(
               " Login now",
+              style: TextStyle(
+                color: AppColors.dotColor,
+                fontSize: 14,
+                fontFamily: FontFamily.satoshi,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => CongratsScreen(),
+                ),
+              );
+            },
+            child: Text(
+              " Register form",
               style: TextStyle(
                 color: AppColors.dotColor,
                 fontSize: 14,
