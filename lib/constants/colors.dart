@@ -25,8 +25,9 @@ class AppColors {
   static const focusTextBoarder = Color(0xffAEE7BE);
   static const focusCursorColor = Color(0xff313131);
   static const errorColor = Color(0xffEB5757);
+  static const errorback = Color(0xffFDEEEE);
   static const confirmValid = Color(0xff27AE60);
   static const disableButtonColor = Color(0xffAEE7BE);
   static const disableButtonTextColor = Color(0xff71D58D);
-  
+  static const homeBack=Color(0xffF8F8F8);
 }

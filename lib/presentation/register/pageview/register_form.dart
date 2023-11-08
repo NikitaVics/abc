@@ -507,7 +507,7 @@ class _RegisterFormState extends State<RegisterForm> {
                             if (val['statusCode'] == 200) {
                                 Navigator.of(context).push(
                         MaterialPageRoute(
-                            builder: (context) =>CongratsScreen()),
+                            builder: (context) =>const CongratsScreen()),
                       );
                               print("yup");
                             } else {

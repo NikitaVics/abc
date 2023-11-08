@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
+import 'package:tennis_court_booking_app/widgets/home_appbar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -39,11 +42,11 @@ class HomeScreenState extends State<HomeScreen> {
             ? AppColors.darkThemeback
             : AppColors.lightThemeback,
         primary: true,
-        appBar: const CustomAppBar(
+        appBar: const HomeAppBar(
           isBoarder: true,
           title: "Login",
-            isProgress: false,
-               step: 0,
+          isProgress: false,
+          step: 0,
         ),
         body: _buildBody(),
       );
@@ -55,7 +58,7 @@ class HomeScreenState extends State<HomeScreen> {
     return Material(
       color: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkThemeback
-          : AppColors.lightThemeback,
+          : AppColors.homeBack,
       child: Stack(
         children: <Widget>[
           MediaQuery.of(context).orientation == Orientation.landscape
@@ -68,7 +71,7 @@ class HomeScreenState extends State<HomeScreen> {
                           Expanded(
                             child: _buildRightSide(),
                           ),
-                         // _buildSignInButton()
+                          // _buildSignInButton()
                         ],
                       ),
                     ),
@@ -76,8 +79,8 @@ class HomeScreenState extends State<HomeScreen> {
                 )
               : Column(
                   children: [
-                    Expanded(child: Center(child: _buildRightSide())),
-                   // _buildSignInButton()
+                    Expanded(child: _buildRightSide()),
+                    // _buildSignInButton()
                   ],
                 ),
         ],
@@ -104,14 +107,14 @@ class HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             _buildLoginText(),
-            const SizedBox(height: 24.0),
-           
-           // _buildForgotPasswordButton(),
-           
+            _buildSignInButton(),
+            _buildSlotshowText(),
+
+            // _buildForgotPasswordButton(),
           ],
         ),
       ),
@@ -119,52 +122,165 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildLoginText() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Log in",
-          style: TextStyle(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? AppColors.headingTextColor
-                : AppColors.allHeadColor,
-            fontSize: 32,
-            fontFamily: FontFamily.satoshi,
-            fontWeight: FontWeight.w700,
-            height: 40 / 32,
-          ),
-        ),
-        const SizedBox(height: 8.0),
-        Row(
+    return Padding(
+      padding: const EdgeInsets.only(top: 80),
+      child: Stack(children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "If You Need Any Support",
+              "Book your ",
               style: TextStyle(
                 color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.darkSubHead
-                    : AppColors.subheadColor,
-                fontSize: 12,
+                    ? AppColors.headingTextColor
+                    : AppColors.allHeadColor,
+                fontSize: 32,
                 fontFamily: FontFamily.satoshi,
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w700,
+                height: 40 / 32,
               ),
             ),
-            const Text(
-              " Click Here",
+            Text(
+              "slot today ! ",
               style: TextStyle(
-                color: AppColors.dotColor,
-                fontSize: 12,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.headingTextColor
+                    : AppColors.allHeadColor,
+                fontSize: 32,
                 fontFamily: FontFamily.satoshi,
-                fontWeight: FontWeight.w400,
+                fontWeight: FontWeight.w700,
+                height: 40 / 32,
               ),
             ),
+            const SizedBox(
+              height: 20,
+            ),
+            Container(
+              height: 72,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0),
+                  color: Colors.white),
+              child: Row(children: [
+                SizedBox(
+                  width: 21,
+                ),
+                Text(
+                  "Select Date",
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.headingTextColor
+                        : AppColors.subheadColor,
+                    fontSize: 14,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w700,
+                    height: 24 / 14,
+                  ),
+                ),
+                SizedBox(width: 8),
+                Image.asset(
+                  "assets/images/calender.png",
+                  height: 17,
+                )
+              ]),
+            )
           ],
         ),
-      ],
+        Align(
+            alignment: Alignment.topRight,
+            child: Image.asset(
+              "assets/images/homeImage.png",
+              height: 171,
+            )),
+      ]),
     );
   }
 
- 
-  
+  Widget _buildSignInButton() {
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        child: FocusScope(
+            // Manage keyboard focus
+            child: CustomElevatedButton(
+          height: 60,
+          width: MediaQuery.of(context).orientation == Orientation.landscape
+              ? 70
+              : double.infinity,
+          isLoading: false,
+          text: "Start Booking",
+          onPressed: () async {
+            FocusManager.instance.primaryFocus?.unfocus();
+            SharedPreferences pref = await SharedPreferences.getInstance();
+
+            pref.remove('authToken');
+            // ignore: use_build_context_synchronously
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()));
+
+/*
+            setState(() {
+              isLoading = true;
+            });
+           
+
+            setState(() {
+              isLoading = false;
+            });
+            */
+          },
+          buttonColor: AppColors.elevatedColor,
+          textColor: Colors.white,
+        )));
+  }
+
+  Widget _buildSlotshowText() {
+    return Padding(
+        padding: const EdgeInsets.only(top: 20),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Our courts",
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.headingTextColor
+                    : AppColors.allHeadColor,
+                fontSize: 24,
+                fontFamily: FontFamily.satoshi,
+                fontWeight: FontWeight.w700,
+                height: 32 / 24,
+              ),
+            ),
+            const Row(
+              children: [
+                Text(
+                  "Junior",
+                  style: TextStyle(
+                    color: Color.fromRGBO(0, 0, 0, 0.50),
+                    fontSize: 12,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w700,
+                    height: 24 / 12,
+                  ),
+                ),
+                SizedBox(
+                  width: 46,
+                ),
+                Text(
+                  "Senior",
+                  style: TextStyle(
+                    color: AppColors.dotColor,
+                    fontSize: 12,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w700,
+                    height: 24 / 12,
+                  ),
+                ),
+              ],
+            )
+          ],
+        ));
+  }
 
   // General Methods:-----------------------------------------------------------
 

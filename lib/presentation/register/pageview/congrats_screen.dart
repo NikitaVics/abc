@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
+import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 
 class CongratsScreen extends StatefulWidget {
   const CongratsScreen({super.key});
@@ -10,6 +13,7 @@ class CongratsScreen extends StatefulWidget {
 }
 
 class CongratsScreenState extends State<CongratsScreen> {
+  bool isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -58,7 +62,7 @@ class CongratsScreenState extends State<CongratsScreen> {
                           Expanded(
                             child: _buildRightSide(),
                           ),
-                          // _buildSignInButton()
+                           _buildSignInButton()
                         ],
                       ),
                     ),
@@ -67,7 +71,7 @@ class CongratsScreenState extends State<CongratsScreen> {
               : Column(
                   children: [
                     Expanded(child: Center(child: _buildRightSide())),
-                    // _buildSignInButton()
+                     _buildSignInButton()
                   ],
                 ),
         ],
@@ -98,8 +102,9 @@ class CongratsScreenState extends State<CongratsScreen> {
           //mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             _buildCongrats(),
+             const SizedBox(height: 24.0),
             _buildLoginText(),
-            const SizedBox(height: 24.0),
+           
           ],
         ),
       ),
@@ -107,82 +112,85 @@ class CongratsScreenState extends State<CongratsScreen> {
   }
 
   Widget _buildCongrats() {
-  return Stack(
-    children: [
-      Padding(
-         padding: const EdgeInsets.only(left: 100, right: 100),
-        child: Image.asset("assets/images/congrats.png"),
-      ),
-      Positioned(
-        top: 50,  // Adjust the top value to position the circle as desired
-        left: 2, // Adjust the left value to position the circle as desired
-        child: Container(
-          width: 50,  // Adjust the width to control the size of the pink circle
-          height: 50, // Adjust the height to control the size of the pink circle
-          decoration: BoxDecoration(
-            color: Colors.pink,
-            shape: BoxShape.circle,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-
-   Widget _buildCircle1() {
     return Padding(
-      padding: const EdgeInsets.only(left: 100,right: 100),
-      child: Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle
-        ),
-      ),
+      padding: const EdgeInsets.only(left: 100, right: 100),
+      child: Lottie.asset("assets/jsons/Successanimation.json"),
     );
   }
 
   Widget _buildLoginText() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          "Log in",
+        const Text(
+          "Congrats!",
           style: TextStyle(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? AppColors.headingTextColor
-                : AppColors.allHeadColor,
-            fontSize: 32,
+            color: AppColors.dotColor,
+            fontSize: 38,
             fontFamily: FontFamily.satoshi,
             fontWeight: FontWeight.w700,
             height: 40 / 32,
           ),
         ),
-        const SizedBox(height: 8.0),
-        Row(
-          children: [
-            Text(
-              "If You Need Any Support",
-              style: TextStyle(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.darkSubHead
-                    : AppColors.subheadColor,
-                fontSize: 12,
-                fontFamily: FontFamily.satoshi,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            const Text(
-              " Click Here",
-              style: TextStyle(
-                color: AppColors.dotColor,
-                fontSize: 12,
-                fontFamily: FontFamily.satoshi,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
+        const SizedBox(height: 10.0),
+        Text(
+          "Your Membership was ",
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkSubHead
+                : AppColors.subheadColor,
+            fontSize: 16,
+            fontFamily: FontFamily.satoshi,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        Text(
+          "successfull created.",
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkSubHead
+                : AppColors.subheadColor,
+            fontSize: 16,
+            fontFamily: FontFamily.satoshi,
+            fontWeight: FontWeight.w400,
+          ),
         ),
       ],
     );
+  }
+
+  Widget _buildSignInButton() {
+    return Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 19),
+            child: FocusScope(
+                // Manage keyboard focus
+                child: CustomElevatedButton(
+              height: 60,
+              width: MediaQuery.of(context).orientation == Orientation.landscape
+                  ? 70
+                  : double.infinity,
+              isLoading: isLoading,
+              text: "Login Now",
+              onPressed: () {
+                FocusManager.instance.primaryFocus?.unfocus();
+
+                setState(() {
+                  isLoading = true;
+                });
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const LoginScreen(),
+                  ),
+                );
+
+                setState(() {
+                  isLoading = false;
+                });
+              },
+              buttonColor: AppColors.elevatedColor,
+              textColor: Colors.white,
+            ))));
   }
 }

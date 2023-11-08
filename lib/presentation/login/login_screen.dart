@@ -9,6 +9,7 @@ import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/model/login/login_response_model.dart';
 import 'package:tennis_court_booking_app/presentation/forgotPassword/forgot_pass_using_otp.dart';
 import 'package:tennis_court_booking_app/presentation/forgotPassword/otp_send_screen.dart';
+import 'package:tennis_court_booking_app/presentation/home/home_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/presentation/register/pageview/register_as_member.dart';
 import 'package:tennis_court_booking_app/presentation/register/register.dart';
@@ -341,21 +342,16 @@ class LoginScreenState extends State<LoginScreen> {
               });
 
               if (await validate()) {
-                setState(() {
+                 setState(() {
                   isLoading = true;
                 });
                 value.loginApi(email.text,password.text).then((val) {
                   if (val["statusCode"] == 200) {
-                    setState(() {
-                      loginError = false;
-                    });
+                  
                     pref.setString('authToken', val['result']['token']);
                     pref.setString('email', val['result']['user']['email']);
-                    AnimatedToast.showToastMessage(
-                      context,
-                      "You are loged in successfully",
-                      const Color.fromRGBO(87, 87, 87, 0.93),
-                    );
+                    Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()));
                     String? authToken = pref.getString('authToken');
                     if (authToken != null) {
                       print("Auth Token: $authToken");

@@ -488,24 +488,7 @@ const SizedBox(
               ),
             ),
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => CongratsScreen(),
-                ),
-              );
-            },
-            child: Text(
-              " Register form",
-              style: TextStyle(
-                color: AppColors.dotColor,
-                fontSize: 14,
-                fontFamily: FontFamily.satoshi,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
+          
         ],
       ),
     );
