@@ -11,9 +11,13 @@ import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_pro
 import 'package:tennis_court_booking_app/presentation/register/pageview/congrats_screen.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
+import 'package:tennis_court_booking_app/widgets/dateTextField.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
 
 class RegisterForm extends StatefulWidget {
+  final String email;
+
+  const RegisterForm({super.key, required this.email});
   @override
   State<RegisterForm> createState() => _RegisterFormState();
 }
@@ -46,6 +50,7 @@ class _RegisterFormState extends State<RegisterForm> {
   @override
   void initState() {
     super.initState();
+    _userEmailController.text = widget.email;
   }
 
   bool isChecked = false;
@@ -178,6 +183,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
   Widget _buildUserName() {
     return TextFieldWidget(
+        read: false,
       hint: 'Name',
       inputType: TextInputType.name,
       hintColor: Theme.of(context).brightness == Brightness.dark
@@ -203,7 +209,9 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   Widget _buildUserDOB() {
-    return TextFieldWidget(
+    
+    return DateTextFieldWidget(
+      read: false,
       hint: 'DOB',
       inputType: TextInputType.datetime,
       hintColor: Theme.of(context).brightness == Brightness.dark
@@ -218,6 +226,28 @@ class _RegisterFormState extends State<RegisterForm> {
       focusBorderColor:
           dobError ? AppColors.errorColor : AppColors.focusTextBoarder,
       autoFocus: false,
+      onSuffixIconPressed:() =>
+        showDatePicker(
+  context: context,
+  initialDate: DateTime.now(),
+  firstDate: DateTime(2000),
+  lastDate: DateTime(2101),
+  builder: (BuildContext context, Widget? child) {
+    return Theme(
+      data: ThemeData.light().copyWith(
+        primaryColor: AppColors.darkSubHead, // Set your preferred primary color
+        hintColor: Colors.teal, // Set your preferred accent color
+        
+        colorScheme: ColorScheme.light(primary: AppColors.dotColor),
+        buttonTheme: ButtonThemeData(buttonColor: Colors.amber),
+        backgroundColor: Colors.blueGrey, // Set your preferred background color
+      ),
+      child: child!,
+    );
+  },
+),
+
+       
       onChanged: (value) {
         setState(() {
           dobError = false; // Reset the error flag
@@ -225,11 +255,13 @@ class _RegisterFormState extends State<RegisterForm> {
         validateDOB(); // Trigger validation on text change
       },
       errorText: dobError ? "Please enter DOB" : " ",
+      isIcon: true,
     );
   }
 
   Widget _buildUserIdField() {
     return TextFieldWidget(
+        read: true,
       hint: 'E-Mail',
       inputType: TextInputType.emailAddress,
       hintColor: Theme.of(context).brightness == Brightness.dark
@@ -238,24 +270,18 @@ class _RegisterFormState extends State<RegisterForm> {
       // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
       textController: _userEmailController,
       inputAction: TextInputAction.next,
-      errorBorderColor: emailError
-          ? AppColors.errorColor // Border color for validation error
-          : AppColors.textInputField,
-      focusBorderColor:
-          emailError ? AppColors.errorColor : AppColors.focusTextBoarder,
+      defaultBoarder: AppColors.textInputField,
+      errorBorderColor:AppColors.textInputField,
+      focusBorderColor:AppColors.textInputField
+        ,
       autoFocus: false,
-      onChanged: (value) {
-        setState(() {
-          emailError = false; // Reset the error flag
-        });
-        validateEmail(); // Trigger validation on text change
-      },
-      errorText: emailError ? emailErrorText : " ",
+      
+      errorText:" ",
     );
   }
-
   Widget _buildUserphone() {
     return TextFieldWidget(
+        read: false,
       hint: 'Phone No.',
       inputType: TextInputType.phone,
       hintColor: Theme.of(context).brightness == Brightness.dark
@@ -282,6 +308,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
   Widget _buildPasswordField() {
     return TextFieldWidget(
+        read: false,
       hint: "Address",
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
@@ -410,7 +437,7 @@ class _RegisterFormState extends State<RegisterForm> {
                   borderRadius: BorderRadius.circular(2), // Makes it circular
                 ),
                 child: isChecked
-                    ? Icon(
+                    ? const Icon(
                         Icons.check,
                         weight: 18,
                         size: 16, // Adjust the size of the checkmark icon
@@ -479,12 +506,12 @@ class _RegisterFormState extends State<RegisterForm> {
                     ? () async {
                         FocusManager.instance.primaryFocus?.unfocus();
                         bool nameValid = await validateName();
-                        bool emailValid = await validateEmail();
+                   
                         bool phoneValid = await validatePhone();
                         bool addressValid = await validateAddress();
                         bool dobValid = await validateDOB();
                         if (nameValid &&
-                            emailValid &&
+                          
                             phoneValid &&
                             addressValid &&
                             dobValid &&
@@ -505,10 +532,11 @@ class _RegisterFormState extends State<RegisterForm> {
                                   imageFile!.path)
                               .then((val) {
                             if (val['statusCode'] == 200) {
-                                Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) =>const CongratsScreen()),
-                      );
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const CongratsScreen()),
+                              );
                               print("yup");
                             } else {
                               print("false");
@@ -613,27 +641,7 @@ class _RegisterFormState extends State<RegisterForm> {
     return !dobError;
   }
 
-  Future<bool> validateEmail() async {
-    // var provider = Provider.of<SignInProvider>(context, listen: false);
-    bool emailValid = RegExp(
-            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+")
-        .hasMatch(_userEmailController.text);
-
-    setState(() {
-      if (_userEmailController.text.isEmpty) {
-        emailError = true;
-        emailErrorText = 'Please enter your email address';
-      } else if (!emailValid) {
-        emailError = true;
-        emailErrorText = 'Entered email is not valid';
-      } else {
-        emailError = false;
-      }
-    });
-
-    return !emailError;
-  }
-
+  
   Future<bool> validatePhone() async {
     // var provider = Provider.of<SignInProvider>(context, listen: false);
 

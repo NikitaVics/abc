@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
-
-class TextFieldWidget extends StatefulWidget {
+typedef DatePickerCallback = void Function();
+class DateTextFieldWidget extends StatefulWidget {
   final String? hint;
   final String? errorText;
   final bool isObscure;
@@ -21,10 +21,9 @@ class TextFieldWidget extends StatefulWidget {
   final Color? focusBorderColor;
   final Color? defaultBoarder;
   final bool read;
- 
+  final DatePickerCallback onSuffixIconPressed;
 
-
-  const TextFieldWidget({
+  const DateTextFieldWidget({
     Key? key,
     required this.errorText,
     required this.textController,
@@ -42,14 +41,16 @@ class TextFieldWidget extends StatefulWidget {
     this.showPassword = false,
     this.errorBorderColor, // Initialize showPassword
     this.focusBorderColor,
-    this.defaultBoarder, required this.read
+    this.defaultBoarder,
+    required this.read,
+    required this.onSuffixIconPressed,
   }) : super(key: key);
 
   @override
-  State<TextFieldWidget> createState() => _TextFieldWidgetState();
+  State<DateTextFieldWidget> createState() => _DateTextFieldWidgetState();
 }
 
-class _TextFieldWidgetState extends State<TextFieldWidget> {
+class _DateTextFieldWidgetState extends State<DateTextFieldWidget> {
   bool _isPasswordVisible = false; // Maintain the state of password visibility
 
   @override
@@ -126,24 +127,17 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
               contentPadding:
                   const EdgeInsets.symmetric(vertical: 19.0, horizontal: 14.0),
               // Add suffixIcon to toggle password visibility
-              suffixIcon: widget.isObscure
-                  ? IconButton(
-                      icon: Icon(
-                        _isPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.darkSubHead
-                            : AppColors.darkSubHead,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
-                    )
-                  : null
-            
+              suffixIcon: GestureDetector(
+                onTap: () {
+                  widget.onSuffixIconPressed();
+                },
+                child: Icon(
+                  Icons.calendar_today,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.darkSubHead
+                      : AppColors.darkSubHead,
+                ),
+              ),
             ),
           ),
           Visibility(

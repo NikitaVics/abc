@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/register/pageview/register_form.dart';
@@ -66,10 +67,12 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
               SizedBox(
                 height: 34,
                 child: OutlinedButton(
-              onPressed: () {
+              onPressed: () async {
+                SharedPreferences pref = await SharedPreferences.getInstance();
+                  String? email = pref.getString('email');
              Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => RegisterForm(),
+                  builder: (context) => RegisterForm(email:email! ),
                 ),
               );
               },

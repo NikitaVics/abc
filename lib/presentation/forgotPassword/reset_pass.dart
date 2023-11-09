@@ -212,6 +212,7 @@ class ResetPassScreenState extends State<ResetPassScreen> {
     return Column(
       children: [
         TextFieldWidget(
+            read: false,
           hint: "Password",
           hintColor: Theme.of(context).brightness == Brightness.dark
               ? AppColors.darkhint
@@ -301,6 +302,7 @@ class ResetPassScreenState extends State<ResetPassScreen> {
 
   Widget _buildConfirmPasswordField() {
     return TextFieldWidget(
+        read: false,
       hint: "Confirm Password",
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint

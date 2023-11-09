@@ -234,6 +234,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
     return Column(
       children: [
         TextFieldWidget(
+            read: false,
           hint: 'User Name',
           inputType: TextInputType.name,
           hintColor: Theme.of(context).brightness == Brightness.dark
@@ -260,51 +261,54 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
           errorText: nameError ? "Please enter name" : " ",
         ),
         if (_userNameFocusNode.hasFocus)
-          Card(
-            color: AppColors.textInputField,
-            child: Column(
-              children: [
-                 const SizedBox(
-                  height: 5,
-                ),
-                Column(
-                  children: [
-                    
-                    Row(
-                      children: [
-                        const SizedBox(width: 5),
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 500),
-                          width: 20,
-                          height: 20,
-                          decoration: BoxDecoration(
-                            color: nameConditions
-                                ? AppColors.dotColor
-                                : AppColors.errorColor,
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: Center(
-                            child: Icon(
-                              nameConditions ? Icons.check : Icons.clear,
-                              color: Colors.white,
-                              size: 15,
+          Visibility(
+            visible: !nameConditions,
+            child: Card(
+              color: AppColors.textInputField,
+              child: Column(
+                children: [
+                   const SizedBox(
+                    height: 5,
+                  ),
+                  Column(
+                    children: [
+                      
+                      Row(
+                        children: [
+                          const SizedBox(width: 5),
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 500),
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              color: nameConditions
+                                  ? AppColors.dotColor
+                                  : AppColors.errorColor,
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: Center(
+                              child: Icon(
+                                nameConditions ? Icons.check : Icons.clear,
+                                color: Colors.white,
+                                size: 15,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Text("Must be in lowerCase"),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                  ],
-                ),
-const SizedBox(
-                  height: 5,
-                ),
-                // Add your menu items here
-              ],
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Text("Must be in lowerCase"),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                    ],
+                  ),
+          const SizedBox(
+                    height: 5,
+                  ),
+                  // Add your menu items here
+                ],
+              ),
             ),
           ),
       ],
@@ -313,6 +317,7 @@ const SizedBox(
 
   Widget _buildUserIdField() {
     return TextFieldWidget(
+        read: false,
       hint: 'E-Mail',
       inputType: TextInputType.emailAddress,
       hintColor: Theme.of(context).brightness == Brightness.dark
@@ -345,6 +350,7 @@ const SizedBox(
     return Column(
       children: [
         TextFieldWidget(
+            read: false,
           hint: "Password",
           hintColor: Theme.of(context).brightness == Brightness.dark
               ? AppColors.darkhint
@@ -364,48 +370,51 @@ const SizedBox(
           },
         ),
         if (_passwordFocusNode.hasFocus)
-          Card(
-            color: AppColors.textInputField,
-            child: Column(
-              children: [
-                for (int i = 0; i < 5; i++)
-                  Column(
-                    children: [
-                      Row(
-                        children: [
-                          const SizedBox(width: 5),
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 500),
-                            width: 20,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              color: passwordConditions[i]
-                                  ? AppColors.dotColor
-                                  : AppColors.errorColor,
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: Center(
-                              child: Icon(
-                                passwordConditions[i]
-                                    ? Icons.check
-                                    : Icons.clear,
-                                color: Colors.white,
-                                size: 15,
+          Visibility(
+            visible: !isPasswordValids,
+            child: Card(
+              color: AppColors.textInputField,
+              child: Column(
+                children: [
+                  for (int i = 0; i < 5; i++)
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            const SizedBox(width: 5),
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 500),
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                color: passwordConditions[i]
+                                    ? AppColors.dotColor
+                                    : AppColors.errorColor,
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  passwordConditions[i]
+                                      ? Icons.check
+                                      : Icons.clear,
+                                  color: Colors.white,
+                                  size: 15,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Text(_getConditionText(i)),
-                        ],
-                      ),
-                      const SizedBox(height: 5),
-                    ],
-                  ),
-
-                // Add your menu items here
-              ],
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(_getConditionText(i)),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                      ],
+                    ),
+          
+                  // Add your menu items here
+                ],
+              ),
             ),
           ),
       ],
@@ -431,6 +440,7 @@ const SizedBox(
 
   Widget _buildConfirmPasswordField() {
     return TextFieldWidget(
+        read: false,
       hint: "Confirm Password",
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint

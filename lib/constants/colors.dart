@@ -29,5 +29,6 @@ class AppColors {
   static const confirmValid = Color(0xff27AE60);
   static const disableButtonColor = Color(0xffAEE7BE);
   static const disableButtonTextColor = Color(0xff71D58D);
-  static const homeBack=Color(0xffF8F8F8);
+  static const homeBack = Color(0xffF8F8F8);
+  static const primaryColor = Color(0xffFEFEFE);
 }

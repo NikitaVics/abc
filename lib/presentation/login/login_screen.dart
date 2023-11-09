@@ -204,6 +204,7 @@ class LoginScreenState extends State<LoginScreen> {
 
   Widget _buildUserIdField() {
     return TextFieldWidget(
+        read: false,
       hint: 'E-Mail/UserName',
       inputType: TextInputType.emailAddress,
       hintColor: Theme.of(context).brightness == Brightness.dark
@@ -231,6 +232,7 @@ class LoginScreenState extends State<LoginScreen> {
 
   Widget _buildPasswordField() {
     return TextFieldWidget(
+        read: false,
       hint: "Password",
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint

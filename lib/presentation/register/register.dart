@@ -34,7 +34,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String currentTitle = "Register as Member"; 
   List<Widget> pages = [
   RegisterAsMember(), 
-   RegisterForm(), 
+  
     RegisterAsMember(), 
      RegisterAsMember(), 
 ];

@@ -284,7 +284,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     .then((val) {
                   if (val["statusCode"] == 200) {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => RegisterForm()),
+                      MaterialPageRoute(builder: (context) => RegisterForm(email: widget.email,)),
                     );
                     print(val);
                   } else {

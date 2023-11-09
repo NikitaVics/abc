@@ -140,6 +140,7 @@ class OtpSendScreenState extends State<OtpSendScreen> {
 
   Widget _buildUserIdField() {
     return TextFieldWidget(
+      read: false,
       hint: 'E-Mail',
       inputType: TextInputType.emailAddress,
       hintColor: Theme.of(context).brightness == Brightness.dark

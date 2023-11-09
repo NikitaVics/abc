@@ -113,6 +113,7 @@ class HomeScreenState extends State<HomeScreen> {
             _buildLoginText(),
             _buildSignInButton(),
             _buildSlotshowText(),
+            _buildShowCourt()
 
             // _buildForgotPasswordButton(),
           ],
@@ -280,6 +281,88 @@ class HomeScreenState extends State<HomeScreen> {
             )
           ],
         ));
+  }
+
+  Widget _buildShowCourt() {
+    final List<int> numbers = [1, 2, 3, 5, 8, 13, 21, 34, 55];
+    
+    return SizedBox(
+    
+      height:  160,
+      child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: numbers.length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.only(right: 20),
+              child: Container(
+                width: 145,
+            
+                child: Card(
+                 shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+                  color: Colors.blue,
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 12,right:12,top:12,bottom: 8),
+                          child: Container(
+                            height: 82,
+                           
+                            decoration: BoxDecoration(
+                               color: Colors.pink,
+                              borderRadius: BorderRadius.circular(8)
+                            ),
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(left: 12,right: 22),
+                          child: Stack(
+                            children: [
+                              Column(
+                               children: [
+                                 Text(
+                                          "Junior",
+                                          style: TextStyle(
+                                            color: Color.fromRGBO(0, 0, 0, 0.50),
+                                            fontSize: 16,
+                                            fontFamily: FontFamily.satoshi,
+                                            fontWeight: FontWeight.w700,
+                                            height: 24 / 16,
+                                          ),
+                                        ),
+                                         Text(
+                                          "Junior",
+                                          style: TextStyle(
+                                            color: Color.fromRGBO(0, 0, 0, 0.50),
+                                            fontSize: 12,
+                                            fontFamily: FontFamily.satoshi,
+                                            fontWeight: FontWeight.w700,
+                                            height: 16 / 12,
+                                          ),
+                                        ),
+                               ], 
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(top: 10),
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Icon(Icons.arrow_forward)),
+                              )
+                            ],
+                          ),
+                        )
+                        
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }),
+    );
   }
 
   // General Methods:-----------------------------------------------------------
