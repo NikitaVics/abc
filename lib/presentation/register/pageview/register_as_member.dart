@@ -36,6 +36,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
       confirmPasswordErrorText = '';
   bool isEmailValidationSuccessful = false;
   bool isPasswordValidationSuccessful = false;
+  bool isLoading = false;
   SignInProvider? provider;
   List<bool> isPasswordValid(String password) {
     // Define regular expressions for each condition
@@ -61,11 +62,8 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
 
   bool isUserNameValid(String name) {
     // Define regular expressions for each condition
-    final lowercaseRegex = RegExp(r'[a-z]');
-
-    final hasLowercase = lowercaseRegex.hasMatch(name);
-
-    return hasLowercase;
+    final uppercaseRegex = RegExp(r'[a-z]');
+    return uppercaseRegex.hasMatch(name);
   }
 
   bool _isMenuVisible = false;
@@ -234,7 +232,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
     return Column(
       children: [
         TextFieldWidget(
-            read: false,
+          read: false,
           hint: 'User Name',
           inputType: TextInputType.name,
           hintColor: Theme.of(context).brightness == Brightness.dark
@@ -267,12 +265,11 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
               color: AppColors.textInputField,
               child: Column(
                 children: [
-                   const SizedBox(
+                  const SizedBox(
                     height: 5,
                   ),
                   Column(
                     children: [
-                      
                       Row(
                         children: [
                           const SizedBox(width: 5),
@@ -303,7 +300,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
                       const SizedBox(height: 5),
                     ],
                   ),
-          const SizedBox(
+                  const SizedBox(
                     height: 5,
                   ),
                   // Add your menu items here
@@ -317,7 +314,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
 
   Widget _buildUserIdField() {
     return TextFieldWidget(
-        read: false,
+      read: false,
       hint: 'E-Mail',
       inputType: TextInputType.emailAddress,
       hintColor: Theme.of(context).brightness == Brightness.dark
@@ -350,7 +347,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
     return Column(
       children: [
         TextFieldWidget(
-            read: false,
+          read: false,
           hint: "Password",
           hintColor: Theme.of(context).brightness == Brightness.dark
               ? AppColors.darkhint
@@ -411,7 +408,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
                         const SizedBox(height: 5),
                       ],
                     ),
-          
+
                   // Add your menu items here
                 ],
               ),
@@ -440,7 +437,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
 
   Widget _buildConfirmPasswordField() {
     return TextFieldWidget(
-        read: false,
+      read: false,
       hint: "Confirm Password",
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
@@ -459,7 +456,6 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
         setState(() {
           confirmPasswordError = false; // Reset the error flag
         });
-        validatePassword(); // Trigger validation on text change
       },
       errorText: confirmPasswordError ? confirmPasswordErrorText : " ",
     );
@@ -498,7 +494,6 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
               ),
             ),
           ),
-          
         ],
       ),
     );
@@ -518,7 +513,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
                   ? 70
                   : double.infinity,
               text: "Register Now",
-              isLoading: false,
+              isLoading: isLoading,
               onPressed: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
                 //SharedPreferences pref = await SharedPreferences.getInstance();
@@ -531,14 +526,28 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
                     emailValid &&
                     passwordValid &&
                     confirmPasswordValid) {
+                  setState(() {
+                    isLoading = true;
+                  });
                   value.registerApi().then((val) {
                     if (val['statusCode'] == 200) {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                             builder: (context) => VerifyEmailScreen(
-                                email: provider!.signUpEmail.text)),
+                                  email: provider!.signUpEmail.text,
+                                  userName: provider!.signUpName.text,
+                                  password: provider!.signUpPassword.text,
+                                  confirmPassword:
+                                      provider!.signUpConfirmPassword.text,
+                                )),
                       );
+                       setState(() {
+                    isLoading = false;
+                  });
                     } else {
+                       setState(() {
+                    isLoading = false;
+                  });
                       print("false");
                     }
                   });
@@ -567,6 +576,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
     _passwordFocusNode.dispose();
     _confirmpasswordFocusNode.dispose();
     _userNameFocusNode.dispose();
+    provider!.signUpEmail.text = " ";
 
     super.dispose();
   }

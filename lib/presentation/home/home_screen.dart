@@ -113,7 +113,9 @@ class HomeScreenState extends State<HomeScreen> {
             _buildLoginText(),
             _buildSignInButton(),
             _buildSlotshowText(),
-            _buildShowCourt()
+            _buildShowCourt(),
+            _buildrecentBookText(),
+            _buildNoBook()
 
             // _buildForgotPasswordButton(),
           ],
@@ -235,7 +237,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   Widget _buildSlotshowText() {
     return Padding(
-        padding: const EdgeInsets.only(top: 20),
+        padding: const EdgeInsets.only(top: 20, bottom: 20),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -284,11 +286,10 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildShowCourt() {
-    final List<int> numbers = [1, 2, 3, 5, 8, 13, 21, 34, 55];
-    
+    final List<int> numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
     return SizedBox(
-    
-      height:  160,
+      height: 160,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: numbers.length,
@@ -297,71 +298,175 @@ class HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.only(right: 20),
               child: Container(
                 width: 145,
-            
-                child: Card(
-                 shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-                  color: Colors.blue,
-                  child: Container(
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 12,right:12,top:12,bottom: 8),
-                          child: Container(
-                            height: 82,
-                           
-                            decoration: BoxDecoration(
-                               color: Colors.pink,
-                              borderRadius: BorderRadius.circular(8)
-                            ),
-                          ),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12)),
+                child: Container(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 12, right: 12, top: 12, bottom: 8),
+                        child: Container(
+                          height: 82,
+                          child: Image.asset("assets/images/court.png"),
                         ),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 12,right: 22),
-                          child: Stack(
-                            children: [
-                              Column(
-                               children: [
-                                 Text(
-                                          "Junior",
-                                          style: TextStyle(
-                                            color: Color.fromRGBO(0, 0, 0, 0.50),
-                                            fontSize: 16,
-                                            fontFamily: FontFamily.satoshi,
-                                            fontWeight: FontWeight.w700,
-                                            height: 24 / 16,
-                                          ),
-                                        ),
-                                         Text(
-                                          "Junior",
-                                          style: TextStyle(
-                                            color: Color.fromRGBO(0, 0, 0, 0.50),
-                                            fontSize: 12,
-                                            fontFamily: FontFamily.satoshi,
-                                            fontWeight: FontWeight.w700,
-                                            height: 16 / 12,
-                                          ),
-                                        ),
-                               ], 
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(top: 10),
-                                child: Align(
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 12, right: 22),
+                        child: Stack(
+                          children: [
+                            Column(
+                              children: [
+                                Text(
+                                  "Court  ${numbers[index]}",
+                                  style: TextStyle(
+                                    color: AppColors.allHeadColor,
+                                    fontSize: 16,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w500,
+                                    height: 24 / 16,
+                                  ),
+                                ),
+                                Text(
+                                  " 10 am -7 pm",
+                                  style: TextStyle(
+                                    color: AppColors.hintColor,
+                                    fontSize: 12,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w400,
+                                    height: 16 / 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 10),
+                              child: Align(
                                   alignment: Alignment.centerRight,
-                                  child: Icon(Icons.arrow_forward)),
-                              )
-                            ],
-                          ),
-                        )
-                        
-                      ],
-                    ),
+                                  child: Image.asset(
+                                    "assets/images/Right.png",
+                                    height: 24,
+                                  )),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
                   ),
                 ),
               ),
             );
           }),
+    );
+  }
+
+  Widget _buildrecentBookText() {
+    return Padding(
+        padding: const EdgeInsets.only(top: 40, bottom: 20),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              "Recent Bookings",
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.headingTextColor
+                    : AppColors.allHeadColor,
+                fontSize: 20,
+                fontFamily: FontFamily.satoshi,
+                fontWeight: FontWeight.w700,
+                height: 32 / 20,
+              ),
+            ),
+            const Text(
+              "See all",
+              style: TextStyle(
+                decoration: TextDecoration.underline,
+                decorationThickness: 2.0, // Set the thickness of the underline
+                decorationStyle: TextDecorationStyle.solid,
+
+                color: AppColors.dotColor,
+                fontSize: 14,
+                fontFamily: FontFamily.satoshi,
+                fontWeight: FontWeight.w700,
+                height: 24 / 14,
+              ),
+            ),
+          ],
+        ));
+  }
+
+  Widget _buildNoBook() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Container(
+        height: 138,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12)
+        ),
+        child: Row(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: 10,top: 10,bottom: 10),
+              child: Image.asset(
+                                      "assets/images/Nobooking.png",
+                                      
+                                    ),
+            ),
+           Column(
+             mainAxisAlignment: MainAxisAlignment.center, 
+             children: [
+              
+               
+           SizedBox(
+             width: 147,
+             
+             child: RichText(
+             text: const TextSpan(
+               children: <TextSpan>[
+                 TextSpan(
+             text:"No Recent Bookings  ",
+             style: TextStyle(
+               color: AppColors.subheadColor,
+               fontSize: 12,
+               fontFamily: FontFamily.satoshi,
+               fontWeight: FontWeight.w400,
+               height: 20 / 12,
+             ),
+           ),
+                 TextSpan(
+                   text: 'Complete your profile ', // The first half of the sentence
+                    style: TextStyle(
+               color: AppColors.disableButtonTextColor,
+               fontSize: 12,
+               fontFamily: FontFamily.satoshi,
+               fontWeight: FontWeight.w400,
+               height: 20 / 12,
+             ),
+                 ),
+                 TextSpan(
+                   text: 'to start booking', // The second half of the sentence
+                   style: TextStyle(
+               color: AppColors.hintColor,
+               fontSize: 12,
+               fontFamily: FontFamily.satoshi,
+               fontWeight: FontWeight.w400,
+               height: 20 / 12,
+             ),
+                 ),
+               ],
+             ),
+           ),
+           )
+
+             ],
+           )
+          ],
+        ),
+      ),
     );
   }
 

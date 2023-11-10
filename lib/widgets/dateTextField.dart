@@ -131,12 +131,13 @@ class _DateTextFieldWidgetState extends State<DateTextFieldWidget> {
                 onTap: () {
                   widget.onSuffixIconPressed();
                 },
-                child: Icon(
-                  Icons.calendar_today,
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.darkSubHead
-                      : AppColors.darkSubHead,
-                ),
+                child:Padding(
+                  padding: const EdgeInsets.only(top: 12,bottom: 12),
+                  child: Image.asset(
+                    "assets/images/calender.png",
+                    height: 2,
+                  ),
+                )
               ),
             ),
           ),

@@ -20,7 +20,10 @@ import 'package:tennis_court_booking_app/widgets/otp_input.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   final String email;
-  const VerifyEmailScreen({super.key, required this.email});
+  final String userName;
+  final String password;
+  final String confirmPassword;
+  const VerifyEmailScreen({super.key, required this.email, required this.userName, required this.password, required this.confirmPassword});
 
   @override
   VerifyEmailScreenState createState() => VerifyEmailScreenState();
@@ -34,12 +37,12 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
   SharedPreferences? pref;
   int resendTime = 100;
   late Timer countdownTimer;
+  bool isLoading = false;
   String? otp;
   @override
   void initState() {
     startTimer();
     super.initState();
-    
   }
 
   startTimer() {
@@ -71,8 +74,6 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
         '$minutes:${remainingSeconds.toString().padLeft(2, '0')} ';
     return formattedTime;
   }
-
- 
 
   @override
   Widget build(BuildContext context) {
@@ -151,11 +152,21 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 OtpInput(_fieldOne, true),
+                 const SizedBox(
+                  width: 20,
+                ),
                 OtpInput(_fieldTwo, false),
+                 const SizedBox(
+                  width: 20,
+                ),
                 OtpInput(_fieldThree, false),
+                 const SizedBox(
+                  width: 20,
+                ),
                 OtpInput(_fieldFour, false),
               ],
             ),
+            _buildResendText()
           ],
         ),
       ),
@@ -238,16 +249,33 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
   }
 
   Widget _buildResendText() {
-    return Text(
-      "Resend Code",
-      style: TextStyle(
-        color: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.headingTextColor
-            : AppColors.allHeadColor,
-        fontSize: 32,
-        fontFamily: FontFamily.satoshi,
-        fontWeight: FontWeight.w700,
-        height: 40 / 32,
+    final signInProvider = Provider.of<SignInProvider>(context, listen: false);
+    void restartTimer() {
+      setState(() {
+        resendTime = 100;
+      });
+      startTimer();
+    }
+
+    return Align(
+      alignment: Alignment.topLeft,
+      child: TextButton(
+        onPressed: () {
+          signInProvider.registerApi().then((val) {
+            if (val["statusCode"] == 200) {
+              restartTimer();
+            }
+          });
+        },
+        child: const Text(
+          "Resend Code",
+          style: TextStyle(
+            color: AppColors.dotColor,
+            fontSize: 14,
+            fontFamily: FontFamily.satoshi,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ),
     );
   }
@@ -276,6 +304,9 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                       _fieldThree.text +
                       _fieldFour.text;
                 });
+                setState(() {
+                  isLoading = true;
+                });
                 value
                     .verifyEmailForgotPasswordApi(
                   widget.email,
@@ -284,11 +315,18 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     .then((val) {
                   if (val["statusCode"] == 200) {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => RegisterForm(email: widget.email,)),
+                      MaterialPageRoute(
+                          builder: (context) => RegisterForm(
+                                email: widget.email,
+                              )),
                     );
+                    setState(() {
+                      isLoading = false;
+                    });
                     print(val);
                   } else {
                     setState(() {
+                      isLoading = false;
                       print(val['errorMessage']);
                     });
                   }

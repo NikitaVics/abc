@@ -73,18 +73,23 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkThemeback
-          : AppColors.lightThemeback,
-      primary: true,
-      appBar: const CustomAppBar(
-        isBoarder: true,
-        title: "Forgot password",
-        isProgress: false,
-        step: 0,
+    return GestureDetector(
+      onTap: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.darkThemeback
+            : AppColors.lightThemeback,
+        primary: true,
+        appBar: const CustomAppBar(
+          isBoarder: true,
+          title: "Forgot password",
+          isProgress: false,
+          step: 0,
+        ),
+        body: _buildBody(),
       ),
-      body: _buildBody(),
     );
   }
 
@@ -148,11 +153,21 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 OtpInput(_fieldOne, true),
+                const SizedBox(
+                  width: 20,
+                ),
                 OtpInput(_fieldTwo, false),
+                const SizedBox(
+                  width: 20,
+                ),
                 OtpInput(_fieldThree, false),
+                const SizedBox(
+                  width: 20,
+                ),
                 OtpInput(_fieldFour, false),
               ],
             ),
+            _buildResendText()
           ],
         ),
       ),
@@ -204,8 +219,19 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
         ),
         Row(
           children: [
+            resendTime != 0?
             Text(
               "This code will expired in ",
+              style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.darkSubHead
+                      : AppColors.subheadColor,
+                  fontSize: 14,
+                  fontFamily: FontFamily.satoshi,
+                  fontWeight: FontWeight.w400,
+                  height: 24 / 14),
+            ):Text(
+              "Your code was expired..Please resend the code... ",
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.darkSubHead
@@ -235,77 +261,34 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
   }
 
   Widget _buildResendText() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Verify with Otp",
+    final signInProvider = Provider.of<SignInProvider>(context, listen: false);
+    void restartTimer() {
+      setState(() {
+        resendTime = 100;
+      });
+      startTimer();
+    }
+
+    return Align(
+      alignment: Alignment.topLeft,
+      child: TextButton(
+        onPressed: () {
+          signInProvider.forgotPasswordApi(widget.email).then((val) {
+            if (val["statusCode"] == 200) {
+              restartTimer();
+            }
+          });
+        },
+        child: const Text(
+          "Resend Code",
           style: TextStyle(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? AppColors.headingTextColor
-                : AppColors.allHeadColor,
-            fontSize: 32,
+            color: AppColors.dotColor,
+            fontSize: 14,
             fontFamily: FontFamily.satoshi,
-            fontWeight: FontWeight.w700,
-            height: 40 / 32,
+            fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 8.0),
-        Row(
-          children: [
-            Text(
-              "Code sent to ",
-              style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.darkSubHead
-                      : AppColors.subheadColor,
-                  fontSize: 14,
-                  fontFamily: FontFamily.satoshi,
-                  fontWeight: FontWeight.w400,
-                  height: 24 / 14),
-            ),
-            Text(
-              widget.email,
-              style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.darkSubHead
-                      : AppColors.subheadColor,
-                  fontSize: 14,
-                  fontFamily: FontFamily.satoshi,
-                  fontWeight: FontWeight.w400,
-                  height: 24 / 14),
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            Text(
-              "This code will expired in ",
-              style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.darkSubHead
-                      : AppColors.subheadColor,
-                  fontSize: 14,
-                  fontFamily: FontFamily.satoshi,
-                  fontWeight: FontWeight.w400,
-                  height: 24 / 14),
-            ),
-            resendTime != 0
-                ? Text(
-                    strFormatting(resendTime),
-                    style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.darkSubHead
-                            : AppColors.subheadColor,
-                        fontSize: 14,
-                        fontFamily: FontFamily.satoshi,
-                        fontWeight: FontWeight.w400,
-                        height: 24 / 14),
-                  )
-                : SizedBox()
-          ],
-        ),
-      ],
+      ),
     );
   }
 
@@ -347,16 +330,16 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
                         ),
                       ),
                     );
-                   
+                    setState(() {
+                      isLoading = false;
+                    });
                     print(val);
                   } else {
                     setState(() {
                       print(val['errorMessage']);
-                    });
-                  }
-                   setState(() {
                       isLoading = false;
                     });
+                  }
                 });
                 /* if (_formStore.canLogin) {
                 DeviceUtils.hideKeyboard(context);

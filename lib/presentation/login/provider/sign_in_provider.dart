@@ -10,8 +10,7 @@ class SignInProvider with ChangeNotifier {
   TextEditingController signUpPassword = TextEditingController();
   TextEditingController signUpConfirmPassword = TextEditingController();
   TextEditingController forgotPass = TextEditingController();
-   TextEditingController resetsignUpPassword = TextEditingController();
-  TextEditingController resetsignUpConfirmPassword = TextEditingController();
+ 
 
   bool loginLoader = false,
       registerLoader = false,
@@ -73,12 +72,12 @@ class SignInProvider with ChangeNotifier {
     }
   }
 
-  Future resetPasswordApi(String email) async {
+  Future resetPasswordApi(String email,String password,String confirmPassword) async {
     //updateForgotPasswordLoader(true);
     var body = {
       'email':email, 
-      'password':resetsignUpPassword.text,
-      'confirmedPassword':resetsignUpConfirmPassword.text
+      'password':password,
+      'confirmedPassword':confirmPassword
 
     };
     try {

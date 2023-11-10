@@ -28,18 +28,23 @@ class OtpSendScreenState extends State<OtpSendScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkThemeback
-          : AppColors.lightThemeback,
-      primary: true,
-      appBar: const CustomAppBar(
-        isBoarder: true,
-        title: "Forgot password",
-        isProgress: false,
-        step: 0,
+    return GestureDetector(
+      onTap: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.darkThemeback
+            : AppColors.lightThemeback,
+        primary: true,
+        appBar: const CustomAppBar(
+          isBoarder: true,
+          title: "Forgot password",
+          isProgress: false,
+          step: 0,
+        ),
+        body: _buildBody(),
       ),
-      body: _buildBody(),
     );
   }
 

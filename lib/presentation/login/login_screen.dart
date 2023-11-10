@@ -306,9 +306,9 @@ class LoginScreenState extends State<LoginScreen> {
               fontWeight: FontWeight.w500,
             ),
           ),
-          MaterialButton(
-            padding: const EdgeInsets.all(0.0),
-            child: const Text("Register now",
+          TextButton(
+          
+            child: const Text(" Register now",
                 style: TextStyle(
                     color: AppColors.forgotpass,
                     fontSize: 14,

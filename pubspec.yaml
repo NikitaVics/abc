@@ -79,6 +79,7 @@ flutter:
   - assets/images/congrats.png
   - assets/images/notification1.png
   - assets/images/homeImage.png
+  - assets/images/Right.png
   - assets/jsons/
 
   # To add assets to your application, add an assets section, like this:

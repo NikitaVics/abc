@@ -46,15 +46,21 @@ class _RegisterFormState extends State<RegisterForm> {
   TextEditingController _userPhoneController = TextEditingController();
 
   TextEditingController _userAddressController = TextEditingController();
-
+  late FocusNode _dobFocusNode;
   @override
   void initState() {
     super.initState();
     _userEmailController.text = widget.email;
+    _dobFocusNode = FocusNode();
+    _dobFocusNode.addListener(() {
+      validateDOB();
+    });
   }
 
+  DateTime? dateTime;
   bool isChecked = false;
   File? imageFile;
+  DateTime? result;
 
   @override
   Widget build(BuildContext context) {
@@ -183,7 +189,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
   Widget _buildUserName() {
     return TextFieldWidget(
-        read: false,
+      read: false,
       hint: 'Name',
       inputType: TextInputType.name,
       hintColor: Theme.of(context).brightness == Brightness.dark
@@ -209,11 +215,11 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   Widget _buildUserDOB() {
-    
     return DateTextFieldWidget(
       read: false,
       hint: 'DOB',
-      inputType: TextInputType.datetime,
+      inputType: TextInputType.none,
+      focusNode: _dobFocusNode,
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
           : AppColors.hintColor,
@@ -226,34 +232,36 @@ class _RegisterFormState extends State<RegisterForm> {
       focusBorderColor:
           dobError ? AppColors.errorColor : AppColors.focusTextBoarder,
       autoFocus: false,
-      onSuffixIconPressed:() =>
-        showDatePicker(
-  context: context,
-  initialDate: DateTime.now(),
-  firstDate: DateTime(2000),
-  lastDate: DateTime(2101),
-  builder: (BuildContext context, Widget? child) {
-    return Theme(
-      data: ThemeData.light().copyWith(
-        primaryColor: AppColors.darkSubHead, // Set your preferred primary color
-        hintColor: Colors.teal, // Set your preferred accent color
-        
-        colorScheme: ColorScheme.light(primary: AppColors.dotColor),
-        buttonTheme: ButtonThemeData(buttonColor: Colors.amber),
-        backgroundColor: Colors.blueGrey, // Set your preferred background color
-      ),
-      child: child!,
-    );
-  },
-),
-
-       
-      onChanged: (value) {
-        setState(() {
-          dobError = false; // Reset the error flag
-        });
-        validateDOB(); // Trigger validation on text change
+      onSuffixIconPressed: () async {
+        result = await showDatePicker(
+          context: context,
+          initialDate: dateTime ?? DateTime.now(),
+          firstDate: DateTime(1950),
+          lastDate: DateTime(2101),
+          helpText: "Select Date",
+          builder: (BuildContext context, Widget? child) {
+            return Theme(
+              data: ThemeData.light().copyWith(
+                primaryColor: AppColors.darkSubHead,
+                hintColor: Colors.teal,
+                colorScheme:
+                    const ColorScheme.light(primary: AppColors.dotColor)
+                        .copyWith(background: Colors.blueGrey),
+              ),
+              child: child!,
+            );
+          },
+        );
+        if (result != null) {
+          setState(() {
+            dateTime = result;
+            _userDobController.text =
+                result!.toLocal().toString().split(' ')[0];
+            print(result!.toLocal().toString());
+          });
+        }
       },
+     
       errorText: dobError ? "Please enter DOB" : " ",
       isIcon: true,
     );
@@ -261,7 +269,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
   Widget _buildUserIdField() {
     return TextFieldWidget(
-        read: true,
+      read: true,
       hint: 'E-Mail',
       inputType: TextInputType.emailAddress,
       hintColor: Theme.of(context).brightness == Brightness.dark
@@ -271,17 +279,17 @@ class _RegisterFormState extends State<RegisterForm> {
       textController: _userEmailController,
       inputAction: TextInputAction.next,
       defaultBoarder: AppColors.textInputField,
-      errorBorderColor:AppColors.textInputField,
-      focusBorderColor:AppColors.textInputField
-        ,
+      errorBorderColor: AppColors.textInputField,
+      focusBorderColor: AppColors.textInputField,
       autoFocus: false,
-      
-      errorText:" ",
+
+      errorText: " ",
     );
   }
+
   Widget _buildUserphone() {
     return TextFieldWidget(
-        read: false,
+      read: false,
       hint: 'Phone No.',
       inputType: TextInputType.phone,
       hintColor: Theme.of(context).brightness == Brightness.dark
@@ -308,7 +316,7 @@ class _RegisterFormState extends State<RegisterForm> {
 
   Widget _buildPasswordField() {
     return TextFieldWidget(
-        read: false,
+      read: false,
       hint: "Address",
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
@@ -506,12 +514,11 @@ class _RegisterFormState extends State<RegisterForm> {
                     ? () async {
                         FocusManager.instance.primaryFocus?.unfocus();
                         bool nameValid = await validateName();
-                   
+
                         bool phoneValid = await validatePhone();
                         bool addressValid = await validateAddress();
                         bool dobValid = await validateDOB();
                         if (nameValid &&
-                          
                             phoneValid &&
                             addressValid &&
                             dobValid &&
@@ -527,7 +534,7 @@ class _RegisterFormState extends State<RegisterForm> {
                                   _userEmailController.text,
                                   _userNameController.text,
                                   _userPhoneController.text,
-                                  formattedDates,
+                                  result!.toUtc().toIso8601String(),
                                   _userAddressController.text,
                                   imageFile!.path)
                               .then((val) {
@@ -607,6 +614,7 @@ class _RegisterFormState extends State<RegisterForm> {
     _userEmailController.dispose();
     _userPhoneController.dispose();
     _userAddressController.dispose();
+    _dobFocusNode.dispose();
 
     // _passwordFocusNode.dispose();
 
@@ -631,17 +639,13 @@ class _RegisterFormState extends State<RegisterForm> {
     // var provider = Provider.of<SignInProvider>(context, listen: false);
 
     setState(() {
-      if (_userDobController.text.isEmpty) {
-        dobError = true;
-      } else {
-        dobError = false;
-      }
+      print(_userDobController.text);
+      dobError = _userDobController.text.isEmpty;
     });
 
     return !dobError;
   }
 
-  
   Future<bool> validatePhone() async {
     // var provider = Provider.of<SignInProvider>(context, listen: false);
 

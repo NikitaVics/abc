@@ -25,7 +25,8 @@ class ResetPassScreen extends StatefulWidget {
 
 class ResetPassScreenState extends State<ResetPassScreen> {
   //text controllers:-----------------------------------------------------------
-  
+  final TextEditingController _password = TextEditingController();
+  final TextEditingController _confirmpassword = TextEditingController();
 
   //predefine bool value for error:---------------------------------------------
   bool emailError = false,
@@ -89,18 +90,23 @@ class ResetPassScreenState extends State<ResetPassScreen> {
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
-      return Scaffold(
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkThemeback
-            : AppColors.lightThemeback,
-        primary: true,
-        appBar: const CustomAppBar(
-          isBoarder: true,
-          title: "Forgot Password",
-          isProgress: false,
-          step: 0,
+      return GestureDetector(
+        onTap: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+        child: Scaffold(
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkThemeback
+              : AppColors.lightThemeback,
+          primary: true,
+          appBar: const CustomAppBar(
+            isBoarder: true,
+            title: "Forgot Password",
+            isProgress: false,
+            step: 0,
+          ),
+          body: _buildBody(),
         ),
-        body: _buildBody(),
       );
     });
   }
@@ -205,20 +211,20 @@ class ResetPassScreenState extends State<ResetPassScreen> {
   }
 
   Widget _buildPasswordField() {
-    final password = provider!.resetsignUpPassword.text;
+    final password = _password.text;
     final passwordConditions = isPasswordValid(password);
     final isPasswordValids = passwordConditions.every((condition) => condition);
 
     return Column(
       children: [
         TextFieldWidget(
-            read: false,
+          read: false,
           hint: "Password",
           hintColor: Theme.of(context).brightness == Brightness.dark
               ? AppColors.darkhint
               : AppColors.hintColor,
           isObscure: true,
-          textController: provider!.resetsignUpPassword,
+          textController: _password,
           focusNode: _passwordFocusNode,
           errorText: passwordError ? "Please enter valid password" : " ",
           defaultBoarder: AppColors.textInputField,
@@ -232,51 +238,54 @@ class ResetPassScreenState extends State<ResetPassScreen> {
           },
         ),
         if (_passwordFocusNode.hasFocus)
-          Card(
-            color: AppColors.textInputField,
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 2,
-                ),
-                for (int i = 0; i < 5; i++)
-                  Column(
-                    children: [
-                      Row(
-                        children: [
-                          const SizedBox(width: 5),
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 500),
-                            width: 20,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              color: passwordConditions[i]
-                                  ? AppColors.dotColor
-                                  : AppColors.errorColor,
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            child: Center(
-                              child: Icon(
-                                passwordConditions[i]
-                                    ? Icons.check
-                                    : Icons.clear,
-                                color: Colors.white,
-                                size: 15,
+          Visibility(
+            visible: !isPasswordValids,
+            child: Card(
+              color: AppColors.textInputField,
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 2,
+                  ),
+                  for (int i = 0; i < 5; i++)
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            const SizedBox(width: 5),
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 500),
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                color: passwordConditions[i]
+                                    ? AppColors.dotColor
+                                    : AppColors.errorColor,
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  passwordConditions[i]
+                                      ? Icons.check
+                                      : Icons.clear,
+                                  color: Colors.white,
+                                  size: 15,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Text(_getConditionText(i)),
-                        ],
-                      ),
-                      const SizedBox(height: 5),
-                    ],
-                  ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(_getConditionText(i)),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                      ],
+                    ),
 
-                // Add your menu items here
-              ],
+                  // Add your menu items here
+                ],
+              ),
             ),
           ),
       ],
@@ -302,14 +311,14 @@ class ResetPassScreenState extends State<ResetPassScreen> {
 
   Widget _buildConfirmPasswordField() {
     return TextFieldWidget(
-        read: false,
+      read: false,
       hint: "Confirm Password",
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
           : AppColors.hintColor,
       isObscure: true,
       padding: const EdgeInsets.only(top: 0.0),
-      textController: provider!.resetsignUpConfirmPassword,
+      textController: _confirmpassword,
       focusNode: _confirmpasswordFocusNode,
       errorBorderColor: confirmPasswordError
           ? AppColors.errorColor // Border color for validation error
@@ -344,12 +353,14 @@ class ResetPassScreenState extends State<ResetPassScreen> {
               onPressed: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
                 // SharedPreferences pref = await SharedPreferences.getInstance();
-                
+
                 if (await validate()) {
+                  setState(() {
+                    isLoading = true;
+                  });
                   value
                       .resetPasswordApi(
-                    widget.email,
-                  )
+                          widget.email, _password.text, _confirmpassword.text)
                       .then((val) {
                     if (val["statusCode"] == 200) {
                       Navigator.of(context).push(
@@ -357,9 +368,13 @@ class ResetPassScreenState extends State<ResetPassScreen> {
                           builder: (context) => const LoginScreen(),
                         ),
                       );
+                      setState(() {
+                    isLoading = false;
+                  });
                       print(val);
                     } else {
                       setState(() {
+                          isLoading = false;
                         print(val['errorMessage']);
                       });
                     }
@@ -394,8 +409,7 @@ class ResetPassScreenState extends State<ResetPassScreen> {
   }
 
   Future<bool> validatePassword() async {
-    var provider = Provider.of<SignInProvider>(context, listen: false);
-    final password = provider.resetsignUpPassword.text;
+    final password = _password.text;
     final passwordConditions = isPasswordValid(password);
     bool isPasswordValids = passwordConditions.every((condition) => condition);
     setState(() {
@@ -410,14 +424,11 @@ class ResetPassScreenState extends State<ResetPassScreen> {
   }
 
   Future<bool> validateConfirmPassword() async {
-    var provider = Provider.of<SignInProvider>(context, listen: false);
-
     setState(() {
-      if (provider.resetsignUpConfirmPassword.text.isEmpty) {
+      if (_confirmpassword.text.isEmpty) {
         confirmPasswordError = true;
         confirmPasswordErrorText = 'Please enter confirm password';
-      } else if (provider.resetsignUpConfirmPassword.text !=
-          provider.resetsignUpPassword.text) {
+      } else if (_confirmpassword.text != _confirmpassword.text) {
         confirmPasswordError = true;
         confirmPasswordErrorText = 'Passwords do not match';
       } else {
