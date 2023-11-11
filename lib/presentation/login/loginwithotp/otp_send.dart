@@ -1,33 +1,27 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
-import 'package:tennis_court_booking_app/presentation/forgotPassword/reset_pass.dart';
+import 'package:tennis_court_booking_app/presentation/home/home_screen.dart';
+import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
-import 'package:tennis_court_booking_app/presentation/register/pageview/register_form.dart';
-import 'package:tennis_court_booking_app/presentation/register/register.dart';
-import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/otp_input.dart';
 
-class VerifyEmailScreen extends StatefulWidget {
+class OtpSendScreen extends StatefulWidget {
   final String email;
- 
-  const VerifyEmailScreen({super.key, required this.email});
+  const OtpSendScreen({super.key, required this.email});
 
   @override
-  VerifyEmailScreenState createState() => VerifyEmailScreenState();
+  OtpSendScreenState createState() =>
+      OtpSendScreenState();
 }
 
-class VerifyEmailScreenState extends State<VerifyEmailScreen> {
+class OtpSendScreenState extends State<OtpSendScreen> {
   final TextEditingController _fieldOne = TextEditingController();
   final TextEditingController _fieldTwo = TextEditingController();
   final TextEditingController _fieldThree = TextEditingController();
@@ -35,14 +29,14 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
   SharedPreferences? pref;
   int resendTime = 100;
   late Timer countdownTimer;
-  bool isLoading = false;
   String? otp;
+  bool isLoading = false;
   @override
   void initState() {
     startTimer();
     super.initState();
   }
-
+bool allowNavigation = false;
   startTimer() {
     try {
       countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -76,13 +70,21 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-       onWillPop: () async {
-          return false; // Prevent going back
-        },
+      onWillPop: () async {
+        if (allowNavigation) {
+         Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  );
+          return true;
+        } else {
+          // Prevent navigation from this screen.
+          return false;
+        }
+      },
       child: GestureDetector(
         onTap: () {
-              FocusManager.instance.primaryFocus?.unfocus();
-            },
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
         child: Scaffold(
           backgroundColor: Theme.of(context).brightness == Brightness.dark
               ? AppColors.darkThemeback
@@ -90,7 +92,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
           primary: true,
           appBar: const CustomAppBar(
             isBoarder: true,
-            title: "Verify mail id",
+            title: "Login with OTP",
             isProgress: false,
             step: 0,
           ),
@@ -160,15 +162,15 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 OtpInput(_fieldOne, true),
-                 const SizedBox(
+                const SizedBox(
                   width: 20,
                 ),
                 OtpInput(_fieldTwo, false),
-                 const SizedBox(
+                const SizedBox(
                   width: 20,
                 ),
                 OtpInput(_fieldThree, false),
-                 const SizedBox(
+                const SizedBox(
                   width: 20,
                 ),
                 OtpInput(_fieldFour, false),
@@ -299,7 +301,6 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
     );
   }
 
-
   Widget _buildforgotPassButton() {
     return Align(
       alignment: Alignment.bottomCenter,
@@ -309,7 +310,6 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
           // Manage keyboard focus
           child: Consumer<SignInProvider>(builder: (context, value, child) {
             return CustomElevatedButton(
-              isLoading: isLoading,
               height: 60,
               width: MediaQuery.of(context).orientation == Orientation.landscape
                   ? 70
@@ -323,8 +323,6 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                       _fieldTwo.text +
                       _fieldThree.text +
                       _fieldFour.text;
-                });
-                setState(() {
                   isLoading = true;
                 });
                 value
@@ -336,9 +334,8 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   if (val["statusCode"] == 200) {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                          builder: (context) => RegisterForm(
-                                email: widget.email,
-                              )),
+                        builder: (context) => const HomeScreen()
+                      ),
                     );
                     setState(() {
                       isLoading = false;
@@ -346,8 +343,8 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     print(val);
                   } else {
                     setState(() {
-                      isLoading = false;
                       print(val['errorMessage']);
+                      isLoading = false;
                     });
                   }
                 });
@@ -359,6 +356,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                 _showErrorMessage('Please fill in all fields');
               }*/
               },
+              isLoading: isLoading,
               buttonColor: AppColors.elevatedColor,
               textColor: Colors.white,
             );

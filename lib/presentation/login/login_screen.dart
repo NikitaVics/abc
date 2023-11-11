@@ -10,6 +10,7 @@ import 'package:tennis_court_booking_app/model/login/login_response_model.dart';
 import 'package:tennis_court_booking_app/presentation/forgotPassword/forgot_pass_using_otp.dart';
 import 'package:tennis_court_booking_app/presentation/forgotPassword/otp_send_screen.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_screen.dart';
+import 'package:tennis_court_booking_app/presentation/login/loginwithotp/login_email_forotp.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/presentation/register/pageview/register_as_member.dart';
 import 'package:tennis_court_booking_app/presentation/register/register.dart';
@@ -66,22 +67,28 @@ class LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
-      return GestureDetector(
-        onTap: () {
-          FocusManager.instance.primaryFocus?.unfocus();
-        },
-        child: Scaffold(
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkThemeback
-              : AppColors.lightThemeback,
-          primary: true,
-          appBar: const CustomAppBar(
-            isBoarder: true,
-            title: "Login",
-            isProgress: false,
-            step: 0,
+      return WillPopScope(
+         onWillPop: () async {
+    
+    return false; 
+  },
+        child: GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Scaffold(
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkThemeback
+                : AppColors.lightThemeback,
+            primary: true,
+            appBar: const CustomAppBar(
+              isBoarder: true,
+              title: "Login",
+              isProgress: false,
+              step: 0,
+            ),
+            body: _buildBody(),
           ),
-          body: _buildBody(),
         ),
       );
     });
@@ -283,7 +290,14 @@ class LoginScreenState extends State<LoginScreen> {
                   fontFamily: FontFamily.satoshi,
                   fontWeight: FontWeight.w500,
                   height: 24 / 14)),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const LoginEmailForotpScreen(),
+              ),
+            );
+            
+          },
         ),
       ],
     );

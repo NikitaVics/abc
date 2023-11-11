@@ -29,16 +29,21 @@ class CongratsScreenState extends State<CongratsScreen> {
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
-      return GestureDetector(
-        onTap: () {
-          FocusManager.instance.primaryFocus?.unfocus();
+      return WillPopScope(
+         onWillPop: () async {
+          return false; // Prevent going back
         },
-        child: Scaffold(
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkThemeback
-              : AppColors.lightThemeback,
-          primary: true,
-          body: _buildBody(),
+        child: GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Scaffold(
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkThemeback
+                : AppColors.lightThemeback,
+            primary: true,
+            body: _buildBody(),
+          ),
         ),
       );
     });

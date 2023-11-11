@@ -98,7 +98,7 @@ class SignInProvider with ChangeNotifier {
   Future loginApi(String email,String password) async {
     updateLoginLoader(true);
     var body = {
-      'userName': email,
+      'userNameOrEmail': email,
       'password': password,
     };
 
@@ -116,13 +116,13 @@ class SignInProvider with ChangeNotifier {
     }
   }
 
-  Future registerApi() async {
+  Future registerApi(String email,String name,String pass,String confirmPass) async {
     updateRegisterLoader(true);
     var body = {
-      "email": signUpEmail.text,
-      "userName": signUpName.text,
-      "password": signUpPassword.text,
-      "confirmedPassword": signUpConfirmPassword.text
+      "email": email,
+      "userName": name,
+      "password": pass,
+      "confirmedPassword": confirmPass
     };
     var res = await Api.register(body);
     updateRegisterLoader(false);

@@ -9,6 +9,7 @@ import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_pro
 import 'package:tennis_court_booking_app/presentation/register/pageview/congrats_screen.dart';
 import 'package:tennis_court_booking_app/presentation/register/pageview/register_form.dart';
 import 'package:tennis_court_booking_app/presentation/register/verifyemail/verify_email.dart';
+import 'package:tennis_court_booking_app/widgets/animated_toast.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/step_progress_indicator.dart';
@@ -22,6 +23,13 @@ class RegisterAsMember extends StatefulWidget {
 }
 
 class _RegisterAsMemberState extends State<RegisterAsMember> {
+  TextEditingController _nameController = TextEditingController();
+
+  TextEditingController _emailController = TextEditingController();
+
+  TextEditingController _passwordController = TextEditingController();
+
+  TextEditingController _confirmpassController = TextEditingController();
   late FocusNode _passwordFocusNode;
   late FocusNode _userNameFocusNode;
   late FocusNode _confirmpasswordFocusNode;
@@ -38,6 +46,9 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
   bool isPasswordValidationSuccessful = false;
   bool isLoading = false;
   SignInProvider? provider;
+  bool shouldAllowBack =
+      true; // Set it to true initially or based on your initial conditions
+
   List<bool> isPasswordValid(String password) {
     // Define regular expressions for each condition
     final lowercaseRegex = RegExp(r'[a-z]');
@@ -88,28 +99,32 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
     _confirmpasswordFocusNode.addListener(() {
       validateConfirmPassword();
     });
-    provider = Provider.of<SignInProvider>(context, listen: false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
-      return GestureDetector(
-        onTap: () {
-          FocusManager.instance.primaryFocus?.unfocus();
+      return WillPopScope(
+        onWillPop: () async {
+          return false; // Prevent going back
         },
-        child: Scaffold(
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkThemeback
-              : AppColors.lightThemeback,
-          primary: true,
-          appBar: const CustomAppBar(
-            isBoarder: false,
-            title: "Register as Member",
-            isProgress: true,
-            step: 1,
+        child: GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Scaffold(
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkThemeback
+                : AppColors.lightThemeback,
+            primary: true,
+            appBar: const CustomAppBar(
+              isBoarder: false,
+              title: "Register as Member",
+              isProgress: true,
+              step: 1,
+            ),
+            body: _buildBody(),
           ),
-          body: _buildBody(),
         ),
       );
     });
@@ -226,7 +241,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
   }
 
   Widget _buildUserName() {
-    final name = provider!.signUpName.text;
+    final name = _nameController.text;
     final nameConditions = isUserNameValid(name);
 
     return Column(
@@ -240,7 +255,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
               : AppColors.hintColor,
           focusNode: _userNameFocusNode,
           // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
-          textController: provider!.signUpName,
+          textController: _nameController,
           inputAction: TextInputAction.next,
           defaultBoarder: AppColors.textInputField,
           errorBorderColor: emailError
@@ -321,8 +336,8 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
           ? AppColors.darkhint
           : AppColors.hintColor,
       // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
-      textController: provider!.signUpEmail,
-      inputAction: TextInputAction.next,
+      textController: _emailController,
+      // inputAction: TextInputAction.next,
       errorBorderColor: emailError
           ? AppColors.errorColor // Border color for validation error
           : AppColors.textInputField,
@@ -340,7 +355,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
   }
 
   Widget _buildPasswordField() {
-    final password = provider!.signUpPassword.text;
+    final password = _passwordController.text;
     final passwordConditions = isPasswordValid(password);
     final isPasswordValids = passwordConditions.every((condition) => condition);
 
@@ -353,7 +368,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
               ? AppColors.darkhint
               : AppColors.hintColor,
           isObscure: true,
-          textController: provider!.signUpPassword,
+          textController: _passwordController,
           focusNode: _passwordFocusNode,
           errorText: passwordError ? "Please enter valid password" : " ",
           defaultBoarder: AppColors.textInputField,
@@ -444,7 +459,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
           : AppColors.hintColor,
       isObscure: true,
       padding: const EdgeInsets.only(top: 8.0),
-      textController: provider!.signUpConfirmPassword,
+      textController: _confirmpassController,
       focusNode: _confirmpasswordFocusNode,
       errorBorderColor: confirmPasswordError
           ? AppColors.errorColor // Border color for validation error
@@ -529,25 +544,27 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
                   setState(() {
                     isLoading = true;
                   });
-                  value.registerApi().then((val) {
+                  value.registerApi(_emailController.text,_nameController.text,_passwordController.text,_confirmpassController.text).then((val) {
                     if (val['statusCode'] == 200) {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                             builder: (context) => VerifyEmailScreen(
-                                  email: provider!.signUpEmail.text,
-                                  userName: provider!.signUpName.text,
-                                  password: provider!.signUpPassword.text,
-                                  confirmPassword:
-                                      provider!.signUpConfirmPassword.text,
+                                  email: _emailController.text,
+                                 
                                 )),
                       );
-                       setState(() {
-                    isLoading = false;
-                  });
+                      setState(() {
+                        isLoading = false;
+                      });
                     } else {
-                       setState(() {
-                    isLoading = false;
-                  });
+                      setState(() {
+                        isLoading = false;
+                         AnimatedToast.showToastMessage(
+                        context,
+                        val["errorMessage"][0],
+                        const Color.fromRGBO(87, 87, 87, 0.93),
+                      );
+                      });
                       print("false");
                     }
                   });
@@ -576,18 +593,20 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
     _passwordFocusNode.dispose();
     _confirmpasswordFocusNode.dispose();
     _userNameFocusNode.dispose();
-    provider!.signUpEmail.text = " ";
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmpassController.dispose();
 
     super.dispose();
   }
 
   Future<bool> validateName() async {
-    var provider = Provider.of<SignInProvider>(context, listen: false);
-    final name = provider.signUpName.text;
+    final name = _nameController.text;
     bool passwordConditions = isUserNameValid(name);
 
     setState(() {
-      if (provider.signUpName.text.isEmpty) {
+      if (name.isEmpty) {
         nameError = true;
       } else if (!passwordConditions) {
         nameError = true;
@@ -600,13 +619,13 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
   }
 
   Future<bool> validateEmail() async {
-    var provider = Provider.of<SignInProvider>(context, listen: false);
+     final email = _emailController.text;
     bool emailValid = RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+")
-        .hasMatch(provider.signUpEmail.text);
+        .hasMatch(email);
 
     setState(() {
-      if (provider.signUpEmail.text.isEmpty) {
+      if (email.isEmpty) {
         emailError = true;
         emailErrorText = 'Please enter your email address';
       } else if (!emailValid) {
@@ -621,8 +640,8 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
   }
 
   Future<bool> validatePassword() async {
-    var provider = Provider.of<SignInProvider>(context, listen: false);
-    final password = provider.signUpPassword.text;
+    
+    final password = _passwordController.text;
     final passwordConditions = isPasswordValid(password);
     bool isPasswordValids = passwordConditions.every((condition) => condition);
     setState(() {
@@ -637,14 +656,14 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
   }
 
   Future<bool> validateConfirmPassword() async {
-    var provider = Provider.of<SignInProvider>(context, listen: false);
+    final confirmpass = _confirmpassController.text;
 
     setState(() {
-      if (provider.signUpConfirmPassword.text.isEmpty) {
+      if (confirmpass.isEmpty) {
         confirmPasswordError = true;
         confirmPasswordErrorText = 'Please enter confirm password';
-      } else if (provider.signUpPassword.text !=
-          provider.signUpConfirmPassword.text) {
+      } else if (confirmpass !=
+          _passwordController.text) {
         confirmPasswordError = true;
         confirmPasswordErrorText = 'Passwords do not match';
       } else {

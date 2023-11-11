@@ -13,6 +13,7 @@ import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/dateTextField.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
+import 'package:intl/intl.dart';
 
 class RegisterForm extends StatefulWidget {
   final String email;
@@ -65,18 +66,28 @@ class _RegisterFormState extends State<RegisterForm> {
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
-      return Scaffold(
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkThemeback
-            : AppColors.lightThemeback,
-        primary: true,
-        appBar: const CustomAppBar(
-          isBoarder: false,
-          title: "Registration Form",
-          isProgress: true,
-          step: 2,
+      return WillPopScope(
+        onWillPop: () async {
+          return false; // Prevent going back
+        },
+        child: GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Scaffold(
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkThemeback
+                : AppColors.lightThemeback,
+            primary: true,
+            appBar: const CustomAppBar(
+              isBoarder: false,
+              title: "Registration Form",
+              isProgress: true,
+              step: 2,
+            ),
+            body: _buildBody(),
+          ),
         ),
-        body: _buildBody(),
       );
     });
   }
@@ -233,6 +244,7 @@ class _RegisterFormState extends State<RegisterForm> {
           dobError ? AppColors.errorColor : AppColors.focusTextBoarder,
       autoFocus: false,
       onSuffixIconPressed: () async {
+        FocusScope.of(context).requestFocus(_dobFocusNode);
         result = await showDatePicker(
           context: context,
           initialDate: dateTime ?? DateTime.now(),
@@ -255,13 +267,18 @@ class _RegisterFormState extends State<RegisterForm> {
         if (result != null) {
           setState(() {
             dateTime = result;
-            _userDobController.text =
-                result!.toLocal().toString().split(' ')[0];
+            _userDobController.text = DateFormat('dd/MM/yyyy').format(result!);
+
             print(result!.toLocal().toString());
           });
         }
       },
-     
+      onChanged: (value) {
+        setState(() {
+          dobError = false; // Reset the error flag
+        });
+        validateDOB(); // Trigger validation on text change
+      },
       errorText: dobError ? "Please enter DOB" : " ",
       isIcon: true,
     );
@@ -518,17 +535,17 @@ class _RegisterFormState extends State<RegisterForm> {
                         bool phoneValid = await validatePhone();
                         bool addressValid = await validateAddress();
                         bool dobValid = await validateDOB();
+                        setState(() {
+                          isLoading = true;
+                        });
                         if (nameValid &&
                             phoneValid &&
                             addressValid &&
                             dobValid &&
                             isChecked &&
                             imageFile != null) {
-                          DateTime formattedDate =
-                              DateTime.parse(_userDobController.text);
-                          String formattedDates =
-                              formattedDate.toUtc().toIso8601String();
-                          print(formattedDates);
+                          
+                          print("result ${result!}");
                           value
                               .registerFormApi(
                                   _userEmailController.text,
@@ -544,8 +561,14 @@ class _RegisterFormState extends State<RegisterForm> {
                                     builder: (context) =>
                                         const CongratsScreen()),
                               );
+                              setState(() {
+                                isLoading = false;
+                              });
                               print("yup");
                             } else {
+                              setState(() {
+                                isLoading = false;
+                              });
                               print("false");
                             }
                           });
@@ -636,11 +659,10 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   Future<bool> validateDOB() async {
-    // var provider = Provider.of<SignInProvider>(context, listen: false);
-
     setState(() {
-      print(_userDobController.text);
-      dobError = _userDobController.text.isEmpty;
+      // Check for an empty DOB only if the field loses focus
+      dobError =
+          _dobFocusNode.hasFocus ? false : _userDobController.text.isEmpty;
     });
 
     return !dobError;
