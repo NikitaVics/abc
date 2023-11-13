@@ -42,6 +42,7 @@ class OnboardingScreenState extends State<OnboardingScreen> {
                 image: OnboardingData.onboardingData[index]['image']!,
                 text: OnboardingData.onboardingData[index]['headingtext']!,
                 subtext: OnboardingData.onboardingData[index]['subtext']!,
+                currentPage: _currentPage,
               );
             },
           ),
@@ -52,18 +53,13 @@ class OnboardingScreenState extends State<OnboardingScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: List.generate(
-                    OnboardingData.onboardingData.length,
-                    (index) => buildDot(index),
-                  ),
-                ),
+                
                 if (_currentPage < OnboardingData.onboardingData.length - 1)
                   CustomElevatedButton(
                     height: 60,
                     width: 153,
                     text: 'Next',
-                      isLoading: false,
+                    isLoading: false,
                     onPressed: () {
                       _pageController.animateToPage(
                         _currentPage + 1,
@@ -79,7 +75,7 @@ class OnboardingScreenState extends State<OnboardingScreen> {
           ),
           Positioned(
               top: 36,
-             // left: 319,
+              // left: 319,
               right: 24,
               child: _currentPage < OnboardingData.onboardingData.length - 1
                   ? TextButton(
@@ -111,32 +107,32 @@ class OnboardingScreenState extends State<OnboardingScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                 CustomElevatedButton(
-                   height: 60,
+                  CustomElevatedButton(
+                    height: 60,
                     width: 153,
                     text: 'Login',
-                       isLoading: false,
+                    isLoading: false,
                     onPressed: () {
-                     Navigator.of(context).push(
-    MaterialPageRoute(
-      builder: (context) =>  const LoginScreen(),
-    ),
-  );
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
                     },
                     buttonColor: AppColors.transparent,
                     textColor: AppColors.loginButtonColor,
                   ),
                   CustomElevatedButton(
-                     height: 60,
+                    height: 60,
                     width: 153,
                     text: 'Register Now',
                     isLoading: false,
                     onPressed: () {
                       Navigator.of(context).push(
-    MaterialPageRoute(
-      builder: (context) => const RegisterAsMember(),
-    ),
-  );
+                        MaterialPageRoute(
+                          builder: (context) => const RegisterAsMember(),
+                        ),
+                      );
                     },
                     buttonColor: AppColors.elevatedColor,
                     textColor: Colors.white,
@@ -148,98 +144,88 @@ class OnboardingScreenState extends State<OnboardingScreen> {
       ),
     );
   }
-
-  Widget buildDot(int index) {
-    if (_currentPage < OnboardingData.onboardingData.length - 1) {
-      return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 5),
-          width: 7,
-          height: 7,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: _currentPage == index ? AppColors.dotColor : Colors.grey,
-          ));
-    } else {
-      // Return an empty container for the last page to hide the dot
-      return Container();
-    }
-  }
 }
 
 class OnboardingPage extends StatelessWidget {
   final String image;
   final String text;
   final String subtext;
+  final int currentPage;
+ 
 
   const OnboardingPage(
-      {super.key, required this.image, required this.text, required this.subtext});
+      {super.key,
+      required this.image,
+      required this.text,
+      required this.subtext, required this.currentPage});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
+      backgroundColor: Colors.pink,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
+            height: 279,
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage(image),
-                fit: BoxFit.cover,
               ),
             ),
           ),
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                colors: [
-                  Colors.black.withOpacity(1.0), // 100% black
-                  Colors.black.withOpacity(0.8), // 80% black
-                  Colors.black.withOpacity(0.7), // 70% black
-                  Colors.transparent,
-                ],
-                stops: const [0.0, 0.2, 0.3, 1.0],
-              ),
-            ),
-          ),
-          Positioned(
-            //top: 510, // Adjust the position of the text as needed
-            left: 24,
-            right: 53,
-            bottom: 127,
-
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-              Text(
-                text,
-                style: const TextStyle(
-                  color: AppColors.headingTextColor,
-                  fontSize: 32,
-                  fontFamily: FontFamily.satoshi,
-                  fontWeight: FontWeight.w700,
-                  height: 1.25,
-                ),
-              )
-,
-                const SizedBox(
-                  height: 8,
-                ),
-                Text(
-                  subtext,
-                  style: const TextStyle(
-                    color: AppColors.headingTextColor,
-                    fontSize: 16,
-                    fontFamily: FontFamily.satoshi,
-                    fontWeight: FontWeight.w400,
-                    height: 1.5,
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+                    children: List.generate(
+                      OnboardingData.onboardingData.length,
+                      (index) => buildDot(index),
+                    ),
                   ),
-                ),
-              ],
+          ),
+          Text(
+            text,
+            style: const TextStyle(
+              color: AppColors.headingTextColor,
+              fontSize: 32,
+              fontFamily: FontFamily.satoshi,
+              fontWeight: FontWeight.w700,
+              height: 1.25,
+            ),
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          Text(
+            subtext,
+            style: const TextStyle(
+              color: AppColors.headingTextColor,
+              fontSize: 16,
+              fontFamily: FontFamily.satoshi,
+              fontWeight: FontWeight.w400,
+              height: 1.5,
             ),
           ),
         ],
       ),
     );
+  }
+
+  Widget buildDot(int index) {
+    if (currentPage < OnboardingData.onboardingData.length - 1) {
+      return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 5),
+          width: 7,
+          height: 7,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: currentPage == index ? AppColors.dotColor : Colors.grey,
+          ));
+    } else {
+      // Return an empty container for the last page to hide the dot
+      return Container();
+    }
   }
 }
