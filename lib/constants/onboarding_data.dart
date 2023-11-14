@@ -4,19 +4,19 @@ class OnboardingData {
   //General
   static const List<Map<String, String>> onboardingData = [
     {
-      'image': 'assets/images/illustration1.png',
-      'headingtext': 'Lorem ipsum dolor sit amet',
-      'subtext':'Lorem ipsum dolor sit amet consectetur. Pellentesque viverra commodo adipiscing viverra velit suspendisse vitae. Gravida ut lectus.'
+      'image': 'assets/images/first.png',
+      'headingtext': 'Welcome to Bahrain tennis club',
+      'subtext':"Discover the convenience of managing your membership and court bookings online. Let's get started!"
     },
     {
-      'image': 'assets/images/illustration2.png',
-      'headingtext': 'Lorem ipsum dolor',
-      'subtext':'Lorem ipsum dolor sit amet consectetur. Pellentesque '
+      'image': 'assets/images/second.png',
+      'headingtext': 'Book Courts with Ease',
+      'subtext':'Enjoy the convenience of booking courts online, ensuring efficient utilization.'
     },
     {
-      'image': 'assets/images/illustration3.png',
-      'headingtext': 'Lorem ipsum dolor sit',
-      'subtext':'Lorem ipsum dolor sit amet consectetur. Pellentesque viverra commodo a'
+      'image': 'assets/images/third.png',
+      'headingtext': 'Easy Registration and Renewal',
+      'subtext':'Join, renew, or manage your membership seamlessly. Say goodbye to paperwork!'
     },
   ];
 

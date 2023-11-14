@@ -50,28 +50,24 @@ class OnboardingScreenState extends State<OnboardingScreen> {
             bottom: 30,
             left: 24,
             right: 24,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                
-                if (_currentPage < OnboardingData.onboardingData.length - 1)
-                  CustomElevatedButton(
-                    height: 60,
-                    width: 153,
-                    text: 'Next',
-                    isLoading: false,
-                    onPressed: () {
-                      _pageController.animateToPage(
-                        _currentPage + 1,
-                        duration: const Duration(milliseconds: 500),
-                        curve: Curves.ease,
-                      );
-                    },
-                    buttonColor: AppColors.elevatedColor,
-                    textColor: Colors.white,
-                  )
-              ],
-            ),
+            child:_currentPage < OnboardingData.onboardingData.length - 1?
+              CustomElevatedButton(
+                height: 60,
+                width: MediaQuery.of(context).orientation == Orientation.landscape
+              ? 70
+              : double.infinity,
+                text: 'Next',
+                isLoading: false,
+                onPressed: () {
+                  _pageController.animateToPage(
+                    _currentPage + 1,
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.ease,
+                  );
+                },
+                buttonColor: AppColors.elevatedColor,
+                textColor: Colors.white,
+              ):SizedBox(),
           ),
           Positioned(
               top: 36,
@@ -87,11 +83,11 @@ class OnboardingScreenState extends State<OnboardingScreen> {
                         );
                       },
                       child: const Text(
-                        "Skip",
+                        "SKIP",
                         style: TextStyle(
-                          decoration: TextDecoration.underline,
-                          decorationThickness: 2.0,
-                          color: AppColors.headingTextColor,
+                         
+                          
+                          color: AppColors.allHeadColor,
                           fontSize: 16,
                           fontFamily: FontFamily.satoshi,
                           fontWeight: FontWeight.w700,
@@ -119,7 +115,7 @@ class OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                       );
                     },
-                    buttonColor: AppColors.transparent,
+                    buttonColor: Colors.white,
                     textColor: AppColors.loginButtonColor,
                   ),
                   CustomElevatedButton(
@@ -162,66 +158,75 @@ class OnboardingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.pink,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            height: 279,
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(image),
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.only(left: 24,right: 24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          //crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              height: 279,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(image),
+                ),
               ),
             ),
-          ),
-          Center(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-                    children: List.generate(
-                      OnboardingData.onboardingData.length,
-                      (index) => buildDot(index),
+             const SizedBox(
+              height: 38,
+            ),
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                      children: List.generate(
+                        OnboardingData.onboardingData.length,
+                        (index) => buildDot(index),
+                      ),
                     ),
-                  ),
-          ),
-          Text(
-            text,
-            style: const TextStyle(
-              color: AppColors.headingTextColor,
-              fontSize: 32,
-              fontFamily: FontFamily.satoshi,
-              fontWeight: FontWeight.w700,
-              height: 1.25,
             ),
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Text(
-            subtext,
-            style: const TextStyle(
-              color: AppColors.headingTextColor,
-              fontSize: 16,
-              fontFamily: FontFamily.satoshi,
-              fontWeight: FontWeight.w400,
-              height: 1.5,
+             const SizedBox(
+              height: 35,
             ),
-          ),
-        ],
+            Text(
+              text,
+              style: const TextStyle(
+                color: AppColors.allHeadColor,
+                fontSize: 32,
+                fontFamily: FontFamily.satoshi,
+                fontWeight: FontWeight.w700,
+                height: 1.25,
+              ),
+            ),
+            const SizedBox(
+              height: 12,
+            ),
+            Text(
+              subtext,
+              style: const TextStyle(
+                color: AppColors.subheadColor,
+                fontSize: 16,
+                fontFamily: FontFamily.satoshi,
+                fontWeight: FontWeight.w400,
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget buildDot(int index) {
-    if (currentPage < OnboardingData.onboardingData.length - 1) {
+    if (currentPage < OnboardingData.onboardingData.length ) {
       return Container(
           margin: const EdgeInsets.symmetric(horizontal: 5),
           width: 7,
           height: 7,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: currentPage == index ? AppColors.dotColor : Colors.grey,
+            color: currentPage == index ? AppColors.dotColor : AppColors.appbarBoarder,
           ));
     } else {
       // Return an empty container for the last page to hide the dot
