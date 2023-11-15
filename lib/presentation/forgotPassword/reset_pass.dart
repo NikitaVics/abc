@@ -428,7 +428,7 @@ class ResetPassScreenState extends State<ResetPassScreen> {
       if (_confirmpassword.text.isEmpty) {
         confirmPasswordError = true;
         confirmPasswordErrorText = 'Please enter confirm password';
-      } else if (_confirmpassword.text != _confirmpassword.text) {
+      } else if (_confirmpassword.text != _password.text) {
         confirmPasswordError = true;
         confirmPasswordErrorText = 'Passwords do not match';
       } else {

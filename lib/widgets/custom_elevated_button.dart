@@ -27,7 +27,7 @@ class CustomElevatedButton extends StatefulWidget {
 }
 
 class _CustomElevatedButtonState extends State<CustomElevatedButton> {
-  @override
+ 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -38,7 +38,7 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
         style: ElevatedButton.styleFrom(
           elevation: 0,
           shape: RoundedRectangleBorder(
-            side: BorderSide(
+            side: const BorderSide(
               width: 1.0,
               color: AppColors.elevatedColor,
             ),

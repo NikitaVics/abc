@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/notifications/notification_screen.dart';
 import 'package:tennis_court_booking_app/presentation/register/pageview/register_form.dart';
 import 'package:tennis_court_booking_app/theme/theme_manager.dart';
+import 'package:tennis_court_booking_app/widgets/funky_overlay.dart';
 
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -27,74 +29,83 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final themeNotifier = context.watch<ThemeModeNotifier>();
     return Padding(
-      padding:  const EdgeInsets.only(top: 12,left: 24,right: 24),
+      padding: const EdgeInsets.only(top: 12, left: 24, right: 24),
       child: Container(
         color: Colors.white,
         height: 90,
-      
         child: Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 10),
-                child:ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(150.0),
-                                        child: const SilentErrorImage(
-                                          width: 48.0,
-                                          height: 48.0,
-                                          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/f/f9/Phoenicopterus_ruber_in_S%C3%A3o_Paulo_Zoo.jpg',
-        
-                                        ),
-                                      )
-              ),
-             Padding(
-              padding: const EdgeInsets.only(left: 20,right: 10),
-                child: Text(
-                      "Hello",
-                      style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.headingTextColor
-                            : AppColors.allHeadColor,
-                        fontFamily: FontFamily.satoshi,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        height: 24/ 16,
-                      ),
+                  padding: const EdgeInsets.only(left: 10),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(150.0),
+                    child: const SilentErrorImage(
+                      width: 48.0,
+                      height: 48.0,
+                      imageUrl:
+                          'https://upload.wikimedia.org/wikipedia/commons/f/f9/Phoenicopterus_ruber_in_S%C3%A3o_Paulo_Zoo.jpg',
                     ),
+                  )),
+              Padding(
+                padding: const EdgeInsets.only(left: 20, right: 10),
+                child: Text(
+                  "Hello",
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.headingTextColor
+                        : AppColors.allHeadColor,
+                    fontFamily: FontFamily.satoshi,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    height: 24 / 16,
+                  ),
+                ),
               ),
               SizedBox(
                 height: 34,
                 child: OutlinedButton(
-              onPressed: () async {
-                SharedPreferences pref = await SharedPreferences.getInstance();
-                  String? email = pref.getString('email');
-             Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => RegisterForm(email:email! ),
+                  onPressed: () async {
+                    SharedPreferences pref =
+                        await SharedPreferences.getInstance();
+                    String? email = pref.getString('email');
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => RegisterForm(email: email!),
+                      ),
+                    );
+                  },
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: AppColors.errorback,
+                    foregroundColor: AppColors.errorColor,
+                    side: BorderSide(color: AppColors.errorColor),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  child: const Text(
+                    'Complete profile',
+                    style: TextStyle(
+                      fontFamily: FontFamily.satoshi,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      height: 24 / 14,
+                    ),
+                  ),
                 ),
-              );
-              },
-              style: OutlinedButton.styleFrom(
-                backgroundColor: AppColors.errorback,
-              foregroundColor: AppColors.errorColor, side: BorderSide(color: AppColors.errorColor),
-                      
-              shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
               ),
-              ),
-              child: const Text('Complete profile',
-              style:  TextStyle( 
-                                  fontFamily: FontFamily.satoshi,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        height: 24/ 14,),),
-              ),
-              ),
-              
-              Image.asset("assets/images/notification1.png",
-              height: 25,)
+              GestureDetector(
+                onTap: () {
+                  showAlertDialog(context);
+                  /*Navigator.push(context,
+                MaterialPageRoute(builder: (context) =>  NotificationScreen()));*/
+                },
+                child: Image.asset(
+                  "assets/images/notification1.png",
+                  height: 25,
+                ),
+              )
               /*GestureDetector(
                 child: themeNotifier.themeMode == ThemeMode.dark
                     ? Icon(Icons.sunny,
@@ -115,7 +126,121 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
   }
+
+  showAlertDialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return WillPopScope(
+          onWillPop: () async => true,
+          child: GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: StatefulBuilder(
+                  builder: (context, setState) {
+                    return FunkyOverlay(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SizedBox(
+                            height: 50,
+                          ),
+                          Image.asset(
+                            "assets/images/rafiki.png",
+                            height: 196,
+                          ),
+                          const SizedBox(
+                            height: 22,
+                          ),
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            padding: const EdgeInsets.symmetric(horizontal: 113),
+                            child: const Center(
+                              child: Text(
+                                ' Oops!',
+                                style: TextStyle(
+                                  color: AppColors.dotColor,
+                                  fontFamily: FontFamily.satoshi,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w700,
+                                  height: 40 / 32,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 66),
+                            child: Text(
+                              "You haven't completed your Profile",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: AppColors.subheadColor,
+                                fontFamily: FontFamily.satoshi,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                height: 24 / 16,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          const Divider(
+                            thickness: 1.2,
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TextButton(
+                                onPressed: () async {
+                                  SharedPreferences pref =
+                                      await SharedPreferences.getInstance();
+                                  String? email = pref.getString('email');
+                                  Navigator.pop(context);
+                                  /*Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => RegisterForm(
+                                                email: email!,
+                                              )));*/
+                                },
+                                child: const Text('OK',
+                                    style: TextStyle(
+                                        color: Color(0xff03BF4E),
+                                        fontWeight: FontWeight.bold)),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
+
 class SilentErrorImage extends StatelessWidget {
   final String imageUrl;
   final double width;
@@ -124,8 +249,8 @@ class SilentErrorImage extends StatelessWidget {
   const SilentErrorImage({
     super.key,
     required this.imageUrl,
-    this.width =48.0,
-    this.height =48.0,
+    this.width = 48.0,
+    this.height = 48.0,
   });
 
   @override
