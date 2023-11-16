@@ -50,6 +50,45 @@ class SignInProvider with ChangeNotifier {
       return null; // Or throw an exception, depending on your requirements.
     }
   }
+  Future loginWithOtp(String email) async {
+   // updateForgotPasswordLoader(true);
+    var body = {
+      'email':email,
+    };
+    try {
+      var res = await Api.loginWithEmail(body);
+      print('Response: $res');
+    
+      // Parse the 'res' here, if needed.
+      //updateForgotPasswordLoader(false);
+      return res;
+    } catch (e) {
+      print('Error while decoding JSON: $e');
+      // Handle the error appropriately.
+      //updateForgotPasswordLoader(false);
+      return null; // Or throw an exception, depending on your requirements.
+    }
+  }
+Future sendOtpforlogin(String email,String otp) async {
+    //updateForgotPasswordLoader(true);
+    var body = {
+      'email':email,
+      'otp':otp,
+    };
+    try {
+      var res = await Api.sendOtp(body);
+      print('Response: $res');
+    
+      // Parse the 'res' here, if needed.
+      //updateForgotPasswordLoader(false);
+      return res;
+    } catch (e) {
+      print('Error while decoding JSON: $e');
+      // Handle the error appropriately.
+      //updateForgotPasswordLoader(false);
+      return null; // Or throw an exception, depending on your requirements.
+    }
+  }
 
    Future verifyEmailForgotPasswordApi(String email,String otp) async {
     //updateForgotPasswordLoader(true);
@@ -129,7 +168,7 @@ class SignInProvider with ChangeNotifier {
     return res;
   }
 
-  Future registerFormApi(String email,String name,String phoneNumber,String dob,String address,String imageUrl) async {
+  Future registerFormApi(String email,String name,String phoneNumber,String dob,String address,String? imageUrl) async {
     //updateRegisterLoader(true);
     var body = {
   "email":email,
@@ -137,7 +176,7 @@ class SignInProvider with ChangeNotifier {
   "phoneNumber": phoneNumber,
   "dob": dob,
   "address":address,
-  "imageUrl":imageUrl
+  if (imageUrl != null && imageUrl.isNotEmpty) "imageUrl": imageUrl,
     };
     var res = await Api.registerForm(body);
     //updateRegisterLoader(false);

@@ -542,8 +542,7 @@ class _RegisterFormState extends State<RegisterForm> {
                             phoneValid &&
                             addressValid &&
                             dobValid &&
-                            isChecked &&
-                            imageFile != null) {
+                            isChecked ) {
                           
                           print("result ${result!}");
                           value

@@ -37,7 +37,40 @@ class Api {
   }
 
   static Future forgotPassword(body) async {
+    var url = "$baseUrl/api/UsersAuth/Send OTP for Reset";
+    Map<String, String> headers = {
+      "content-Type": "application/json;  charset=UTF-8",
+    };
+   http.Response response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    print(response.body);
+
+   // final jsonData = json.decode(response.body);
+    return jsonDecode(response.body);
+  }
+
+  static Future loginWithEmail(body) async {
     var url = "$baseUrl/api/UsersAuth/Send OTP";
+    Map<String, String> headers = {
+      "content-Type": "application/json;  charset=UTF-8",
+    };
+   http.Response response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    print(response.body);
+
+   // final jsonData = json.decode(response.body);
+    return jsonDecode(response.body);
+  }
+  static Future sendOtp(body) async {
+    var url = "$baseUrl/api/UsersAuth/Login With Otp";
     Map<String, String> headers = {
       "content-Type": "application/json;  charset=UTF-8",
     };
@@ -54,7 +87,7 @@ class Api {
   }
 
 static Future emaiVerificationForgotPassword(body) async {
-    var url = "$baseUrl/api/UsersAuth/Verify Email";
+    var url = "$baseUrl/api/UsersAuth/Confirm Email For Password Reset";
     Map<String, String> headers = {
       "content-Type": "application/json;  charset=UTF-8",
     };

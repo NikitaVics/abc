@@ -280,9 +280,23 @@ bool allowNavigation = false;
 
     return Align(
       alignment: Alignment.topLeft,
-      child: TextButton(
+      child:resendTime != 0 ? TextButton(
         onPressed: () {
-          signInProvider.forgotPasswordApi(widget.email).then((val) {
+         
+        },
+        child: const Text(
+          "Resend Code",
+          style: TextStyle(
+            color: AppColors.hintColor,
+            fontSize: 14,
+            fontFamily: FontFamily.satoshi,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ):
+      TextButton(
+        onPressed: () {
+          signInProvider.loginWithOtp(widget.email).then((val) {
             if (val["statusCode"] == 200) {
               restartTimer();
             }
@@ -297,7 +311,7 @@ bool allowNavigation = false;
             fontWeight: FontWeight.w500,
           ),
         ),
-      ),
+      ) 
     );
   }
 
@@ -326,7 +340,7 @@ bool allowNavigation = false;
                   isLoading = true;
                 });
                 value
-                    .verifyEmailForgotPasswordApi(
+                    .sendOtpforlogin(
                   widget.email,
                   otp!,
                 )

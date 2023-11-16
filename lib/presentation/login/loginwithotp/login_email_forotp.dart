@@ -209,7 +209,7 @@ class LoginEmailForotpScreenState extends State<LoginEmailForotpScreen> {
                   setState(() {
                     isLoading = true;
                   });
-                  value.forgotPasswordApi(email.text).then((val) {
+                  value.loginWithOtp(email.text).then((val) {
                     if (val["statusCode"] == 200) {
                       Navigator.of(context).push(
                         MaterialPageRoute(
