@@ -228,7 +228,7 @@ class _RegisterFormState extends State<RegisterForm> {
   Widget _buildUserDOB() {
     return DateTextFieldWidget(
       read: false,
-      hint: 'DOB',
+      hint: 'Date Of Birth',
       inputType: TextInputType.none,
       focusNode: _dobFocusNode,
       hintColor: Theme.of(context).brightness == Brightness.dark
