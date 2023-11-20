@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tennis_court_booking_app/model/login/login_response_model.dart';
+import 'package:tennis_court_booking_app/tennismodel/teniscourt/court.dart';
 
 
 class Api {
@@ -166,5 +166,23 @@ static Future resetPassword(body) async {
 
    // final jsonData = json.decode(response.body);
     return jsonDecode(response.body);
+  }
+
+
+  //Show court api
+  static Future<CourtList> showCourt() async {
+    var url = "$baseUrl/api/TennisCourt";
+    Map<String, String> headers = {
+      "content-Type": "application/json; charset=UTF-8",
+    };
+
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    print(response.body);
+
+    return CourtList.fromJson(jsonDecode(response.body));
   }
 }

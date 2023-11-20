@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:tennis_court_booking_app/presentation/home/home_provider/courtshowprovider.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/splash/splash_screen.dart';
 
@@ -36,6 +37,9 @@ class _MyAppState extends State<MyApp> {
         
         ChangeNotifierProvider<SignInProvider>(
           create: (context) => SignInProvider(),
+        ),
+        ChangeNotifierProvider<CourtShowProvider>(
+          create: (context) => CourtShowProvider(),
         ),
          ChangeNotifierProvider<ThemeModeNotifier>(
           create: (context) =>ThemeModeNotifier(initialThemeMode: ThemeMode.light),

@@ -6,6 +6,7 @@ import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/notifications/notification_screen.dart';
 import 'package:tennis_court_booking_app/presentation/register/pageview/register_form.dart';
 import 'package:tennis_court_booking_app/theme/theme_manager.dart';
+import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/funky_overlay.dart';
 
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -151,8 +152,18 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                           const SizedBox(
+                            height: 10,
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.only(right: 10),
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Icon(Icons.close,
+                              size: 24,)),
+                          ),
                           const SizedBox(
-                            height: 50,
+                            height: 16,
                           ),
                           Image.asset(
                             "assets/images/rafiki.png",
@@ -195,35 +206,79 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                             ),
                           ),
                           const SizedBox(
-                            height: 15,
+                            height: 25,
                           ),
-                          const Divider(
-                            thickness: 1.2,
+                          
+                          Padding(
+                            padding: const EdgeInsets.only(left: 102,right: 102,bottom: 63),
+                            child: SizedBox(
+                              height: 34,
+                              child: ElevatedButton(
+                            style:ElevatedButton.styleFrom(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            side: const BorderSide(
+              width: 1.0,
+              color: AppColors.elevatedColor,
+            ),
+            borderRadius: BorderRadius.circular(98),
+          ),
+          backgroundColor:
+              AppColors.elevatedColor, // Change background color on hover
+        ),
+                                   
+                                     child: const Text("Complete profile",
+                                   style: TextStyle(
+            color: AppColors.completeProfileColor,
+            fontSize: 14,
+            fontFamily: FontFamily.satoshi,
+            fontWeight: FontWeight.w700,
+            height: 24 / 14,
+          ),
+                                     ),
+                                      onPressed: () async {
+                                        FocusManager.instance.primaryFocus?.unfocus();
+                                        SharedPreferences pref = await SharedPreferences.getInstance();
+                            
+                                        pref.remove('authToken');
+                                        // ignore: use_build_context_synchronously
+                                        Navigator.push(context,
+                                            MaterialPageRoute(builder: (context) => const RegisterForm(email: '',)));
+                            
+                            /*
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+                                       
+                            
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                        */
+                                      },
+                                      //buttonColor: AppColors.elevatedColor,
+                                     // textColor: Colors.white,
+                                    ),
+                            ),
                           ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              TextButton(
-                                onPressed: () async {
-                                  SharedPreferences pref =
-                                      await SharedPreferences.getInstance();
-                                  String? email = pref.getString('email');
-                                  Navigator.pop(context);
-                                  /*Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => RegisterForm(
-                                                email: email!,
-                                              )));*/
-                                },
-                                child: const Text('OK',
-                                    style: TextStyle(
-                                        color: Color(0xff03BF4E),
-                                        fontWeight: FontWeight.bold)),
-                              ),
-                            ],
-                          ),
+                          /*TextButton(
+                            onPressed: () async {
+                              SharedPreferences pref =
+                                  await SharedPreferences.getInstance();
+                              String? email = pref.getString('email');
+                              Navigator.pop(context);
+                              /*Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => RegisterForm(
+                                            email: email!,
+                                          )));*/
+                            },
+                            child: const Text('OK',
+                                style: TextStyle(
+                                    color: Color(0xff03BF4E),
+                                    fontWeight: FontWeight.bold)),
+                          ),*/
                           const SizedBox(
                             height: 5,
                           ),

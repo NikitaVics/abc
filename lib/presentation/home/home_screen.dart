@@ -3,11 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/presentation/home/home_provider/courtshowprovider.dart';
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
+import 'package:tennis_court_booking_app/tennismodel/teniscourt/court.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/home_appbar.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,6 +28,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   //focus node:-----------------------------------------------------------------
   late FocusNode _passwordFocusNode;
+  bool juniorColor = false, seniorColor = false;
   //SignInProvider? provider;
 
   @override
@@ -105,20 +109,35 @@ class HomeScreenState extends State<HomeScreen> {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            _buildLoginText(),
-            _buildSignInButton(),
-            _buildSlotshowText(),
-            _buildShowCourt(),
-            _buildrecentBookText(),
-            _buildNoBook()
-
-            // _buildForgotPasswordButton(),
-          ],
+        child: Consumer<CourtShowProvider>(
+          builder: (context, courtShowProvider, child) {
+           
+            if (courtShowProvider.courtList == null) {
+              // If not loaded, fetch the data
+              courtShowProvider.fetchCourts();
+              // You can show a loading indicator here if needed
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else {
+             
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  _buildLoginText(),
+                  _buildSignInButton(),
+                  _buildSlotshowText(),
+                  _buildShowCourt(
+                      courtShowProvider.courtList!), // Pass the court list
+                  _buildrecentBookText(),
+                  _buildNoBook(),
+                  // _buildForgotPasswordButton(),
+                ],
+              );
+            }
+          },
         ),
       ),
     );
@@ -254,29 +273,59 @@ class HomeScreenState extends State<HomeScreen> {
                 height: 32 / 24,
               ),
             ),
-            const Row(
+            Row(
               children: [
-                Text(
-                  "Junior",
-                  style: TextStyle(
-                    color: Color.fromRGBO(0, 0, 0, 0.50),
-                    fontSize: 12,
-                    fontFamily: FontFamily.satoshi,
-                    fontWeight: FontWeight.w700,
-                    height: 24 / 12,
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      juniorColor = true;
+                      seniorColor = false;
+                    });
+                  },
+                  child: Text(
+                    "Junior",
+                    style: TextStyle(
+                       decoration: juniorColor? TextDecoration.underline:TextDecoration.none,
+                decorationThickness: 3.0, 
+                      color: juniorColor
+                          ? AppColors.dotColor
+                          : const Color.fromRGBO(0, 0, 0, 0.50),
+                      fontSize: 12,
+                      fontFamily: FontFamily.satoshi,
+                      fontWeight: FontWeight.w700,
+                      height: 24 / 12,
+                    ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 46,
                 ),
-                Text(
-                  "Senior",
-                  style: TextStyle(
-                    color: AppColors.dotColor,
-                    fontSize: 12,
-                    fontFamily: FontFamily.satoshi,
-                    fontWeight: FontWeight.w700,
-                    height: 24 / 12,
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      juniorColor = false;
+                      seniorColor = true;
+                    });
+                  },
+                  child:  Text(
+                    "Senior",
+                    style: TextStyle(
+                    decoration: seniorColor? TextDecoration.underline:TextDecoration.none,
+                     decorationColor: seniorColor
+        ? AppColors.dotColor // Color of the underline
+        : Colors.transparent, 
+         decorationStyle: seniorColor
+        ? TextDecorationStyle.solid
+        : TextDecorationStyle.solid, 
+                decorationThickness: 3.0, 
+                      color: seniorColor
+                          ? AppColors.dotColor
+                          : const Color.fromRGBO(0, 0, 0, 0.50),
+                      fontSize: 12,
+                      fontFamily: FontFamily.satoshi,
+                      fontWeight: FontWeight.w700,
+                      height: 24 / 12,
+                    ),
                   ),
                 ),
               ],
@@ -285,41 +334,71 @@ class HomeScreenState extends State<HomeScreen> {
         ));
   }
 
-  Widget _buildShowCourt() {
-    final List<int> numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
+  Widget _buildShowCourt(CourtList courtList) {
+    final List<Court> filteredCourts = (juniorColor || seniorColor)
+      ? (juniorColor
+          ? courtList.result.where((court) => court.ageGroup == 'Junior').toList()
+          : courtList.result.where((court) => court.ageGroup == 'Senior').toList())
+      : List.from(courtList.result);
     return SizedBox(
       height: 160,
       child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: numbers.length,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.only(right: 20),
+        scrollDirection: Axis.horizontal,
+        itemCount:filteredCourts.length,
+        itemBuilder: (context, index) {
+          
+          Court court = filteredCourts[index];
+          // Format start and end times
+          String startTime = DateFormat('h:mm a').format(
+            DateFormat('HH:mm:ss').parse(court.startTime),
+          );
+          String endTime = DateFormat('h:mm a').format(
+            DateFormat('HH:mm:ss').parse(court.endTime),
+          );
+          return Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: Container(
+              width: 145,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Container(
-                width: 145,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12)),
-                child: Container(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 12, right: 12, top: 12, bottom: 8),
-                        child: Container(
-                          height: 82,
-                          child: Image.asset("assets/images/court.png"),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 12,
+                        right: 12,
+                        top: 12,
+                        bottom: 8,
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(6)),
+                        height: 85,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: Image.network(
+                            court
+                                .courtImageURL, // Use the image URL from the Court model
+                            // You can also use AssetImage if the image is in the assets folder
+                            // e.g., Image.asset("assets/images/court.png"),
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 12, right: 22),
-                        child: Stack(
-                          children: [
-                            Column(
-                              children: [
-                                Text(
-                                  "Court  ${numbers[index]}",
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 12, right: 22),
+                      child: Stack(
+                        children: [
+                          Column(
+                            children: [
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  court.courtName,
                                   style: TextStyle(
                                     color: AppColors.allHeadColor,
                                     fontSize: 16,
@@ -328,8 +407,11 @@ class HomeScreenState extends State<HomeScreen> {
                                     height: 24 / 16,
                                   ),
                                 ),
-                                Text(
-                                  " 10 am -7 pm",
+                              ),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  "${startTime} - ${endTime}",
                                   style: TextStyle(
                                     color: AppColors.hintColor,
                                     fontSize: 12,
@@ -338,26 +420,29 @@ class HomeScreenState extends State<HomeScreen> {
                                     height: 16 / 12,
                                   ),
                                 ),
-                              ],
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 4),
+                            child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Image.asset(
+                                "assets/images/Right.png",
+                                height: 24,
+                              ),
                             ),
-                            Padding(
-                              padding: EdgeInsets.only(top: 10),
-                              child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Image.asset(
-                                    "assets/images/Right.png",
-                                    height: 24,
-                                  )),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            );
-          }),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -404,66 +489,62 @@ class HomeScreenState extends State<HomeScreen> {
       child: Container(
         height: 138,
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12)
-        ),
+            color: Colors.white, borderRadius: BorderRadius.circular(12)),
         child: Row(
           children: [
             Padding(
-              padding: EdgeInsets.only(left: 10,top: 10,bottom: 10),
+              padding: EdgeInsets.only(left: 10, top: 10, bottom: 10),
               child: Image.asset(
-                                      "assets/images/Nobooking.png",
-                                      
-                                    ),
+                "assets/images/Nobooking.png",
+              ),
             ),
-           Column(
-             mainAxisAlignment: MainAxisAlignment.center, 
-             children: [
-              
-             //TextSpan  
-           SizedBox(
-             width: 147,
-             
-             child: RichText(
-             text: const TextSpan(
-               children: <TextSpan>[
-                 TextSpan(
-             text:"No Recent Bookings  ",
-             style: TextStyle(
-               color: AppColors.subheadColor,
-               fontSize: 12,
-               fontFamily: FontFamily.satoshi,
-               fontWeight: FontWeight.w400,
-               height: 20 / 12,
-             ),
-           ),
-                 TextSpan(
-                   text: 'Complete your profile ', // The first half of the sentence
-                    style: TextStyle(
-               color: AppColors.disableButtonTextColor,
-               fontSize: 12,
-               fontFamily: FontFamily.satoshi,
-               fontWeight: FontWeight.w400,
-               height: 20 / 12,
-             ),
-                 ),
-                 TextSpan(
-                   text: 'to start booking', // The second half of the sentence
-                   style: TextStyle(
-               color: AppColors.hintColor,
-               fontSize: 12,
-               fontFamily: FontFamily.satoshi,
-               fontWeight: FontWeight.w400,
-               height: 20 / 12,
-             ),
-                 ),
-               ],
-             ),
-           ),
-           )
-
-             ],
-           )
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                //TextSpan
+                SizedBox(
+                  width: 147,
+                  child: RichText(
+                    text: const TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: "No Recent Bookings  ",
+                          style: TextStyle(
+                            color: AppColors.subheadColor,
+                            fontSize: 12,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w400,
+                            height: 20 / 12,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              'Complete your profile ', // The first half of the sentence
+                          style: TextStyle(
+                            color: AppColors.disableButtonTextColor,
+                            fontSize: 12,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w400,
+                            height: 20 / 12,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              'to start booking', // The second half of the sentence
+                          style: TextStyle(
+                            color: AppColors.hintColor,
+                            fontSize: 12,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w400,
+                            height: 20 / 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            )
           ],
         ),
       ),
