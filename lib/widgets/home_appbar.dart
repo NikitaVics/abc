@@ -4,7 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/notifications/notification_screen.dart';
+import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
+import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/presentation/register/pageview/register_form.dart';
+import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/theme/theme_manager.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/funky_overlay.dart';
@@ -14,13 +17,14 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isBoarder;
   final bool isProgress;
   final int step;
+  final bool isFormDone;
 
   const HomeAppBar(
       {Key? key,
       required this.title,
       required this.isBoarder,
       required this.isProgress,
-      required this.step})
+      required this.step, required this.isFormDone})
       : super(key: key);
 
   @override
@@ -64,38 +68,39 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                 ),
               ),
-              SizedBox(
-                height: 34,
-                child: OutlinedButton(
-                  onPressed: () async {
-                    SharedPreferences pref =
-                        await SharedPreferences.getInstance();
-                    String? email = pref.getString('email');
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => RegisterForm(email: email!),
-                      ),
-                    );
-                  },
-                  style: OutlinedButton.styleFrom(
-                    backgroundColor: AppColors.errorback,
-                    foregroundColor: AppColors.errorColor,
-                    side: BorderSide(color: AppColors.errorColor),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  child: const Text(
-                    'Complete profile',
-                    style: TextStyle(
-                      fontFamily: FontFamily.satoshi,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                      height: 24 / 14,
-                    ),
-                  ),
-                ),
-              ),
+             isFormDone? SizedBox(
+                            height: 34,
+                            child: OutlinedButton(
+                              onPressed: () async {
+                                SharedPreferences pref =
+                                    await SharedPreferences.getInstance();
+                                String? email = await SharePref.fetchEmail();
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        RegisterForm(email: email!),
+                                  ),
+                                );
+                              },
+                              style: OutlinedButton.styleFrom(
+                                backgroundColor: AppColors.errorback,
+                                foregroundColor: AppColors.errorColor,
+                                side: BorderSide(color: AppColors.errorColor),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              child: const Text(
+                                'Complete profile',
+                                style: TextStyle(
+                                  fontFamily: FontFamily.satoshi,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  height: 24 / 14,
+                                ),
+                              ),
+                            ),
+                          ):SizedBox(),
               GestureDetector(
                 onTap: () {
                   showAlertDialog(context);
@@ -152,15 +157,17 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                           const SizedBox(
+                          const SizedBox(
                             height: 10,
                           ),
                           const Padding(
                             padding: EdgeInsets.only(right: 10),
                             child: Align(
-                              alignment: Alignment.centerRight,
-                              child: Icon(Icons.close,
-                              size: 24,)),
+                                alignment: Alignment.centerRight,
+                                child: Icon(
+                                  Icons.close,
+                                  size: 24,
+                                )),
                           ),
                           const SizedBox(
                             height: 16,
@@ -174,7 +181,8 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                           ),
                           Container(
                             width: MediaQuery.of(context).size.width,
-                            padding: const EdgeInsets.symmetric(horizontal: 113),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 113),
                             child: const Center(
                               child: Text(
                                 ' Oops!',
@@ -208,44 +216,51 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                           const SizedBox(
                             height: 25,
                           ),
-                          
                           Padding(
-                            padding: const EdgeInsets.only(left: 102,right: 102,bottom: 63),
+                            padding: const EdgeInsets.only(
+                                left: 102, right: 102, bottom: 63),
                             child: SizedBox(
                               height: 34,
                               child: ElevatedButton(
-                            style:ElevatedButton.styleFrom(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            side: const BorderSide(
-              width: 1.0,
-              color: AppColors.elevatedColor,
-            ),
-            borderRadius: BorderRadius.circular(98),
-          ),
-          backgroundColor:
-              AppColors.elevatedColor, // Change background color on hover
-        ),
-                                   
-                                     child: const Text("Complete profile",
-                                   style: TextStyle(
-            color: AppColors.completeProfileColor,
-            fontSize: 14,
-            fontFamily: FontFamily.satoshi,
-            fontWeight: FontWeight.w700,
-            height: 24 / 14,
-          ),
-                                     ),
-                                      onPressed: () async {
-                                        FocusManager.instance.primaryFocus?.unfocus();
-                                        SharedPreferences pref = await SharedPreferences.getInstance();
-                            
-                                        pref.remove('authToken');
-                                        // ignore: use_build_context_synchronously
-                                        Navigator.push(context,
-                                            MaterialPageRoute(builder: (context) => const RegisterForm(email: '',)));
-                            
-                            /*
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    side: const BorderSide(
+                                      width: 1.0,
+                                      color: AppColors.elevatedColor,
+                                    ),
+                                    borderRadius: BorderRadius.circular(98),
+                                  ),
+                                  backgroundColor: AppColors
+                                      .elevatedColor, // Change background color on hover
+                                ),
+
+                                child: const Text(
+                                  "Complete profile",
+                                  style: TextStyle(
+                                    color: AppColors.completeProfileColor,
+                                    fontSize: 14,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w700,
+                                    height: 24 / 14,
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                  SharedPreferences pref =
+                                      await SharedPreferences.getInstance();
+
+                                  pref.remove('authToken');
+                                  // ignore: use_build_context_synchronously
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const RegisterForm(
+                                                email: '',
+                                              )));
+
+                                  /*
                                         setState(() {
                                           isLoading = true;
                                         });
@@ -255,10 +270,10 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                                           isLoading = false;
                                         });
                                         */
-                                      },
-                                      //buttonColor: AppColors.elevatedColor,
-                                     // textColor: Colors.white,
-                                    ),
+                                },
+                                //buttonColor: AppColors.elevatedColor,
+                                // textColor: Colors.white,
+                              ),
                             ),
                           ),
                           /*TextButton(

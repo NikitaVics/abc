@@ -155,6 +155,8 @@ Future sendOtpforlogin(String email,String otp) async {
     }
   }
 
+
+
   Future registerApi(String email,String name,String pass,String confirmPass) async {
     updateRegisterLoader(true);
     var body = {
@@ -181,5 +183,23 @@ Future sendOtpforlogin(String email,String otp) async {
     var res = await Api.registerForm(body);
     //updateRegisterLoader(false);
     return res;
+  }
+
+  Future statusCheckApi(String authToken) async {
+   // updateLoginLoader(true);
+    
+
+    try {
+      var res = await Api.completeProfile(authToken);
+      print('Response: $res');
+      // Parse the 'res' here, if needed.
+      updateLoginLoader(false);
+      return res;
+    } catch (e) {
+      print('Error while decoding JSON: $e');
+      // Handle the error appropriately.
+      //updateLoginLoader(false);
+      return null; // Or throw an exception, depending on your requirements.
+    }
   }
 }

@@ -1,11 +1,15 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/courtshowprovider.dart';
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
+import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/tennismodel/teniscourt/court.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
@@ -35,7 +39,33 @@ class HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _passwordFocusNode = FocusNode();
-    // provider = Provider.of<SignInProvider>(context, listen: false);
+    getTokenAndCheckStatus();
+  }
+
+  bool isFormDone = false;
+  Future<void> getTokenAndCheckStatus() async {
+    try {
+      String token = await SharePref.fetchAuthToken();
+      context.read<CheckStatusProvider>().checkRegistrationStatus(token);
+      bool hasErrorMessage = context
+              .read<CheckStatusProvider>()
+              .checkStatus
+              ?.errorMessage
+              .isNotEmpty ??
+          false;
+      print(hasErrorMessage);
+      if (hasErrorMessage) {
+        setState(() {
+          isFormDone = true;
+        });
+      }
+    } catch (error) {
+      print("Error getting token and checking status: $error");
+      setState(() {
+        isFormDone = false;
+      });
+      // Handle the error if needed
+    }
   }
 
   @override
@@ -46,11 +76,12 @@ class HomeScreenState extends State<HomeScreen> {
             ? AppColors.darkThemeback
             : AppColors.lightThemeback,
         primary: true,
-        appBar: const HomeAppBar(
+        appBar: HomeAppBar(
           isBoarder: true,
           title: "Login",
           isProgress: false,
           step: 0,
+          isFormDone: isFormDone,
         ),
         body: _buildBody(),
       );
@@ -111,7 +142,6 @@ class HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Consumer<CourtShowProvider>(
           builder: (context, courtShowProvider, child) {
-           
             if (courtShowProvider.courtList == null) {
               // If not loaded, fetch the data
               courtShowProvider.fetchCourts();
@@ -120,7 +150,6 @@ class HomeScreenState extends State<HomeScreen> {
                 child: CircularProgressIndicator(),
               );
             } else {
-             
               return Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -285,8 +314,10 @@ class HomeScreenState extends State<HomeScreen> {
                   child: Text(
                     "Junior",
                     style: TextStyle(
-                       decoration: juniorColor? TextDecoration.underline:TextDecoration.none,
-                decorationThickness: 3.0, 
+                      decoration: juniorColor
+                          ? TextDecoration.underline
+                          : TextDecoration.none,
+                      decorationThickness: 3.0,
                       color: juniorColor
                           ? AppColors.dotColor
                           : const Color.fromRGBO(0, 0, 0, 0.50),
@@ -307,17 +338,19 @@ class HomeScreenState extends State<HomeScreen> {
                       seniorColor = true;
                     });
                   },
-                  child:  Text(
+                  child: Text(
                     "Senior",
                     style: TextStyle(
-                    decoration: seniorColor? TextDecoration.underline:TextDecoration.none,
-                     decorationColor: seniorColor
-        ? AppColors.dotColor // Color of the underline
-        : Colors.transparent, 
-         decorationStyle: seniorColor
-        ? TextDecorationStyle.solid
-        : TextDecorationStyle.solid, 
-                decorationThickness: 3.0, 
+                      decoration: seniorColor
+                          ? TextDecoration.underline
+                          : TextDecoration.none,
+                      decorationColor: seniorColor
+                          ? AppColors.dotColor // Color of the underline
+                          : Colors.transparent,
+                      decorationStyle: seniorColor
+                          ? TextDecorationStyle.solid
+                          : TextDecorationStyle.solid,
+                      decorationThickness: 3.0,
                       color: seniorColor
                           ? AppColors.dotColor
                           : const Color.fromRGBO(0, 0, 0, 0.50),
@@ -336,17 +369,20 @@ class HomeScreenState extends State<HomeScreen> {
 
   Widget _buildShowCourt(CourtList courtList) {
     final List<Court> filteredCourts = (juniorColor || seniorColor)
-      ? (juniorColor
-          ? courtList.result.where((court) => court.ageGroup == 'Junior').toList()
-          : courtList.result.where((court) => court.ageGroup == 'Senior').toList())
-      : List.from(courtList.result);
+        ? (juniorColor
+            ? courtList.result
+                .where((court) => court.ageGroup == 'Junior')
+                .toList()
+            : courtList.result
+                .where((court) => court.ageGroup == 'Senior')
+                .toList())
+        : List.from(courtList.result);
     return SizedBox(
       height: 160,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount:filteredCourts.length,
+        itemCount: filteredCourts.length,
         itemBuilder: (context, index) {
-          
           Court court = filteredCourts[index];
           // Format start and end times
           String startTime = DateFormat('h:mm a').format(

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tennis_court_booking_app/presentation/home/model/checkstatus.dart';
 import 'package:tennis_court_booking_app/tennismodel/teniscourt/court.dart';
 
 
@@ -167,7 +168,23 @@ static Future resetPassword(body) async {
    // final jsonData = json.decode(response.body);
     return jsonDecode(response.body);
   }
+//Complete profile
+static Future<CheckStatus>  completeProfile(String bearerToken) async {
+    var url = "$baseUrl/api/UsersAuth/registration-status";
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+      
+    };
 
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    print(response.body);
+
+    return CheckStatus.fromJson(jsonDecode(response.body));
+  }
 
   //Show court api
   static Future<CourtList> showCourt() async {
