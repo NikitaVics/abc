@@ -68,7 +68,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                 ),
               ),
-             isFormDone? SizedBox(
+             isFormDone?const SizedBox(): SizedBox(
                             height: 34,
                             child: OutlinedButton(
                               onPressed: () async {
@@ -100,12 +100,11 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                                 ),
                               ),
                             ),
-                          ):SizedBox(),
+                          ),
               GestureDetector(
                 onTap: () {
                   showAlertDialog(context);
-                  /*Navigator.push(context,
-                MaterialPageRoute(builder: (context) =>  NotificationScreen()));*/
+                 
                 },
                 child: Image.asset(
                   "assets/images/notification1.png",

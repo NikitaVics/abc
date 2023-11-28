@@ -9,10 +9,12 @@ import 'package:tennis_court_booking_app/presentation/home/home_provider/check_s
 import 'package:tennis_court_booking_app/presentation/home/home_provider/courtshowprovider.dart';
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
+import 'package:tennis_court_booking_app/presentation/register/pageview/register_form.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/tennismodel/teniscourt/court.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
+import 'package:tennis_court_booking_app/widgets/funky_overlay.dart';
 import 'package:tennis_court_booking_app/widgets/home_appbar.dart';
 import 'package:intl/intl.dart';
 
@@ -251,36 +253,221 @@ class HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: FocusScope(
             // Manage keyboard focus
-            child: CustomElevatedButton(
-          height: 60,
-          width: MediaQuery.of(context).orientation == Orientation.landscape
-              ? 70
-              : double.infinity,
-          isLoading: false,
-          text: "Start Booking",
-          onPressed: () async {
-            FocusManager.instance.primaryFocus?.unfocus();
-            SharedPreferences pref = await SharedPreferences.getInstance();
+            child: isFormDone
+                ? CustomElevatedButton(
+                    height: 60,
+                    width: MediaQuery.of(context).orientation ==
+                            Orientation.landscape
+                        ? 70
+                        : double.infinity,
+                    isLoading: false,
+                    text: "Start Booking",
+                    onPressed: () async {
+                      FocusManager.instance.primaryFocus?.unfocus();
+                      SharedPreferences pref =
+                          await SharedPreferences.getInstance();
 
-            pref.remove('authToken');
-            // ignore: use_build_context_synchronously
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const LoginScreen()));
+                      pref.remove('authToken');
 
-/*
-            setState(() {
-              isLoading = true;
-            });
-           
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginScreen()));
+                    },
+                    buttonColor: AppColors.elevatedColor,
+                    textColor: Colors.white,
+                  )
+                : CustomElevatedButton(
+                    height: 60,
+                    width: MediaQuery.of(context).orientation ==
+                            Orientation.landscape
+                        ? 70
+                        : double.infinity,
+                    isLoading: false,
+                    text: "Start Booking",
+                    onPressed: () async {
+                      showAlertDialog(context);
+                    },
+                    buttonColor: AppColors.disableButtonColor,
+                    textColor: AppColors.disableButtonTextColor,
+                  )));
+  }
 
-            setState(() {
-              isLoading = false;
-            });
-            */
-          },
-          buttonColor: AppColors.elevatedColor,
-          textColor: Colors.white,
-        )));
+  showAlertDialog(BuildContext context) {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return WillPopScope(
+          onWillPop: () async => true,
+          child: GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: StatefulBuilder(
+                  builder: (context, setState) {
+                    return FunkyOverlay(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.only(right: 10),
+                            child: Align(
+                                alignment: Alignment.centerRight,
+                                child: Icon(
+                                  Icons.close,
+                                  size: 24,
+                                )),
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Image.asset(
+                            "assets/images/rafiki.png",
+                            height: 196,
+                          ),
+                          const SizedBox(
+                            height: 22,
+                          ),
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 113),
+                            child: const Center(
+                              child: Text(
+                                ' Oops!',
+                                style: TextStyle(
+                                  color: AppColors.dotColor,
+                                  fontFamily: FontFamily.satoshi,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w700,
+                                  height: 40 / 32,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 66),
+                            child: Text(
+                              "You haven't completed your Profile",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: AppColors.subheadColor,
+                                fontFamily: FontFamily.satoshi,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                height: 24 / 16,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 25,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 102, right: 102, bottom: 63),
+                            child: SizedBox(
+                              height: 34,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                    side: const BorderSide(
+                                      width: 1.0,
+                                      color: AppColors.elevatedColor,
+                                    ),
+                                    borderRadius: BorderRadius.circular(98),
+                                  ),
+                                  backgroundColor: AppColors
+                                      .elevatedColor, // Change background color on hover
+                                ),
+
+                                child: const Text(
+                                  "Complete profile",
+                                  style: TextStyle(
+                                    color: AppColors.completeProfileColor,
+                                    fontSize: 14,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w700,
+                                    height: 24 / 14,
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  FocusManager.instance.primaryFocus?.unfocus();
+                                  SharedPreferences pref =
+                                      await SharedPreferences.getInstance();
+
+                                  pref.remove('authToken');
+                                  // ignore: use_build_context_synchronously
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const RegisterForm(
+                                                email: '',
+                                              )));
+
+                                  /*
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+                                       
+                            
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                        */
+                                },
+                                //buttonColor: AppColors.elevatedColor,
+                                // textColor: Colors.white,
+                              ),
+                            ),
+                          ),
+                          /*TextButton(
+                            onPressed: () async {
+                              SharedPreferences pref =
+                                  await SharedPreferences.getInstance();
+                              String? email = pref.getString('email');
+                              Navigator.pop(context);
+                              /*Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => RegisterForm(
+                                            email: email!,
+                                          )));*/
+                            },
+                            child: const Text('OK',
+                                style: TextStyle(
+                                    color: Color(0xff03BF4E),
+                                    fontWeight: FontWeight.bold)),
+                          ),*/
+                          const SizedBox(
+                            height: 5,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildSlotshowText() {

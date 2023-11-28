@@ -38,10 +38,7 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
         style: ElevatedButton.styleFrom(
           elevation: 0,
           shape: RoundedRectangleBorder(
-            side: const BorderSide(
-              width: 1.0,
-              color: AppColors.elevatedColor,
-            ),
+           
             borderRadius: BorderRadius.circular(8),
           ),
           backgroundColor:

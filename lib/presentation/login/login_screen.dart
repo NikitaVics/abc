@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tennis_court_booking_app/bottomnavbar/bottom_navbar.dart';
 
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
@@ -367,7 +368,7 @@ class LoginScreenState extends State<LoginScreen> {
                     pref.setString('authToken', val['result']['token']);
                     pref.setString('email', val['result']['user']['email']);
                     Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const HomeScreen()));
+                MaterialPageRoute(builder: (context) => const BottomNavBar()));
                     String? authToken = pref.getString('authToken');
                     if (authToken != null) {
                       print("Auth Token: $authToken");

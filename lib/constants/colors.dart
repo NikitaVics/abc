@@ -32,4 +32,6 @@ class AppColors {
   static const homeBack = Color(0xffF8F8F8);
   static const primaryColor = Color(0xffFEFEFE);
   static const completeProfileColor = Color(0xffE9F7EF);
+  static const disableNavIconColor = Color(0xff979797);
+  static const navIconColor = Color(0xff4EcB71);
 }
