@@ -97,7 +97,28 @@ Future sendOtpforlogin(String email,String otp) async {
       'otp':otp,
     };
     try {
-      var res = await Api.emaiVerificationForgotPassword(body);
+      var res = await Api.emaiVerification(body);
+      print('Response: $res');
+    
+      // Parse the 'res' here, if needed.
+      //updateForgotPasswordLoader(false);
+      return res;
+    } catch (e) {
+      print('Error while decoding JSON: $e');
+      // Handle the error appropriately.
+      //updateForgotPasswordLoader(false);
+      return null; // Or throw an exception, depending on your requirements.
+    }
+  }
+
+   Future verifyEmail(String email,String otp) async {
+    //updateForgotPasswordLoader(true);
+    var body = {
+      'email':email,
+      'otp':otp,
+    };
+    try {
+      var res = await Api.emaiVerification(body);
       print('Response: $res');
     
       // Parse the 'res' here, if needed.

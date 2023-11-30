@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_screen.dart';
+import 'package:tennis_court_booking_app/profile/profile_screen.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
@@ -43,9 +44,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
           },
           children: const <Widget>[
             HomeScreen(),
-            HomeScreen(),
-            HomeScreen(),
-            HomeScreen()
+            ProfileScreen(),
+            ProfileScreen(),
+            ProfileScreen()
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(

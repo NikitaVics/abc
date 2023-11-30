@@ -34,4 +34,5 @@ class AppColors {
   static const completeProfileColor = Color(0xffE9F7EF);
   static const disableNavIconColor = Color(0xff979797);
   static const navIconColor = Color(0xff4EcB71);
+  static const profileHead = Color(0xff343434);
 }

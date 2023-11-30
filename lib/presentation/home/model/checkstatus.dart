@@ -2,7 +2,7 @@ class CheckStatus {
   final int statusCode;
   final bool isSuccess;
   final List<String> errorMessage;
-  final dynamic result;
+  final bool result;
 
  CheckStatus({
     required this.statusCode,

@@ -3,13 +3,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tennis_court_booking_app/api/api.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/courtshowprovider.dart';
+import 'package:tennis_court_booking_app/presentation/home/model/checkstatus.dart';
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/presentation/register/pageview/register_form.dart';
+import 'package:tennis_court_booking_app/profile/model/profile_model.dart';
+import 'package:tennis_court_booking_app/profile/profileprovider/profile_provider.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/tennismodel/teniscourt/court.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
@@ -35,60 +39,212 @@ class HomeScreenState extends State<HomeScreen> {
   //focus node:-----------------------------------------------------------------
   late FocusNode _passwordFocusNode;
   bool juniorColor = false, seniorColor = false;
+
+  DateTime? dateTime;
+  DateTime? result;
+  String? imageUrl;
   //SignInProvider? provider;
 
   @override
   void initState() {
     super.initState();
     _passwordFocusNode = FocusNode();
-    getTokenAndCheckStatus();
+    profile();
   }
 
   bool isFormDone = false;
-  Future<void> getTokenAndCheckStatus() async {
-    try {
-      String token = await SharePref.fetchAuthToken();
-      context.read<CheckStatusProvider>().checkRegistrationStatus(token);
-      bool hasErrorMessage = context
-              .read<CheckStatusProvider>()
-              .checkStatus
-              ?.errorMessage
-              .isNotEmpty ??
-          false;
-      print(hasErrorMessage);
-      if (hasErrorMessage) {
-        setState(() {
-          isFormDone = true;
-        });
-      }
-    } catch (error) {
-      print("Error getting token and checking status: $error");
-      setState(() {
-        isFormDone = false;
-      });
-      // Handle the error if needed
-    }
+  String name = "";
+  String? tokens;
+  bool loading = false;
+  Future<void> profile() async {
+    final profileProvider =
+        Provider.of<ProfileProvider>(context, listen: false);
+    final checkstatusprovider =
+        Provider.of<CheckStatusProvider>(context, listen: false);
+
+    setState(() {
+      loading = true;
+    });
+    
+    tokens = await SharePref.fetchAuthToken();
+    print("Tokio $tokens");
+    profileProvider.fetchProfile(tokens!);
+    checkstatusprovider.checkRegistrationStatus(tokens!);
+    setState(() {
+      loading = false;
+    });
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Builder(builder: (context) {
-      return Scaffold(
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkThemeback
-            : AppColors.lightThemeback,
-        primary: true,
-        appBar: HomeAppBar(
-          isBoarder: true,
-          title: "Login",
-          isProgress: false,
-          step: 0,
-          isFormDone: isFormDone,
-        ),
-        body: _buildBody(),
-      );
-    });
-  }
+ Widget build(BuildContext context) {
+  return Consumer2<CheckStatusProvider, ProfileProvider>(
+    builder: (context, checkStatusProvider, profileProvider, child) {
+      if (checkStatusProvider.checkStatus == null ||
+          profileProvider.profileModel == null) {
+        profileProvider.fetchProfile(tokens ?? "");
+        checkStatusProvider.checkRegistrationStatus(tokens ?? "");
+
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      } else {
+        imageUrl = profileProvider.profileModel?.result.imageUrl;
+        name = profileProvider.profileModel!.result.name;
+        bool hasErrorMessage = checkStatusProvider.checkStatus!.result;
+
+        print("Nope $hasErrorMessage");
+
+        return loading == true
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Scaffold(
+                backgroundColor:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.darkThemeback
+                        : AppColors.lightThemeback,
+                primary: true,
+                body: Column(
+                  children: [
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(top: 12, left: 24, right: 24),
+                      child: Container(
+                        color: Colors.white,
+                        height: 90,
+                        child: Center(
+                          child: Row(
+                            children: [
+                              Container(
+                                height: 90,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(150.0),
+                                    child: imageUrl != null &&
+                                            imageUrl!.isNotEmpty
+                                        ? SilentErrorImage(
+                                            width: 48.0,
+                                            height: 48.0,
+                                            imageUrl: imageUrl!,
+                                          )
+                                        : const Icon(
+                                            Icons.account_circle,
+                                            size: 48.0,
+                                            color: Colors.grey,
+                                          ),
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 20, right: 10),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      "Hello",
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.headingTextColor
+                                            : AppColors.allHeadColor,
+                                        fontFamily: FontFamily.satoshi,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                        height: 24 / 16,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 3,
+                                    ),
+                                    Text(
+                                      name ?? " ",
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.headingTextColor
+                                            : AppColors.allHeadColor,
+                                        fontFamily: FontFamily.satoshi,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                        height: 24 / 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              hasErrorMessage
+                                  ? const SizedBox()
+                                  : SizedBox(
+                                      height: 34,
+                                      child: OutlinedButton(
+                                        onPressed: () async {
+                                          SharedPreferences pref =
+                                              await SharedPreferences
+                                                  .getInstance();
+                                          String? email =
+                                              await SharePref.fetchEmail();
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  RegisterForm(email: email!),
+                                            ),
+                                          );
+                                        },
+                                        style: OutlinedButton.styleFrom(
+                                          backgroundColor:
+                                              AppColors.errorback,
+                                          foregroundColor:
+                                              AppColors.errorColor,
+                                          side: BorderSide(
+                                              color: AppColors.errorColor),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'Complete profile',
+                                          style: TextStyle(
+                                            fontFamily: FontFamily.satoshi,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400,
+                                            height: 24 / 14,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                              Expanded(
+                                child: Container(),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      showAlertDialog(context);
+                                    },
+                                    child: Image.asset(
+                                      "assets/images/notification1.png",
+                                      height: 25,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(child: _buildBody()),
+                  ],
+                ),
+              );
+      }
+    },
+  );
+}
 
   // body methods:--------------------------------------------------------------
   Widget _buildBody() {
@@ -142,11 +298,14 @@ class HomeScreenState extends State<HomeScreen> {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Consumer<CourtShowProvider>(
-          builder: (context, courtShowProvider, child) {
+        child: Builder(
+          builder: (context) {
+            final courtShowProvider = Provider.of<CourtShowProvider>(context);
+
             if (courtShowProvider.courtList == null) {
               // If not loaded, fetch the data
               courtShowProvider.fetchCourts();
+
               // You can show a loading indicator here if needed
               return Center(
                 child: CircularProgressIndicator(),
@@ -160,8 +319,7 @@ class HomeScreenState extends State<HomeScreen> {
                   _buildLoginText(),
                   _buildSignInButton(),
                   _buildSlotshowText(),
-                  _buildShowCourt(
-                      courtShowProvider.courtList!), // Pass the court list
+                  _buildShowCourt(courtShowProvider.courtList!),
                   _buildrecentBookText(),
                   _buildNoBook(),
                   // _buildForgotPasswordButton(),
@@ -229,11 +387,52 @@ class HomeScreenState extends State<HomeScreen> {
                     height: 24 / 14,
                   ),
                 ),
-                SizedBox(width: 8),
-                Image.asset(
-                  "assets/images/calender.png",
-                  height: 17,
-                )
+                const SizedBox(width: 8),
+                isFormDone
+                    ? GestureDetector(
+                        child: Image.asset(
+                          "assets/images/calender.png",
+                          height: 18,
+                        ),
+                        onTap: () async {
+                          result = await showDatePicker(
+                            context: context,
+                            initialDate: dateTime ?? DateTime.now(),
+                            firstDate: DateTime(1950),
+                            lastDate: DateTime(2101),
+                            helpText: "Select Date",
+                            builder: (BuildContext context, Widget? child) {
+                              return Theme(
+                                data: ThemeData.light().copyWith(
+                                  primaryColor: AppColors.darkSubHead,
+                                  hintColor: Colors.teal,
+                                  colorScheme: const ColorScheme.light(
+                                          primary: AppColors.dotColor)
+                                      .copyWith(background: Colors.blueGrey),
+                                ),
+                                child: child!,
+                              );
+                            },
+                          );
+                          if (result != null) {
+                            setState(() {
+                              dateTime = result;
+                              // _userDobController.text = DateFormat('dd/MM/yyyy').format(result!);
+
+                              print(result!.toLocal().toString());
+                            });
+                          }
+                        },
+                      )
+                    : GestureDetector(
+                        child: Image.asset(
+                          "assets/images/calender.png",
+                          height: 18,
+                        ),
+                        onTap: () async {
+                          showAlertDialog(context);
+                        },
+                      )
               ]),
             )
           ],
@@ -572,10 +771,10 @@ class HomeScreenState extends State<HomeScreen> {
         itemBuilder: (context, index) {
           Court court = filteredCourts[index];
           // Format start and end times
-          String startTime = DateFormat('h:mm a').format(
+          String startTime = DateFormat('h a').format(
             DateFormat('HH:mm:ss').parse(court.startTime),
           );
-          String endTime = DateFormat('h:mm a').format(
+          String endTime = DateFormat('h a').format(
             DateFormat('HH:mm:ss').parse(court.endTime),
           );
           return Padding(

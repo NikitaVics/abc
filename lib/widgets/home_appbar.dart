@@ -7,6 +7,7 @@ import 'package:tennis_court_booking_app/notifications/notification_screen.dart'
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/presentation/register/pageview/register_form.dart';
+import 'package:tennis_court_booking_app/profile/profileprovider/profile_provider.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/theme/theme_manager.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
@@ -18,13 +19,17 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isProgress;
   final int step;
   final bool isFormDone;
+  final String imageUrl;
+  final String name;
 
   const HomeAppBar(
       {Key? key,
       required this.title,
       required this.isBoarder,
       required this.isProgress,
-      required this.step, required this.isFormDone})
+      required this.step,
+      required this.isFormDone,
+      required this.imageUrl, required this.name})
       : super(key: key);
 
   @override
@@ -33,6 +38,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final themeNotifier = context.watch<ThemeModeNotifier>();
+
     return Padding(
       padding: const EdgeInsets.only(top: 12, left: 24, right: 24),
       child: Container(
@@ -40,75 +46,107 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
         height: 90,
         child: Center(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Padding(
                   padding: const EdgeInsets.only(left: 10),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(150.0),
-                    child: const SilentErrorImage(
-                      width: 48.0,
-                      height: 48.0,
-                      imageUrl:
-                          'https://upload.wikimedia.org/wikipedia/commons/f/f9/Phoenicopterus_ruber_in_S%C3%A3o_Paulo_Zoo.jpg',
-                    ),
+                    child: imageUrl.isNotEmpty
+                        ? SilentErrorImage(
+                            width: 48.0,
+                            height: 48.0,
+                            imageUrl: imageUrl,
+                          )
+                        : const Icon(
+                            Icons.account_circle, // or any other default icon
+                            size: 48.0,
+                            color: Colors.grey,
+                          ),
                   )),
               Padding(
                 padding: const EdgeInsets.only(left: 20, right: 10),
-                child: Text(
-                  "Hello",
-                  style: TextStyle(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.headingTextColor
-                        : AppColors.allHeadColor,
-                    fontFamily: FontFamily.satoshi,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    height: 24 / 16,
-                  ),
+                child: Row(
+                  children: [
+                    Text(
+                      "Hello",
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.headingTextColor
+                            : AppColors.allHeadColor,
+                        fontFamily: FontFamily.satoshi,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        height: 24 / 16,
+                      ),
+                    ),
+                    SizedBox(
+                      width:3,),
+                    Text(
+                      name??" ",
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.headingTextColor
+                            : AppColors.allHeadColor,
+                        fontFamily: FontFamily.satoshi,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w400,
+                        height: 24 / 16,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-             isFormDone?const SizedBox(): SizedBox(
-                            height: 34,
-                            child: OutlinedButton(
-                              onPressed: () async {
-                                SharedPreferences pref =
-                                    await SharedPreferences.getInstance();
-                                String? email = await SharePref.fetchEmail();
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        RegisterForm(email: email!),
-                                  ),
-                                );
-                              },
-                              style: OutlinedButton.styleFrom(
-                                backgroundColor: AppColors.errorback,
-                                foregroundColor: AppColors.errorColor,
-                                side: BorderSide(color: AppColors.errorColor),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                              ),
-                              child: const Text(
-                                'Complete profile',
-                                style: TextStyle(
-                                  fontFamily: FontFamily.satoshi,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  height: 24 / 14,
-                                ),
-                              ),
+              isFormDone
+                  ? const SizedBox()
+                  : SizedBox(
+                      height: 34,
+                      child: OutlinedButton(
+                        onPressed: () async {
+                          SharedPreferences pref =
+                              await SharedPreferences.getInstance();
+                          String? email = await SharePref.fetchEmail();
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => RegisterForm(email: email!),
                             ),
+                          );
+                        },
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: AppColors.errorback,
+                          foregroundColor: AppColors.errorColor,
+                          side: BorderSide(color: AppColors.errorColor),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
                           ),
-              GestureDetector(
-                onTap: () {
-                  showAlertDialog(context);
-                 
-                },
-                child: Image.asset(
-                  "assets/images/notification1.png",
-                  height: 25,
+                        ),
+                        child: const Text(
+                          'Complete profile',
+                          style: TextStyle(
+                            fontFamily: FontFamily.satoshi,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            height: 24 / 14,
+                          ),
+                        ),
+                      ),
+                    ),
+              Expanded(
+                child: Container(),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: GestureDetector(
+                    onTap: () {
+                      showAlertDialog(context);
+                    },
+                    child: Image.asset(
+                      "assets/images/notification1.png",
+                      height: 25,
+                    ),
+                  ),
                 ),
               )
               /*GestureDetector(

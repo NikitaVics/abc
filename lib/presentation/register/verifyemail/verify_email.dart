@@ -328,7 +328,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   isLoading = true;
                 });
                 value
-                    .verifyEmailForgotPasswordApi(
+                    .verifyEmail(
                   widget.email,
                   otp!,
                 )

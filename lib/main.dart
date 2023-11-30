@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/courtshowprovider.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
+import 'package:tennis_court_booking_app/profile/profileprovider/profile_provider.dart';
 import 'package:tennis_court_booking_app/splash/splash_screen.dart';
 
 import 'package:tennis_court_booking_app/theme/theme_manager.dart';
@@ -44,6 +45,9 @@ class _MyAppState extends State<MyApp> {
         ),
          ChangeNotifierProvider<CheckStatusProvider>(
           create: (context) => CheckStatusProvider(),
+        ),
+         ChangeNotifierProvider<ProfileProvider>(
+          create: (context) => ProfileProvider(),
         ),
          ChangeNotifierProvider<ThemeModeNotifier>(
           create: (context) =>ThemeModeNotifier(initialThemeMode: ThemeMode.light),

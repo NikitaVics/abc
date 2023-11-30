@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tennis_court_booking_app/presentation/home/model/checkstatus.dart';
+import 'package:tennis_court_booking_app/profile/model/profile_model.dart';
 import 'package:tennis_court_booking_app/tennismodel/teniscourt/court.dart';
 
 
@@ -104,6 +105,23 @@ static Future emaiVerificationForgotPassword(body) async {
     return jsonDecode(response.body);
   }
 
+  static Future emaiVerification(body) async {
+    var url = "$baseUrl/api/UsersAuth/Verify Email";
+    Map<String, String> headers = {
+      "content-Type": "application/json;  charset=UTF-8",
+    };
+   http.Response response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    print(response.body);
+
+   // final jsonData = json.decode(response.body);
+    return jsonDecode(response.body);
+  }
+
 static Future resetPassword(body) async {
     var url = "$baseUrl/api/UsersAuth/Reset Password";
     Map<String, String> headers = {
@@ -184,6 +202,28 @@ static Future<CheckStatus>  completeProfile(String bearerToken) async {
     print(response.body);
 
     return CheckStatus.fromJson(jsonDecode(response.body));
+  }
+
+  //profile show
+  static Future<ProfileModel> profileShow(String bearerToken) async {
+  
+    var url = "$baseUrl/api/Profile/View Profile";
+
+    // Convert the model to a JSON string
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+    };
+
+   
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+     
+    );
+
+    print(response.body);
+
+    return ProfileModel.fromJson(jsonDecode(response.body));
   }
 
   //Show court api
