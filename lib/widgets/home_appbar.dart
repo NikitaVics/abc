@@ -33,7 +33,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       : super(key: key);
 
   @override
-  Size get preferredSize => const Size.fromHeight(90);
+  Size get preferredSize => const Size.fromHeight(70);
 
   @override
   Widget build(BuildContext context) {
@@ -43,31 +43,24 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       padding: const EdgeInsets.only(top: 12, left: 24, right: 24),
       child: Container(
         color: Colors.white,
-        height: 90,
+        height: 62,
         child: Center(
           child: Row(
             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(150.0),
-                    child: imageUrl.isNotEmpty
-                        ? SilentErrorImage(
-                            width: 48.0,
-                            height: 48.0,
-                            imageUrl: imageUrl,
-                          )
-                        : const Icon(
-                            Icons.account_circle, // or any other default icon
-                            size: 48.0,
-                            color: Colors.grey,
-                          ),
-                  )),
+             
               Padding(
                 padding: const EdgeInsets.only(left: 20, right: 10),
                 child: Row(
                   children: [
+                    ClipRRect(
+              borderRadius: BorderRadius.circular(150.0),
+              child:  const Icon(
+                      Icons.account_circle, // or any other default icon
+                      size: 48.0,
+                      color: Colors.black,
+                    ),
+            ),
                     Text(
                       "Hello",
                       style: TextStyle(
@@ -367,11 +360,13 @@ class SilentErrorImage extends StatelessWidget {
       width: width,
       height: height,
       fit: BoxFit.fill,
-      errorBuilder:
-          (BuildContext context, Object exception, StackTrace? stackTrace) {
-        // Return an empty container (or any other widget) to silently handle errors
-        return SizedBox(width: width, height: height);
-      },
+      errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+    // Handle the error, e.g., display a placeholder image
+    return Image.asset("assets/images/userImage.png",
+     width: width,
+      height: height,
+    );
+  },
     );
   }
 }

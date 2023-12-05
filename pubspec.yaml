@@ -53,6 +53,7 @@ dependencies:
   lottie: ^2.7.0
   signalr_netcore: ^0.1.7+2-nullsafety.3
   persistent_bottom_nav_bar: ^5.0.2
+  getwidget: ^4.0.0
 
 dev_dependencies:
   flutter_test:

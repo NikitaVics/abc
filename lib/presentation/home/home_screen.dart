@@ -65,7 +65,7 @@ class HomeScreenState extends State<HomeScreen> {
     setState(() {
       loading = true;
     });
-    
+
     tokens = await SharePref.fetchAuthToken();
     print("Tokio $tokens");
     profileProvider.fetchProfile(tokens!);
@@ -75,176 +75,190 @@ class HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  bool? hasErrorMessage;
+
   @override
- Widget build(BuildContext context) {
-  return Consumer2<CheckStatusProvider, ProfileProvider>(
-    builder: (context, checkStatusProvider, profileProvider, child) {
-      if (checkStatusProvider.checkStatus == null ||
-          profileProvider.profileModel == null) {
-        profileProvider.fetchProfile(tokens ?? "");
-        checkStatusProvider.checkRegistrationStatus(tokens ?? "");
+  Widget build(BuildContext context) {
+    return Consumer2<CheckStatusProvider, ProfileProvider>(
+      builder: (context, checkStatusProvider, profileProvider, child) {
+        if (checkStatusProvider.checkStatus == null ||
+            profileProvider.profileModel == null) {
+          profileProvider.fetchProfile(tokens ?? "");
+          checkStatusProvider.checkRegistrationStatus(tokens ?? "");
 
-        return Center(
-          child: CircularProgressIndicator(),
-        );
-      } else {
-        imageUrl = profileProvider.profileModel?.result.imageUrl;
-        name = profileProvider.profileModel!.result.name;
-        bool hasErrorMessage = checkStatusProvider.checkStatus!.result;
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        } else {
+          imageUrl = profileProvider.profileModel?.result.imageUrl;
+          name = profileProvider.profileModel!.result.name;
+           hasErrorMessage = checkStatusProvider.checkStatus!.result;
+          List<String> nameParts = name.split(' ');
 
-        print("Nope $hasErrorMessage");
+// Extract the first name
+              String firstName = nameParts.isNotEmpty ? nameParts.first : '';
 
-        return loading == true
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
-            : Scaffold(
-                backgroundColor:
-                    Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.darkThemeback
-                        : AppColors.lightThemeback,
-                primary: true,
-                body: Column(
-                  children: [
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 12, left: 24, right: 24),
-                      child: Container(
-                        color: Colors.white,
-                        height: 90,
-                        child: Center(
-                          child: Row(
-                            children: [
-                              Container(
-                                height: 90,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 10),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(150.0),
-                                    child: imageUrl != null &&
-                                            imageUrl!.isNotEmpty
-                                        ? SilentErrorImage(
-                                            width: 48.0,
-                                            height: 48.0,
-                                            imageUrl: imageUrl!,
-                                          )
-                                        : const Icon(
-                                            Icons.account_circle,
-                                            size: 48.0,
-                                            color: Colors.grey,
-                                          ),
+          print("Nope $hasErrorMessage");
+
+          return loading == true
+              ? Center(
+                  child: CircularProgressIndicator(),
+                )
+              : Scaffold(
+                  backgroundColor:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.darkThemeback
+                          : AppColors.lightThemeback,
+                  primary: true,
+                  body: Column(
+                    children: [
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(top: 12),
+                        child: Container(
+                          color:  Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkTextInput
+                            : Colors.white,
+                          height: 90,
+                          width: MediaQuery.of(context).size.width,
+                          child: Center(
+                            child: Row(
+                              children: [
+                                Container(
+                                  height: 48,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 24),
+                                    child: ClipRRect(
+                                      borderRadius:
+                                          BorderRadius.circular(150.0),
+                                      child: imageUrl != null &&
+                                              imageUrl!.isNotEmpty
+                                          ? SilentErrorImage(
+                                              width: 48.0,
+                                              height: 48.0,
+                                              imageUrl: imageUrl!,
+                                            )
+                                          :  Image.asset("assets/images/userImage.png",
+                   width: 48.0,
+                      height: 48.0,)
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 20, right: 10),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      "Hello",
-                                      style: TextStyle(
-                                        color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? AppColors.headingTextColor
-                                            : AppColors.allHeadColor,
-                                        fontFamily: FontFamily.satoshi,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        height: 24 / 16,
+                                hasErrorMessage!?
+                                SizedBox(width: 20,)
+                                :SizedBox(width: 10,),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                     right: 10),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        "Hello",
+                                        style: TextStyle(
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? AppColors.headingTextColor
+                                              : AppColors.allHeadColor,
+                                          fontFamily: FontFamily.satoshi,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                          height: 24 / 16,
+                                        ),
                                       ),
-                                    ),
-                                    SizedBox(
-                                      width: 3,
-                                    ),
-                                    Text(
-                                      name ?? " ",
-                                      style: TextStyle(
-                                        color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? AppColors.headingTextColor
-                                            : AppColors.allHeadColor,
-                                        fontFamily: FontFamily.satoshi,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w400,
-                                        height: 24 / 16,
+                                      SizedBox(
+                                        width: 3,
                                       ),
-                                    ),
-                                  ],
+                                      Text(
+                                        firstName ?? " ",
+                                        style: TextStyle(
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? AppColors.headingTextColor
+                                              : AppColors.allHeadColor,
+                                          fontFamily: FontFamily.satoshi,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                          height: 24 / 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              hasErrorMessage
-                                  ? const SizedBox()
-                                  : SizedBox(
-                                      height: 34,
-                                      child: OutlinedButton(
-                                        onPressed: () async {
-                                          SharedPreferences pref =
-                                              await SharedPreferences
-                                                  .getInstance();
-                                          String? email =
-                                              await SharePref.fetchEmail();
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  RegisterForm(email: email!),
+                                hasErrorMessage!
+                                    ? const SizedBox()
+                                    : SizedBox(
+                                        height: 34,
+                                        child: OutlinedButton(
+                                          onPressed: () async {
+                                            SharedPreferences pref =
+                                                await SharedPreferences
+                                                    .getInstance();
+                                            String? email =
+                                                await SharePref.fetchEmail();
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    RegisterForm(email: email!),
+                                              ),
+                                            );
+                                          },
+                                          style: OutlinedButton.styleFrom(
+                                            backgroundColor:
+                                                AppColors.errorback,
+                                            foregroundColor:
+                                                AppColors.errorColor,
+                                            side: BorderSide(
+                                                color: AppColors.errorColor),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
                                             ),
-                                          );
-                                        },
-                                        style: OutlinedButton.styleFrom(
-                                          backgroundColor:
-                                              AppColors.errorback,
-                                          foregroundColor:
-                                              AppColors.errorColor,
-                                          side: BorderSide(
-                                              color: AppColors.errorColor),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20),
                                           ),
-                                        ),
-                                        child: const Text(
-                                          'Complete profile',
-                                          style: TextStyle(
-                                            fontFamily: FontFamily.satoshi,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w400,
-                                            height: 24 / 14,
+                                          child: const Text(
+                                            'Complete profile',
+                                            style: TextStyle(
+                                              fontFamily: FontFamily.satoshi,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w400,
+                                              height: 24 / 14,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                              Expanded(
-                                child: Container(),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 10),
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      showAlertDialog(context);
-                                    },
-                                    child: Image.asset(
-                                      "assets/images/notification1.png",
-                                      height: 25,
+                                Expanded(
+                                  child: Container(),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 24),
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        showAlertDialog(context);
+                                      },
+                                      child: Image.asset(
+                                        "assets/images/notification1.png",
+                                        height: 25,
+                                         color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.headingTextColor
+                      : Colors.black,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              )
-                            ],
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Expanded(child: _buildBody()),
-                  ],
-                ),
-              );
-      }
-    },
-  );
-}
+                      Expanded(child: _buildBody()),
+                    ],
+                  ),
+                );
+        }
+      },
+    );
+  }
 
   // body methods:--------------------------------------------------------------
   Widget _buildBody() {
@@ -343,7 +357,7 @@ class HomeScreenState extends State<HomeScreen> {
               "Book your ",
               style: TextStyle(
                 color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.headingTextColor
+                    ? AppColors.booklight
                     : AppColors.allHeadColor,
                 fontSize: 32,
                 fontFamily: FontFamily.satoshi,
@@ -355,7 +369,7 @@ class HomeScreenState extends State<HomeScreen> {
               "slot today ! ",
               style: TextStyle(
                 color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.headingTextColor
+                    ? AppColors.booklight
                     : AppColors.allHeadColor,
                 fontSize: 32,
                 fontFamily: FontFamily.satoshi,
@@ -370,16 +384,32 @@ class HomeScreenState extends State<HomeScreen> {
               height: 72,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8.0),
-                  color: Colors.white),
+                  color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkTextInput
+                    : Colors.white,),
               child: Row(children: [
                 SizedBox(
                   width: 21,
                 ),
+                result!=null?
+                
+                 Text(
+                  DateFormat('dd/MM/yyyy').format(result!),
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.darkSubHead
+                        : AppColors.subheadColor,
+                    fontSize: 14,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w700,
+                    height: 24 / 14,
+                  ),
+                ):
                 Text(
                   "Select Date",
                   style: TextStyle(
                     color: Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.headingTextColor
+                        ? AppColors.darkSubHead
                         : AppColors.subheadColor,
                     fontSize: 14,
                     fontFamily: FontFamily.satoshi,
@@ -388,11 +418,14 @@ class HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                isFormDone
+                hasErrorMessage!
                     ? GestureDetector(
                         child: Image.asset(
                           "assets/images/calender.png",
                           height: 18,
+                          color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.darkSubHead
+                        : AppColors.subheadColor,
                         ),
                         onTap: () async {
                           result = await showDatePicker(
@@ -418,8 +451,8 @@ class HomeScreenState extends State<HomeScreen> {
                             setState(() {
                               dateTime = result;
                               // _userDobController.text = DateFormat('dd/MM/yyyy').format(result!);
-
-                              print(result!.toLocal().toString());
+                              
+                              print("yp${result!.toLocal().toString()}");
                             });
                           }
                         },
@@ -452,8 +485,9 @@ class HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: FocusScope(
             // Manage keyboard focus
-            child: isFormDone
-                ? CustomElevatedButton(
+            child: hasErrorMessage!
+                ?  result!=null?
+                CustomElevatedButton(
                     height: 60,
                     width: MediaQuery.of(context).orientation ==
                             Orientation.landscape
@@ -462,19 +496,24 @@ class HomeScreenState extends State<HomeScreen> {
                     isLoading: false,
                     text: "Start Booking",
                     onPressed: () async {
-                      FocusManager.instance.primaryFocus?.unfocus();
-                      SharedPreferences pref =
-                          await SharedPreferences.getInstance();
-
-                      pref.remove('authToken');
-
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const LoginScreen()));
+                     
                     },
                     buttonColor: AppColors.elevatedColor,
                     textColor: Colors.white,
+                  ):
+                  CustomElevatedButton(
+                    height: 60,
+                    width: MediaQuery.of(context).orientation ==
+                            Orientation.landscape
+                        ? 70
+                        : double.infinity,
+                    isLoading: false,
+                    text: "Start Booking",
+                    onPressed: () async {
+                     
+                    },
+                    buttonColor: AppColors.buttonwithvalue,
+                    textColor: AppColors.buttonmid,
                   )
                 : CustomElevatedButton(
                     height: 60,
@@ -706,7 +745,9 @@ class HomeScreenState extends State<HomeScreen> {
                       decorationThickness: 3.0,
                       color: juniorColor
                           ? AppColors.dotColor
-                          : const Color.fromRGBO(0, 0, 0, 0.50),
+                          : Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.darkSubHead
+                        : Color.fromRGBO(0, 0, 0, 0.50), 
                       fontSize: 12,
                       fontFamily: FontFamily.satoshi,
                       fontWeight: FontWeight.w700,
@@ -739,7 +780,9 @@ class HomeScreenState extends State<HomeScreen> {
                       decorationThickness: 3.0,
                       color: seniorColor
                           ? AppColors.dotColor
-                          : const Color.fromRGBO(0, 0, 0, 0.50),
+                          : Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.darkSubHead
+                        : Color.fromRGBO(0, 0, 0, 0.50), 
                       fontSize: 12,
                       fontFamily: FontFamily.satoshi,
                       fontWeight: FontWeight.w700,
@@ -782,7 +825,10 @@ class HomeScreenState extends State<HomeScreen> {
             child: Container(
               width: 145,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.darkTextInput
+                        : Colors.white,
+                
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Container(
@@ -822,7 +868,10 @@ class HomeScreenState extends State<HomeScreen> {
                                 child: Text(
                                   court.courtName,
                                   style: TextStyle(
-                                    color: AppColors.allHeadColor,
+                                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.booklight
+                        : 
+                                    AppColors.allHeadColor,
                                     fontSize: 16,
                                     fontFamily: FontFamily.satoshi,
                                     fontWeight: FontWeight.w500,
@@ -835,7 +884,9 @@ class HomeScreenState extends State<HomeScreen> {
                                 child: Text(
                                   "${startTime} - ${endTime}",
                                   style: TextStyle(
-                                    color: AppColors.hintColor,
+                                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.darkSubHead
+                        : AppColors.hintColor,
                                     fontSize: 12,
                                     fontFamily: FontFamily.satoshi,
                                     fontWeight: FontWeight.w400,
@@ -852,6 +903,9 @@ class HomeScreenState extends State<HomeScreen> {
                               child: Image.asset(
                                 "assets/images/Right.png",
                                 height: 24,
+                                color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.headingTextColor
+                        : Colors.black,
                               ),
                             ),
                           ),
@@ -911,7 +965,11 @@ class HomeScreenState extends State<HomeScreen> {
       child: Container(
         height: 138,
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(12)),
+            color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.darkTextInput
+                        : Colors.white,
+            
+            borderRadius: BorderRadius.circular(12)),
         child: Row(
           children: [
             Padding(
@@ -927,12 +985,15 @@ class HomeScreenState extends State<HomeScreen> {
                 SizedBox(
                   width: 147,
                   child: RichText(
-                    text: const TextSpan(
+                    text: TextSpan(
                       children: <TextSpan>[
                         TextSpan(
                           text: "No Recent Bookings  ",
                           style: TextStyle(
-                            color: AppColors.subheadColor,
+                            color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.booklight
+                        : 
+                            AppColors.subheadColor,
                             fontSize: 12,
                             fontFamily: FontFamily.satoshi,
                             fontWeight: FontWeight.w400,
@@ -954,7 +1015,10 @@ class HomeScreenState extends State<HomeScreen> {
                           text:
                               'to start booking', // The second half of the sentence
                           style: TextStyle(
-                            color: AppColors.hintColor,
+                            color:  Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.darkSubHead
+                        : 
+                           AppColors.hintColor,
                             fontSize: 12,
                             fontFamily: FontFamily.satoshi,
                             fontWeight: FontWeight.w400,

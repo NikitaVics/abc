@@ -35,4 +35,11 @@ class AppColors {
   static const disableNavIconColor = Color(0xff979797);
   static const navIconColor = Color(0xff4EcB71);
   static const profileHead = Color(0xff343434);
+  static const bookingInvalid = Color(0xffA2A2A3);
+  static const buttonwithvalue = Color(0xffC8EFD3);
+  static const buttonmid = Color(0xff379050);
+  static const disableSwitch = Color(0xffE6E0E9);
+  static const disableswitchmiddle = Color(0xff79747E);
+  static const profileDarkText = Color(0xffE0E0E2);
+  static const booklight = Color(0xffFEFEFE);
 }

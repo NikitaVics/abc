@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/mybookings/my_bookings.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_screen.dart';
 import 'package:tennis_court_booking_app/profile/profile_screen.dart';
 
@@ -37,6 +38,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     return SafeArea(
       top: false,
       child: Scaffold(
+        
         body: PageView(
           controller: pageController,
           onPageChanged: (index) {
@@ -44,12 +46,13 @@ class _BottomNavBarState extends State<BottomNavBar> {
           },
           children: const <Widget>[
             HomeScreen(),
-            ProfileScreen(),
+            MyBookingScreen(),
             ProfileScreen(),
             ProfileScreen()
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
+         
             items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 icon: NavBarItem(
@@ -121,7 +124,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
               ),
              
             ],
-            backgroundColor: const Color(0xFFffffff),
+            backgroundColor: 
+            Theme.of(context).brightness == Brightness.dark
+            ? AppColors.darkTextInput
+            : Color(0xFFffffff),
+            
             type: BottomNavigationBarType.fixed,
             currentIndex: _selectedIndex,
             // selectedItemColor: Color(0xff41FFF4),
