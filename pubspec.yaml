@@ -54,6 +54,7 @@ dependencies:
   signalr_netcore: ^0.1.7+2-nullsafety.3
   persistent_bottom_nav_bar: ^5.0.2
   getwidget: ^4.0.0
+  date_picker_timeline: ^1.2.5
 
 dev_dependencies:
   flutter_test:

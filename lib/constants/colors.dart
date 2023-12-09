@@ -42,4 +42,5 @@ class AppColors {
   static const disableswitchmiddle = Color(0xff79747E);
   static const profileDarkText = Color(0xffE0E0E2);
   static const booklight = Color(0xffFEFEFE);
+  static const dateColor = Color(0xff4CBC7B);
 }

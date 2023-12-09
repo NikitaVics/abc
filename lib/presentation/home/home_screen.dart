@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tennis_court_booking_app/api/api.dart';
+import 'package:tennis_court_booking_app/bookingprocess/booking_court.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
@@ -14,6 +15,7 @@ import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_pro
 import 'package:tennis_court_booking_app/presentation/register/pageview/register_form.dart';
 import 'package:tennis_court_booking_app/profile/model/profile_model.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/profile_provider.dart';
+import 'package:tennis_court_booking_app/provider/booking_response_provider.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/tennismodel/teniscourt/court.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
@@ -42,6 +44,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   DateTime? dateTime;
   DateTime? result;
+  DateTime? results;
   String? imageUrl;
   //SignInProvider? provider;
 
@@ -92,11 +95,11 @@ class HomeScreenState extends State<HomeScreen> {
         } else {
           imageUrl = profileProvider.profileModel?.result.imageUrl;
           name = profileProvider.profileModel!.result.name;
-           hasErrorMessage = checkStatusProvider.checkStatus!.result;
+          hasErrorMessage = checkStatusProvider.checkStatus!.result;
           List<String> nameParts = name.split(' ');
 
 // Extract the first name
-              String firstName = nameParts.isNotEmpty ? nameParts.first : '';
+          String firstName = nameParts.isNotEmpty ? nameParts.first : '';
 
           print("Nope $hasErrorMessage");
 
@@ -113,12 +116,11 @@ class HomeScreenState extends State<HomeScreen> {
                   body: Column(
                     children: [
                       Padding(
-                        padding:
-                            const EdgeInsets.only(top: 12),
+                        padding: const EdgeInsets.only(top: 12),
                         child: Container(
-                          color:  Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.darkTextInput
-                            : Colors.white,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.darkTextInput
+                              : Colors.white,
                           height: 90,
                           width: MediaQuery.of(context).size.width,
                           child: Center(
@@ -129,27 +131,31 @@ class HomeScreenState extends State<HomeScreen> {
                                   child: Padding(
                                     padding: const EdgeInsets.only(left: 24),
                                     child: ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(150.0),
-                                      child: imageUrl != null &&
-                                              imageUrl!.isNotEmpty
-                                          ? SilentErrorImage(
-                                              width: 48.0,
-                                              height: 48.0,
-                                              imageUrl: imageUrl!,
-                                            )
-                                          :  Image.asset("assets/images/userImage.png",
-                   width: 48.0,
-                      height: 48.0,)
-                                    ),
+                                        borderRadius:
+                                            BorderRadius.circular(150.0),
+                                        child: imageUrl != null &&
+                                                imageUrl!.isNotEmpty
+                                            ? SilentErrorImage(
+                                                width: 48.0,
+                                                height: 48.0,
+                                                imageUrl: imageUrl!,
+                                              )
+                                            : Image.asset(
+                                                "assets/images/userImage.png",
+                                                width: 48.0,
+                                                height: 48.0,
+                                              )),
                                   ),
                                 ),
-                                hasErrorMessage!?
-                                SizedBox(width: 20,)
-                                :SizedBox(width: 10,),
+                                hasErrorMessage!
+                                    ? SizedBox(
+                                        width: 20,
+                                      )
+                                    : SizedBox(
+                                        width: 10,
+                                      ),
                                 Padding(
-                                  padding: const EdgeInsets.only(
-                                     right: 10),
+                                  padding: const EdgeInsets.only(right: 10),
                                   child: Row(
                                     children: [
                                       Text(
@@ -239,9 +245,10 @@ class HomeScreenState extends State<HomeScreen> {
                                       child: Image.asset(
                                         "assets/images/notification1.png",
                                         height: 25,
-                                         color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.headingTextColor
-                      : Colors.black,
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.headingTextColor
+                                            : Colors.black,
                                       ),
                                     ),
                                   ),
@@ -262,35 +269,44 @@ class HomeScreenState extends State<HomeScreen> {
 
   // body methods:--------------------------------------------------------------
   Widget _buildBody() {
-    return Material(
-      color: Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkThemeback
-          : AppColors.homeBack,
-      child: Stack(
-        children: <Widget>[
-          MediaQuery.of(context).orientation == Orientation.landscape
-              ? Row(
-                  children: <Widget>[
-                    Expanded(child: _buildLeftSide()),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: _buildRightSide(),
-                          ),
-                          // _buildSignInButton()
-                        ],
+    return WillPopScope(
+      onWillPop: () async {
+        print("WillPopScope triggered");
+        setState(() {
+          result = null;
+        });
+        return true;
+      },
+      child: Material(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.darkThemeback
+            : AppColors.homeBack,
+        child: Stack(
+          children: <Widget>[
+            MediaQuery.of(context).orientation == Orientation.landscape
+                ? Row(
+                    children: <Widget>[
+                      Expanded(child: _buildLeftSide()),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: _buildRightSide(),
+                            ),
+                            // _buildSignInButton()
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                )
-              : Column(
-                  children: [
-                    Expanded(child: _buildRightSide()),
-                    // _buildSignInButton()
-                  ],
-                ),
-        ],
+                    ],
+                  )
+                : Column(
+                    children: [
+                      Expanded(child: _buildRightSide()),
+                      // _buildSignInButton()
+                    ],
+                  ),
+          ],
+        ),
       ),
     );
   }
@@ -383,40 +399,40 @@ class HomeScreenState extends State<HomeScreen> {
             Container(
               height: 72,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.0),
-                  color: Theme.of(context).brightness == Brightness.dark
+                borderRadius: BorderRadius.circular(8.0),
+                color: Theme.of(context).brightness == Brightness.dark
                     ? AppColors.darkTextInput
-                    : Colors.white,),
+                    : Colors.white,
+              ),
               child: Row(children: [
                 SizedBox(
                   width: 21,
                 ),
-                result!=null?
-                
-                 Text(
-                  DateFormat('dd/MM/yyyy').format(result!),
-                  style: TextStyle(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.darkSubHead
-                        : AppColors.subheadColor,
-                    fontSize: 14,
-                    fontFamily: FontFamily.satoshi,
-                    fontWeight: FontWeight.w700,
-                    height: 24 / 14,
-                  ),
-                ):
-                Text(
-                  "Select Date",
-                  style: TextStyle(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.darkSubHead
-                        : AppColors.subheadColor,
-                    fontSize: 14,
-                    fontFamily: FontFamily.satoshi,
-                    fontWeight: FontWeight.w700,
-                    height: 24 / 14,
-                  ),
-                ),
+                results != null
+                    ? Text(
+                        DateFormat('dd/MM/yyyy').format(results!),
+                        style: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.darkSubHead
+                              : AppColors.subheadColor,
+                          fontSize: 14,
+                          fontFamily: FontFamily.satoshi,
+                          fontWeight: FontWeight.w700,
+                          height: 24 / 14,
+                        ),
+                      )
+                    : Text(
+                        "Select Date",
+                        style: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.darkSubHead
+                              : AppColors.subheadColor,
+                          fontSize: 14,
+                          fontFamily: FontFamily.satoshi,
+                          fontWeight: FontWeight.w700,
+                          height: 24 / 14,
+                        ),
+                      ),
                 const SizedBox(width: 8),
                 hasErrorMessage!
                     ? GestureDetector(
@@ -424,8 +440,8 @@ class HomeScreenState extends State<HomeScreen> {
                           "assets/images/calender.png",
                           height: 18,
                           color: Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.darkSubHead
-                        : AppColors.subheadColor,
+                              ? AppColors.darkSubHead
+                              : AppColors.subheadColor,
                         ),
                         onTap: () async {
                           result = await showDatePicker(
@@ -450,8 +466,9 @@ class HomeScreenState extends State<HomeScreen> {
                           if (result != null) {
                             setState(() {
                               dateTime = result;
+                              results = result;
                               // _userDobController.text = DateFormat('dd/MM/yyyy').format(result!);
-                              
+
                               print("yp${result!.toLocal().toString()}");
                             });
                           }
@@ -486,35 +503,50 @@ class HomeScreenState extends State<HomeScreen> {
         child: FocusScope(
             // Manage keyboard focus
             child: hasErrorMessage!
-                ?  result!=null?
-                CustomElevatedButton(
-                    height: 60,
-                    width: MediaQuery.of(context).orientation ==
-                            Orientation.landscape
-                        ? 70
-                        : double.infinity,
-                    isLoading: false,
-                    text: "Start Booking",
-                    onPressed: () async {
-                     
-                    },
-                    buttonColor: AppColors.elevatedColor,
-                    textColor: Colors.white,
-                  ):
-                  CustomElevatedButton(
-                    height: 60,
-                    width: MediaQuery.of(context).orientation ==
-                            Orientation.landscape
-                        ? 70
-                        : double.infinity,
-                    isLoading: false,
-                    text: "Start Booking",
-                    onPressed: () async {
-                     
-                    },
-                    buttonColor: AppColors.buttonwithvalue,
-                    textColor: AppColors.buttonmid,
-                  )
+                ? results != null
+                    ? CustomElevatedButton(
+                        height: 60,
+                        width: MediaQuery.of(context).orientation ==
+                                Orientation.landscape
+                            ? 70
+                            : double.infinity,
+                        isLoading: false,
+                        text: "Start Booking",
+                        onPressed: () async {
+                          final newResult = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => BookingCourtScreen(
+                                      result: result!,
+                                    )),
+                          );
+
+                          // Update result with the value returned from the second screen
+                          setState(() {
+                            results = null;
+                          });
+
+                          /*await context
+                            .read<BookingResponseProvider>()
+                            .fetchBookingResponse(
+                            result!.toUtc().toIso8601String(),
+                            );*/
+                        },
+                        buttonColor: AppColors.elevatedColor,
+                        textColor: Colors.white,
+                      )
+                    : CustomElevatedButton(
+                        height: 60,
+                        width: MediaQuery.of(context).orientation ==
+                                Orientation.landscape
+                            ? 70
+                            : double.infinity,
+                        isLoading: false,
+                        text: "Start Booking",
+                        onPressed: () async {},
+                        buttonColor: AppColors.buttonwithvalue,
+                        textColor: AppColors.buttonmid,
+                      )
                 : CustomElevatedButton(
                     height: 60,
                     width: MediaQuery.of(context).orientation ==
@@ -746,8 +778,8 @@ class HomeScreenState extends State<HomeScreen> {
                       color: juniorColor
                           ? AppColors.dotColor
                           : Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.darkSubHead
-                        : Color.fromRGBO(0, 0, 0, 0.50), 
+                              ? AppColors.darkSubHead
+                              : Color.fromRGBO(0, 0, 0, 0.50),
                       fontSize: 12,
                       fontFamily: FontFamily.satoshi,
                       fontWeight: FontWeight.w700,
@@ -781,8 +813,8 @@ class HomeScreenState extends State<HomeScreen> {
                       color: seniorColor
                           ? AppColors.dotColor
                           : Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.darkSubHead
-                        : Color.fromRGBO(0, 0, 0, 0.50), 
+                              ? AppColors.darkSubHead
+                              : Color.fromRGBO(0, 0, 0, 0.50),
                       fontSize: 12,
                       fontFamily: FontFamily.satoshi,
                       fontWeight: FontWeight.w700,
@@ -826,9 +858,8 @@ class HomeScreenState extends State<HomeScreen> {
               width: 145,
               decoration: BoxDecoration(
                 color: Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.darkTextInput
-                        : Colors.white,
-                
+                    ? AppColors.darkTextInput
+                    : Colors.white,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Container(
@@ -868,10 +899,10 @@ class HomeScreenState extends State<HomeScreen> {
                                 child: Text(
                                   court.courtName,
                                   style: TextStyle(
-                                    color: Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.booklight
-                        : 
-                                    AppColors.allHeadColor,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.booklight
+                                        : AppColors.allHeadColor,
                                     fontSize: 16,
                                     fontFamily: FontFamily.satoshi,
                                     fontWeight: FontWeight.w500,
@@ -884,9 +915,10 @@ class HomeScreenState extends State<HomeScreen> {
                                 child: Text(
                                   "${startTime} - ${endTime}",
                                   style: TextStyle(
-                                    color: Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.darkSubHead
-                        : AppColors.hintColor,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.darkSubHead
+                                        : AppColors.hintColor,
                                     fontSize: 12,
                                     fontFamily: FontFamily.satoshi,
                                     fontWeight: FontWeight.w400,
@@ -903,9 +935,10 @@ class HomeScreenState extends State<HomeScreen> {
                               child: Image.asset(
                                 "assets/images/Right.png",
                                 height: 24,
-                                color: Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.headingTextColor
-                        : Colors.black,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : Colors.black,
                               ),
                             ),
                           ),
@@ -966,9 +999,8 @@ class HomeScreenState extends State<HomeScreen> {
         height: 138,
         decoration: BoxDecoration(
             color: Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.darkTextInput
-                        : Colors.white,
-            
+                ? AppColors.darkTextInput
+                : Colors.white,
             borderRadius: BorderRadius.circular(12)),
         child: Row(
           children: [
@@ -990,10 +1022,10 @@ class HomeScreenState extends State<HomeScreen> {
                         TextSpan(
                           text: "No Recent Bookings  ",
                           style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.booklight
-                        : 
-                            AppColors.subheadColor,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.booklight
+                                    : AppColors.subheadColor,
                             fontSize: 12,
                             fontFamily: FontFamily.satoshi,
                             fontWeight: FontWeight.w400,
@@ -1015,10 +1047,10 @@ class HomeScreenState extends State<HomeScreen> {
                           text:
                               'to start booking', // The second half of the sentence
                           style: TextStyle(
-                            color:  Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.darkSubHead
-                        : 
-                           AppColors.hintColor,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.darkSubHead
+                                    : AppColors.hintColor,
                             fontSize: 12,
                             fontFamily: FontFamily.satoshi,
                             fontWeight: FontWeight.w400,
@@ -1045,6 +1077,39 @@ class HomeScreenState extends State<HomeScreen> {
     // Clean up the controller when the Widget is removed from the Widget tree
 
     _passwordFocusNode.dispose();
+    result = null;
     super.dispose();
+  }
+}
+
+class SilentErrorImage extends StatelessWidget {
+  final String imageUrl;
+  final double width;
+  final double height;
+
+  const SilentErrorImage({
+    super.key,
+    required this.imageUrl,
+    this.width = 48.0,
+    this.height = 48.0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.network(
+      imageUrl,
+      width: width,
+      height: height,
+      fit: BoxFit.fill,
+      errorBuilder:
+          (BuildContext context, Object error, StackTrace? stackTrace) {
+        // Handle the error, e.g., display a placeholder image
+        return Image.asset(
+          "assets/images/userImage.png",
+          width: width,
+          height: height,
+        );
+      },
+    );
   }
 }

@@ -168,7 +168,10 @@ class ProfileScreenState extends State<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Center(child: _buildLoginText()),
-                  _buildProfilePerfomence()
+                  _buildProfilePerfomence(),
+                  SizedBox(
+                    height: 20,
+                  ),
                 ],
               );
             }
@@ -183,529 +186,539 @@ class ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.only(top: 28),
         child: Center(
           child:
-              Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
-            ClipRRect(
-                borderRadius: BorderRadius.circular(150.0),
-                child: imageUrl != null && imageUrl!.isNotEmpty
-                    ? SilentErrorImage(
-                        width: 80.0,
-                        height: 80.0,
-                        imageUrl: imageUrl!,
-                      )
-                    : Image.asset(
-                        "assets/images/userImage.png",
-                        width: 80.0,
-                        height: 80.0,
-                      )),
-            SizedBox(
-              height: 8,
-            ),
-            Text(
-              name,
-              style: TextStyle(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.headingTextColor
-                    : AppColors.allHeadColor,
-                fontSize: 20,
-                fontFamily: FontFamily.satoshi,
-                fontWeight: FontWeight.w700,
-                height: 32 / 20,
+              MediaQuery(
+                 data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                          ClipRRect(
+                  borderRadius: BorderRadius.circular(150.0),
+                  child: imageUrl != null && imageUrl!.isNotEmpty
+                      ? SilentErrorImage(
+                          width: 80.0,
+                          height: 80.0,
+                          imageUrl: imageUrl!,
+                        )
+                      : Image.asset(
+                          "assets/images/userImage.png",
+                          width: 80.0,
+                          height: 80.0,
+                        )),
+                          SizedBox(
+                height: 8,
+                          ),
+                          Text(
+                name,
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.headingTextColor
+                      : AppColors.allHeadColor,
+                  fontSize: 20,
+                  fontFamily: FontFamily.satoshi,
+                  fontWeight: FontWeight.w700,
+                  height: 32 / 20,
+                ),
+                          ),
+                          const SizedBox(
+                height: 20,
+                          ),
+                        ]),
               ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-          ]),
         ));
   }
 
   Widget _buildProfilePerfomence() {
     final themeNotifier = context.watch<ThemeModeNotifier>();
+    final textScaleFactor = MediaQuery.of(context).textScaleFactor;
     return Padding(
         padding: const EdgeInsets.only(top: 20),
         child: Center(
           child: Container(
-            height: 436,
+           // height: 436,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12.0), color: 
                 Theme.of(context).brightness == Brightness.dark
                               ? AppColors.darkTextInput
                               : Colors.white,
                 ),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 21,
-                    ),
-                    Container(
-                      height: 17,
-                      width: 17,
-                      child: GestureDetector(
-                          onTap: () async {},
-                          child: Image.asset(
-                            "assets/images/Profile1.png",
-                            height: 15,
-                            color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.darkSubHead
-                              : AppColors.subheadColor,
-                          )),
-                    ),
-                    const SizedBox(width: 25),
-                    GestureDetector(
-                      onTap: () async {},
-                      child: Text(
-                        "My Profile",
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
-                          fontSize: 16,
-                          fontFamily: FontFamily.satoshi,
-                          fontWeight: FontWeight.w500,
-                          height: 24 / 16,
-                        ),
+            child: MediaQuery(
+               data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 21,
                       ),
-                    ),
-                    Expanded(
-                      child: Container(),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20),
-                      child: Align(
-                        alignment: Alignment.centerRight,
+                      Container(
+                        height: 17,
+                        width: 17,
                         child: GestureDetector(
                             onTap: () async {},
                             child: Image.asset(
-                              "assets/images/Right3.png",
-                              width: 24,
-                              height: 24,
+                              "assets/images/Profile1.png",
+                              height: 15,
                               color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
+                                ? AppColors.darkSubHead
+                                : AppColors.subheadColor,
                             )),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 26,
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 21,
-                    ),
-                    Container(
-                      height: 17,
-                      width: 17,
-                      child: GestureDetector(
-                          onTap: () async {},
-                          child: Image.asset(
-                            "assets/images/Card1.png",
-                            height: 15,
-                             color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
-                          )),
-                    ),
-                    const SizedBox(width: 25),
-                    GestureDetector(
-                      onTap: () async {},
-                      child: Text(
-                        "Membership",
-                        style: TextStyle(
-                          color:Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
-                          fontSize: 16,
-                          fontFamily: FontFamily.satoshi,
-                          fontWeight: FontWeight.w500,
-                          height: 24 / 16,
+                      const SizedBox(width: 25),
+                      GestureDetector(
+                        onTap: () async {},
+                        child: Text(
+                          "My Profile",
+                          style: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                            fontSize: 16* textScaleFactor,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w500,
+                            height: 24 / 16,
+                          ),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: Container(),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20),
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: GestureDetector(
-                            onTap: () async {},
-                            child: Image.asset(
-                              "assets/images/Right3.png",
-                              width: 24,
-                              height: 24,
-                               color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
-                            )),
+                      Expanded(
+                        child: Container(),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 26,
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 21,
-                    ),
-                    Container(
-                      height: 17,
-                      width: 17,
-                      child: GestureDetector(
-                          onTap: () async {},
-                          child: Image.asset(
-                            "assets/images/Group3.png",
-                            height: 15,
-                             color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
-                          )),
-                    ),
-                    const SizedBox(width: 25),
-                    GestureDetector(
-                      onTap: () async {},
-                      child: Text(
-                        "My Team",
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
-                          fontSize: 16,
-                          fontFamily: FontFamily.satoshi,
-                          fontWeight: FontWeight.w500,
-                          height: 24 / 16,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20),
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: GestureDetector(
-                            onTap: () async {},
-                            child: Image.asset(
-                              "assets/images/Right3.png",
-                              width: 24,
-                              height: 24,
-                               color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
-                            )),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 26,
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 21,
-                    ),
-                    Container(
-                      height: 17,
-                      width: 17,
-                      child: GestureDetector(
-                          onTap: () async {},
-                          child: Image.asset(
-                            "assets/images/Notification3.png",
-                            height: 15,
-                             color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
-                          )),
-                    ),
-                    const SizedBox(width: 25),
-                    GestureDetector(
-                      onTap: () async {},
-                      child: Text(
-                        "Notifications",
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
-                          fontSize: 16,
-                          fontFamily: FontFamily.satoshi,
-                          fontWeight: FontWeight.w500,
-                          height: 24 / 16,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 20),
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: GestureDetector(
-                            onTap: () async {},
-                            child: Image.asset(
-                              "assets/images/Right3.png",
-                              width: 24,
-                              height: 24,
-                               color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
-                            )),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 26,
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 21,
-                    ),
-                    Container(
-                      height: 17,
-                      width: 17,
-                      child: GestureDetector(
-                          onTap: () async {},
-                          child: Image.asset(
-                            "assets/images/Document5.png",
-                            height: 15,
-                             color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
-                          )),
-                    ),
-                    const SizedBox(width: 25),
-                    GestureDetector(
-                      onTap: () async {},
-                      child: Text(
-                        "Languages - English",
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
-                          fontSize: 16,
-                          fontFamily: FontFamily.satoshi,
-                          fontWeight: FontWeight.w500,
-                          height: 24 / 16,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10, top: 0),
-                      child: Align(
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Align(
                           alignment: Alignment.centerRight,
-                          child: Transform.scale(
-                            scale: 0.6,
-                            child: SizedBox(
-                              height: 20,
-                              child: CupertinoSwitch(
-                                trackColor: AppColors.disableSwitch,
-                                thumbColor: Colors.white,
-                                activeColor: AppColors.confirmValid,
-                                value: state,
-                                onChanged: (value) {
-                                  state = value;
-                                  setState(
-                                    () {},
-                                  );
-                                },
-                              ),
-                            ),
-                          )),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 26,
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 21,
-                    ),
-                    Container(
-                      height: 17,
-                      width: 17,
-                      child: GestureDetector(
-                          onTap: () async {},
-                          child: Image.asset(
-                            "assets/images/Sun1.png",
-                            height: 15,
-                             color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
-                          )),
-                    ),
-                    const SizedBox(width: 25),
-                    GestureDetector(
-                      onTap: () async {},
-                      child: Text(
-                        "Light Mode",
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
-                          fontSize: 16,
-                          fontFamily: FontFamily.satoshi,
-                          fontWeight: FontWeight.w500,
-                          height: 24 / 16,
+                          child: GestureDetector(
+                              onTap: () async {},
+                              child: Image.asset(
+                                "assets/images/Right3.png",
+                                width: 24,
+                                height: 24,
+                                color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                              )),
                         ),
                       ),
-                    ),
-                    Expanded(
-                      child: Container(),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 10, top: 0),
-                      child: Align(
+                    ],
+                  ),
+                  SizedBox(
+                    height: 26,
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 21,
+                      ),
+                      Container(
+                        height: 17,
+                        width: 17,
+                        child: GestureDetector(
+                            onTap: () async {},
+                            child: Image.asset(
+                              "assets/images/Card1.png",
+                              height: 15,
+                               color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                            )),
+                      ),
+                      const SizedBox(width: 25),
+                      GestureDetector(
+                        onTap: () async {},
+                        child: Text(
+                          "Membership",
+                          style: TextStyle(
+                            color:Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                            fontSize: 16* textScaleFactor,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w500,
+                            height: 24 / 16,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Align(
                           alignment: Alignment.centerRight,
-                          child: Transform.scale(
-                            scale: 0.6,
-                            child: SizedBox(
-                              height: 20,
-                              child: CupertinoSwitch(
-                                trackColor: AppColors.disableSwitch,
-                                thumbColor: Colors.white,
-                                activeColor: AppColors.confirmValid,
-                                value: themeNotifier.themeMode == ThemeMode.light,
-                                onChanged: (value) {
-                                 
-                                  setState(
-                                    () {
-                                      final newMode = value
-                                          ? ThemeMode.light
-                                          : ThemeMode.dark;
-                                      themeNotifier.setThemeMode(newMode);
-                                    },
-                                  );
-                                },
-                              ),
+                          child: GestureDetector(
+                              onTap: () async {},
+                              child: Image.asset(
+                                "assets/images/Right3.png",
+                                width: 24,
+                                height: 24,
+                                 color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                              )),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 26,
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 21,
+                      ),
+                      Container(
+                        height: 17,
+                        width: 17,
+                        child: GestureDetector(
+                            onTap: () async {},
+                            child: Image.asset(
+                              "assets/images/Group3.png",
+                              height: 15,
+                               color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                            )),
+                      ),
+                      const SizedBox(width: 25),
+                      GestureDetector(
+                        onTap: () async {},
+                        child: Text(
+                          "My Team",
+                          style: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                            fontSize: 16* textScaleFactor,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w500,
+                            height: 24 / 16,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                              onTap: () async {},
+                              child: Image.asset(
+                                "assets/images/Right3.png",
+                                width: 24,
+                                height: 24,
+                                 color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                              )),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 26,
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 21,
+                      ),
+                      Container(
+                        height: 17,
+                        width: 17,
+                        child: GestureDetector(
+                            onTap: () async {},
+                            child: Image.asset(
+                              "assets/images/Notification3.png",
+                              height: 15,
+                               color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                            )),
+                      ),
+                      const SizedBox(width: 25),
+                      GestureDetector(
+                        onTap: () async {},
+                        child: Text(
+                          "Notifications",
+                          style: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                            fontSize: 16* textScaleFactor,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w500,
+                            height: 24 / 16,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: GestureDetector(
+                              onTap: () async {},
+                              child: Image.asset(
+                                "assets/images/Right3.png",
+                                width: 24,
+                                height: 24,
+                                 color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                              )),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 26,
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 21,
+                      ),
+                      Container(
+                        height: 17,
+                        width: 17,
+                        child: GestureDetector(
+                            onTap: () async {},
+                            child: Image.asset(
+                              "assets/images/Document5.png",
+                              height: 15,
+                               color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                            )),
+                      ),
+                      const SizedBox(width: 25),
+                      GestureDetector(
+                        onTap: () async {},
+                        child: MediaQuery(
+                           data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                          child: Text(
+                            "Languages - English",
+                            style: TextStyle(
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? AppColors.profileDarkText
+                                  : AppColors.subheadColor,
+                              fontSize: 16* textScaleFactor,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w500,
+                              height: 24 / 16,
                             ),
-                          )),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 26,
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 21,
-                    ),
-                    Container(
-                      height: 17,
-                      width: 17,
-                      child: GestureDetector(
-                          onTap: () async {},
-                          child: Image.asset(
-                            "assets/images/Like.png",
-                            height: 15,
-                             color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
-                          )),
-                    ),
-                    const SizedBox(width: 25),
-                    GestureDetector(
-                      onTap: () async {},
-                      child: Text(
-                        "Rate Us",
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
-                          fontSize: 16,
-                          fontFamily: FontFamily.satoshi,
-                          fontWeight: FontWeight.w500,
-                          height: 24 / 16,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 26,
-                ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 21,
-                    ),
-                    Container(
-                      height: 17,
-                      width: 17,
-                      child: GestureDetector(
-                          onTap: () async {
-                            SharedPreferences pref =
-                                await SharedPreferences.getInstance();
-
-                            pref.remove('authToken');
-
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const LoginScreen()));
-                          },
-                          child: Image.asset(
-                            "assets/images/Logout.png",
-                            height: 15,
-                             color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
-                          )),
-                    ),
-                    const SizedBox(width: 25),
-                    GestureDetector(
-                      onTap: () async {
-                        SharedPreferences pref =
-                            await SharedPreferences.getInstance();
-
-                        pref.remove('authToken');
-                        Provider.of<ProfileProvider>(context, listen: false)
-                            .clearStateList();
-                        Provider.of<CheckStatusProvider>(context, listen: false)
-                            .clearStateList();
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const LoginScreen()));
-                      },
-                      child: Text(
-                        "Log Out",
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.subheadColor,
-                          fontSize: 16,
-                          fontFamily: FontFamily.satoshi,
-                          fontWeight: FontWeight.w500,
-                          height: 24 / 16,
+                      Expanded(
+                        child: Container(),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10, top: 0),
+                        child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Transform.scale(
+                              scale: 0.6,
+                              child: SizedBox(
+                                height: 20,
+                                child: CupertinoSwitch(
+                                  trackColor: AppColors.disableSwitch,
+                                  thumbColor: Colors.white,
+                                  activeColor: AppColors.confirmValid,
+                                  value: state,
+                                  onChanged: (value) {
+                                    state = value;
+                                    setState(
+                                      () {},
+                                    );
+                                  },
+                                ),
+                              ),
+                            )),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 26,
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 21,
+                      ),
+                      Container(
+                        height: 17,
+                        width: 17,
+                        child: GestureDetector(
+                            onTap: () async {},
+                            child: Image.asset(
+                              "assets/images/Sun1.png",
+                              height: 15,
+                               color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                            )),
+                      ),
+                      const SizedBox(width: 25),
+                      GestureDetector(
+                        onTap: () async {},
+                        child: Text(
+                          "Light Mode",
+                          style: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                            fontSize: 16* textScaleFactor,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w500,
+                            height: 24 / 16,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-              ],
+                      Expanded(
+                        child: Container(),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 10, top: 0),
+                        child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Transform.scale(
+                              scale: 0.6,
+                              child: SizedBox(
+                                height: 20,
+                                child: CupertinoSwitch(
+                                  trackColor: AppColors.disableSwitch,
+                                  thumbColor: Colors.white,
+                                  activeColor: AppColors.confirmValid,
+                                  value: themeNotifier.themeMode == ThemeMode.light,
+                                  onChanged: (value) {
+                                   
+                                    setState(
+                                      () {
+                                        final newMode = value
+                                            ? ThemeMode.light
+                                            : ThemeMode.dark;
+                                        themeNotifier.setThemeMode(newMode);
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            )),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 26,
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 21,
+                      ),
+                      Container(
+                        height: 17,
+                        width: 17,
+                        child: GestureDetector(
+                            onTap: () async {},
+                            child: Image.asset(
+                              "assets/images/Like.png",
+                              height: 15,
+                               color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                            )),
+                      ),
+                      const SizedBox(width: 25),
+                      GestureDetector(
+                        onTap: () async {},
+                        child: Text(
+                          "Rate Us",
+                          style: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                            fontSize: 16* textScaleFactor,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w500,
+                            height: 24 / 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 26,
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 21,
+                      ),
+                      Container(
+                        height: 17,
+                        width: 17,
+                        child: GestureDetector(
+                            onTap: () async {
+                              SharedPreferences pref =
+                                  await SharedPreferences.getInstance();
+            
+                              pref.remove('authToken');
+            
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const LoginScreen()));
+                            },
+                            child: Image.asset(
+                              "assets/images/Logout.png",
+                              height: 15,
+                               color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                            )),
+                      ),
+                      const SizedBox(width: 25),
+                      GestureDetector(
+                        onTap: () async {
+                          SharedPreferences pref =
+                              await SharedPreferences.getInstance();
+            
+                          pref.remove('authToken');
+                          Provider.of<ProfileProvider>(context, listen: false)
+                              .clearStateList();
+                          Provider.of<CheckStatusProvider>(context, listen: false)
+                              .clearStateList();
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const LoginScreen()));
+                        },
+                        child: Text(
+                          "Log Out",
+                          style: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                            fontSize: 16* textScaleFactor,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w500,
+                            height: 24 / 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                ],
+              ),
             ),
           ),
         ));

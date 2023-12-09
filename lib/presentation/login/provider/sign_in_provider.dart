@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:http/src/multipart_file.dart';
 import 'package:tennis_court_booking_app/api/api.dart';
 import 'package:tennis_court_booking_app/model/login/login_response_model.dart';
 
@@ -191,7 +194,7 @@ Future sendOtpforlogin(String email,String otp) async {
     return res;
   }
 
-  Future registerFormApi(String email,String name,String phoneNumber,String dob,String address,String? imageUrl) async {
+  Future registerFormApi(String email,String name,String phoneNumber,String dob,String address,String imageUrl) async {
     //updateRegisterLoader(true);
     var body = {
   "email":email,
@@ -199,9 +202,9 @@ Future sendOtpforlogin(String email,String otp) async {
   "phoneNumber": phoneNumber,
   "dob": dob,
   "address":address,
-  if (imageUrl != null && imageUrl.isNotEmpty) "imageUrl": imageUrl,
+  if (imageUrl != null ) "imageUrl": imageUrl,
     };
-    var res = await Api.registerForm(body);
+    var res = await Api.registerForm(email,name,phoneNumber,dob,address,imageUrl );
     //updateRegisterLoader(false);
     return res;
   }
