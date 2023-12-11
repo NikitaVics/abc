@@ -1,11 +1,8 @@
-import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/filter/filter_court_screen.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
-import 'package:tennis_court_booking_app/constants/onhover.dart';
-import 'package:tennis_court_booking_app/model/bookingCourt/booking_response.dart';
 import 'package:tennis_court_booking_app/provider/booking_response_provider.dart';
 
 class BookingCourtScreen extends StatefulWidget {
@@ -203,18 +200,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
         padding: const EdgeInsets.only(top: 12),
         child: Container(
           height: 87,
-          child: DatePicker(
-            DateTime.now(),
-            initialSelectedDate: result,
-            selectionColor: AppColors.dotColor,
-            selectedTextColor: Colors.white,
-            onDateChange: (date) {
-              setState(() {
-                result = date;
-              });
-              _fetchBookingResponse();
-            },
-          ),
+         
         ));
   }
 
@@ -319,49 +305,16 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                       padding: const EdgeInsets.only(
                                         bottom: 12,
                                       ),
-                                      child:InkWell(
-                                        hoverColor: AppColors.disableButtonTextColor,
-                                          highlightColor: Colors.blue.withOpacity(0.4),
-  splashColor: Colors.green.withOpacity(0.5),
+                                      child: GestureDetector(
                                         onTap: () {
-                                          
+                                           setState(() {
+                                              isHover = true;
+                                            });
                                             
                                         },
-                                        child:  Container(
-                                                         
-                                                          decoration: BoxDecoration(
-                                              color: Colors.transparent,
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                border: Border.all(
-                                                    color:
-                                                        AppColors.confirmValid)),
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 17.5,
-                                                  right: 17.5,
-                                                  top: 8.75,
-                                                  bottom: 8.75),
-                                              child: Text(
-                                                slot,
-                                                style: TextStyle(
-                                                  color: Theme.of(context)
-                                                              .brightness ==
-                                                          Brightness.dark
-                                                      ? AppColors
-                                                          .headingTextColor
-                                                      : AppColors.dateColor,
-                                                  fontSize: 14,
-                                                  fontFamily: FontFamily.roboto,
-                                                  fontWeight: FontWeight.w500,
-                                                  height: 20 / 14,
-                                                ),
-                                              ),
-                                            ),
-                                                        )
-                                        /*Container(
+                                        child: Container(
                                           decoration: BoxDecoration(
-                                            color: Colors.transparent,
+                                            color: isHover?AppColors.disableButtonTextColor:Colors.transparent,
                                               borderRadius:
                                                   BorderRadius.circular(8),
                                               border: Border.all(
@@ -389,7 +342,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                               ),
                                             ),
                                           ),
-                                        ),*/
+                                        ),
                                       ),
                                     ),
                                   )

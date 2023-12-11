@@ -43,4 +43,5 @@ class AppColors {
   static const profileDarkText = Color(0xffE0E0E2);
   static const booklight = Color(0xffFEFEFE);
   static const dateColor = Color(0xff4CBC7B);
+  static const warningToast = Color(0xffF2994A);
 }

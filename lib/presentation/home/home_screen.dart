@@ -124,136 +124,139 @@ class HomeScreenState extends State<HomeScreen> {
                           height: 90,
                           width: MediaQuery.of(context).size.width,
                           child: Center(
-                            child: Row(
-                              children: [
-                                Container(
-                                  height: 48,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 24),
-                                    child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(150.0),
-                                        child: imageUrl != null &&
-                                                imageUrl!.isNotEmpty
-                                            ? SilentErrorImage(
-                                                width: 48.0,
-                                                height: 48.0,
-                                                imageUrl: imageUrl!,
-                                              )
-                                            : Image.asset(
-                                                "assets/images/userImage.png",
-                                                width: 48.0,
-                                                height: 48.0,
-                                              )),
-                                  ),
-                                ),
-                                hasErrorMessage!
-                                    ? SizedBox(
-                                        width: 20,
-                                      )
-                                    : SizedBox(
-                                        width: 10,
-                                      ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 10),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        "Hello",
-                                        style: TextStyle(
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? AppColors.headingTextColor
-                                              : AppColors.allHeadColor,
-                                          fontFamily: FontFamily.satoshi,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400,
-                                          height: 24 / 16,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 3,
-                                      ),
-                                      Text(
-                                        firstName ?? " ",
-                                        style: TextStyle(
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? AppColors.headingTextColor
-                                              : AppColors.allHeadColor,
-                                          fontFamily: FontFamily.satoshi,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w400,
-                                          height: 24 / 16,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                hasErrorMessage!
-                                    ? const SizedBox()
-                                    : SizedBox(
-                                        height: 34,
-                                        child: OutlinedButton(
-                                          onPressed: () async {
-                                            SharedPreferences pref =
-                                                await SharedPreferences
-                                                    .getInstance();
-                                            String? email =
-                                                await SharePref.fetchEmail();
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    RegisterForm(email: email!),
-                                              ),
-                                            );
-                                          },
-                                          style: OutlinedButton.styleFrom(
-                                            backgroundColor:
-                                                AppColors.errorback,
-                                            foregroundColor:
-                                                AppColors.errorColor,
-                                            side: BorderSide(
-                                                color: AppColors.errorColor),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                          ),
-                                          child: const Text(
-                                            'Complete profile',
-                                            style: TextStyle(
-                                              fontFamily: FontFamily.satoshi,
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w400,
-                                              height: 24 / 14,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                Expanded(
-                                  child: Container(),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 24),
-                                  child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        showAlertDialog(context);
-                                      },
-                                      child: Image.asset(
-                                        "assets/images/notification1.png",
-                                        height: 25,
-                                        color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? AppColors.headingTextColor
-                                            : Colors.black,
-                                      ),
+                            child: MediaQuery(
+                               data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    height: 48,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 24),
+                                      child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(150.0),
+                                          child: imageUrl != null &&
+                                                  imageUrl!.isNotEmpty
+                                              ? SilentErrorImage(
+                                                  width: 48.0,
+                                                  height: 48.0,
+                                                  imageUrl: imageUrl!,
+                                                )
+                                              : Image.asset(
+                                                  "assets/images/userImage.png",
+                                                  width: 48.0,
+                                                  height: 48.0,
+                                                )),
                                     ),
                                   ),
-                                )
-                              ],
+                                  hasErrorMessage!
+                                      ? SizedBox(
+                                          width: 20,
+                                        )
+                                      : SizedBox(
+                                          width: 10,
+                                        ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 10),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          "Hello",
+                                          style: TextStyle(
+                                            color: Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? AppColors.headingTextColor
+                                                : AppColors.allHeadColor,
+                                            fontFamily: FontFamily.satoshi,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                            height: 24 / 16,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 3,
+                                        ),
+                                        Text(
+                                          firstName ?? " ",
+                                          style: TextStyle(
+                                            color: Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? AppColors.headingTextColor
+                                                : AppColors.allHeadColor,
+                                            fontFamily: FontFamily.satoshi,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                            height: 24 / 16,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  hasErrorMessage!
+                                      ? const SizedBox()
+                                      : SizedBox(
+                                          height: 34,
+                                          child: OutlinedButton(
+                                            onPressed: () async {
+                                              SharedPreferences pref =
+                                                  await SharedPreferences
+                                                      .getInstance();
+                                              String? email =
+                                                  await SharePref.fetchEmail();
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      RegisterForm(email: email!),
+                                                ),
+                                              );
+                                            },
+                                            style: OutlinedButton.styleFrom(
+                                              backgroundColor:
+                                                  AppColors.errorback,
+                                              foregroundColor:
+                                                  AppColors.errorColor,
+                                              side: BorderSide(
+                                                  color: AppColors.errorColor),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+                                            ),
+                                            child: const Text(
+                                              'Complete profile',
+                                              style: TextStyle(
+                                                fontFamily: FontFamily.satoshi,
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w400,
+                                                height: 24 / 14,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                  Expanded(
+                                    child: Container(),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 24),
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          showAlertDialog(context);
+                                        },
+                                        child: Image.asset(
+                                          "assets/images/notification1.png",
+                                          height: 25,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? AppColors.headingTextColor
+                                              : Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -366,126 +369,129 @@ class HomeScreenState extends State<HomeScreen> {
     return Padding(
       padding: const EdgeInsets.only(top: 80),
       child: Stack(children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Book your ",
-              style: TextStyle(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.booklight
-                    : AppColors.allHeadColor,
-                fontSize: 32,
-                fontFamily: FontFamily.satoshi,
-                fontWeight: FontWeight.w700,
-                height: 40 / 32,
-              ),
-            ),
-            Text(
-              "slot today ! ",
-              style: TextStyle(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.booklight
-                    : AppColors.allHeadColor,
-                fontSize: 32,
-                fontFamily: FontFamily.satoshi,
-                fontWeight: FontWeight.w700,
-                height: 40 / 32,
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Container(
-              height: 72,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.0),
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.darkTextInput
-                    : Colors.white,
-              ),
-              child: Row(children: [
-                SizedBox(
-                  width: 21,
+        MediaQuery(
+           data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Book your ",
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.booklight
+                      : AppColors.allHeadColor,
+                  fontSize: 32,
+                  fontFamily: FontFamily.satoshi,
+                  fontWeight: FontWeight.w700,
+                  height: 40 / 32,
                 ),
-                results != null
-                    ? Text(
-                        DateFormat('dd/MM/yyyy').format(results!),
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.darkSubHead
-                              : AppColors.subheadColor,
-                          fontSize: 14,
-                          fontFamily: FontFamily.satoshi,
-                          fontWeight: FontWeight.w700,
-                          height: 24 / 14,
+              ),
+              Text(
+                "slot today ! ",
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.booklight
+                      : AppColors.allHeadColor,
+                  fontSize: 32,
+                  fontFamily: FontFamily.satoshi,
+                  fontWeight: FontWeight.w700,
+                  height: 40 / 32,
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Container(
+                height: 72,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.0),
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.darkTextInput
+                      : Colors.white,
+                ),
+                child: Row(children: [
+                  SizedBox(
+                    width: 21,
+                  ),
+                  results != null
+                      ? Text(
+                          DateFormat('dd/MM/yyyy').format(results!),
+                          style: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.darkSubHead
+                                : AppColors.subheadColor,
+                            fontSize: 14,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w700,
+                            height: 24 / 14,
+                          ),
+                        )
+                      : Text(
+                          "Select Date",
+                          style: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.darkSubHead
+                                : AppColors.subheadColor,
+                            fontSize: 14,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w700,
+                            height: 24 / 14,
+                          ),
                         ),
-                      )
-                    : Text(
-                        "Select Date",
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.darkSubHead
-                              : AppColors.subheadColor,
-                          fontSize: 14,
-                          fontFamily: FontFamily.satoshi,
-                          fontWeight: FontWeight.w700,
-                          height: 24 / 14,
-                        ),
-                      ),
-                const SizedBox(width: 8),
-                hasErrorMessage!
-                    ? GestureDetector(
-                        child: Image.asset(
-                          "assets/images/calender.png",
-                          height: 18,
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.darkSubHead
-                              : AppColors.subheadColor,
-                        ),
-                        onTap: () async {
-                          result = await showDatePicker(
-                            context: context,
-                            initialDate: dateTime ?? DateTime.now(),
-                            firstDate: DateTime(1950),
-                            lastDate: DateTime(2101),
-                            helpText: "Select Date",
-                            builder: (BuildContext context, Widget? child) {
-                              return Theme(
-                                data: ThemeData.light().copyWith(
-                                  primaryColor: AppColors.darkSubHead,
-                                  hintColor: Colors.teal,
-                                  colorScheme: const ColorScheme.light(
-                                          primary: AppColors.dotColor)
-                                      .copyWith(background: Colors.blueGrey),
-                                ),
-                                child: child!,
-                              );
-                            },
-                          );
-                          if (result != null) {
-                            setState(() {
-                              dateTime = result;
-                              results = result;
-                              // _userDobController.text = DateFormat('dd/MM/yyyy').format(result!);
-
-                              print("yp${result!.toLocal().toString()}");
-                            });
-                          }
-                        },
-                      )
-                    : GestureDetector(
-                        child: Image.asset(
-                          "assets/images/calender.png",
-                          height: 18,
-                        ),
-                        onTap: () async {
-                          showAlertDialog(context);
-                        },
-                      )
-              ]),
-            )
-          ],
+                  const SizedBox(width: 8),
+                  hasErrorMessage!
+                      ? GestureDetector(
+                          child: Image.asset(
+                            "assets/images/calender.png",
+                            height: 18,
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.darkSubHead
+                                : AppColors.subheadColor,
+                          ),
+                          onTap: () async {
+                            result = await showDatePicker(
+                              context: context,
+                              initialDate: dateTime ?? DateTime.now(),
+                              firstDate:DateTime.now(),
+                              lastDate: DateTime(2101),
+                              helpText: "Select Date",
+                              builder: (BuildContext context, Widget? child) {
+                                return Theme(
+                                  data: ThemeData.light().copyWith(
+                                    primaryColor: AppColors.darkSubHead,
+                                    hintColor: Colors.teal,
+                                    colorScheme: const ColorScheme.light(
+                                            primary: AppColors.dotColor)
+                                        .copyWith(background: Colors.blueGrey),
+                                  ),
+                                  child: child!,
+                                );
+                              },
+                            );
+                            if (result != null) {
+                              setState(() {
+                                dateTime = result;
+                                results = result;
+                                // _userDobController.text = DateFormat('dd/MM/yyyy').format(result!);
+        
+                                print("yp${result!.toLocal().toString()}");
+                              });
+                            }
+                          },
+                        )
+                      : GestureDetector(
+                          child: Image.asset(
+                            "assets/images/calender.png",
+                            height: 18,
+                          ),
+                          onTap: () async {
+                            showAlertDialog(context);
+                          },
+                        )
+                ]),
+              )
+            ],
+          ),
         ),
         Align(
             alignment: Alignment.topRight,
@@ -498,69 +504,72 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildSignInButton() {
-    return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        child: FocusScope(
-            // Manage keyboard focus
-            child: hasErrorMessage!
-                ? results != null
-                    ? CustomElevatedButton(
-                        height: 60,
-                        width: MediaQuery.of(context).orientation ==
-                                Orientation.landscape
-                            ? 70
-                            : double.infinity,
-                        isLoading: false,
-                        text: "Start Booking",
-                        onPressed: () async {
-                          final newResult = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => BookingCourtScreen(
-                                      result: result!,
-                                    )),
-                          );
-
-                          // Update result with the value returned from the second screen
-                          setState(() {
-                            results = null;
-                          });
-
-                          /*await context
-                            .read<BookingResponseProvider>()
-                            .fetchBookingResponse(
-                            result!.toUtc().toIso8601String(),
-                            );*/
-                        },
-                        buttonColor: AppColors.elevatedColor,
-                        textColor: Colors.white,
-                      )
-                    : CustomElevatedButton(
-                        height: 60,
-                        width: MediaQuery.of(context).orientation ==
-                                Orientation.landscape
-                            ? 70
-                            : double.infinity,
-                        isLoading: false,
-                        text: "Start Booking",
-                        onPressed: () async {},
-                        buttonColor: AppColors.buttonwithvalue,
-                        textColor: AppColors.buttonmid,
-                      )
-                : CustomElevatedButton(
-                    height: 60,
-                    width: MediaQuery.of(context).orientation ==
-                            Orientation.landscape
-                        ? 70
-                        : double.infinity,
-                    isLoading: false,
-                    text: "Start Booking",
-                    onPressed: () async {
-                      showAlertDialog(context);
-                    },
-                    buttonColor: AppColors.disableButtonColor,
-                    textColor: AppColors.disableButtonTextColor,
-                  )));
+    return MediaQuery(
+       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+      child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: FocusScope(
+              // Manage keyboard focus
+              child: hasErrorMessage!
+                  ? results != null
+                      ? CustomElevatedButton(
+                          height: 60,
+                          width: MediaQuery.of(context).orientation ==
+                                  Orientation.landscape
+                              ? 70
+                              : double.infinity,
+                          isLoading: false,
+                          text: "Start Booking",
+                          onPressed: () async {
+                            final newResult = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => BookingCourtScreen(
+                                        result: result!,
+                                      )),
+                            );
+    
+                            // Update result with the value returned from the second screen
+                            setState(() {
+                              results = null;
+                            });
+    
+                            /*await context
+                              .read<BookingResponseProvider>()
+                              .fetchBookingResponse(
+                              result!.toUtc().toIso8601String(),
+                              );*/
+                          },
+                          buttonColor: AppColors.elevatedColor,
+                          textColor: Colors.white,
+                        )
+                      : CustomElevatedButton(
+                          height: 60,
+                          width: MediaQuery.of(context).orientation ==
+                                  Orientation.landscape
+                              ? 70
+                              : double.infinity,
+                          isLoading: false,
+                          text: "Start Booking",
+                          onPressed: () async {},
+                          buttonColor: AppColors.buttonwithvalue,
+                          textColor: AppColors.buttonmid,
+                        )
+                  : CustomElevatedButton(
+                      height: 60,
+                      width: MediaQuery.of(context).orientation ==
+                              Orientation.landscape
+                          ? 70
+                          : double.infinity,
+                      isLoading: false,
+                      text: "Start Booking",
+                      onPressed: () async {
+                        showAlertDialog(context);
+                      },
+                      buttonColor: AppColors.disableButtonColor,
+                      textColor: AppColors.disableButtonTextColor,
+                    ))),
+    );
   }
 
   showAlertDialog(BuildContext context) {
@@ -741,91 +750,94 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildSlotshowText() {
-    return Padding(
-        padding: const EdgeInsets.only(top: 20, bottom: 20),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Our courts",
-              style: TextStyle(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.headingTextColor
-                    : AppColors.allHeadColor,
-                fontSize: 24,
-                fontFamily: FontFamily.satoshi,
-                fontWeight: FontWeight.w700,
-                height: 32 / 24,
+    return MediaQuery(
+       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+      child: Padding(
+          padding: const EdgeInsets.only(top: 20, bottom: 20),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Our courts",
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.headingTextColor
+                      : AppColors.allHeadColor,
+                  fontSize: 24,
+                  fontFamily: FontFamily.satoshi,
+                  fontWeight: FontWeight.w700,
+                  height: 32 / 24,
+                ),
               ),
-            ),
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      juniorColor = true;
-                      seniorColor = false;
-                    });
-                  },
-                  child: Text(
-                    "Junior",
-                    style: TextStyle(
-                      decoration: juniorColor
-                          ? TextDecoration.underline
-                          : TextDecoration.none,
-                      decorationThickness: 3.0,
-                      color: juniorColor
-                          ? AppColors.dotColor
-                          : Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.darkSubHead
-                              : Color.fromRGBO(0, 0, 0, 0.50),
-                      fontSize: 12,
-                      fontFamily: FontFamily.satoshi,
-                      fontWeight: FontWeight.w700,
-                      height: 24 / 12,
+              Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        juniorColor = true;
+                        seniorColor = false;
+                      });
+                    },
+                    child: Text(
+                      "Junior",
+                      style: TextStyle(
+                        decoration: juniorColor
+                            ? TextDecoration.underline
+                            : TextDecoration.none,
+                        decorationThickness: 3.0,
+                        color: juniorColor
+                            ? AppColors.dotColor
+                            : Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.darkSubHead
+                                : Color.fromRGBO(0, 0, 0, 0.50),
+                        fontSize: 12,
+                        fontFamily: FontFamily.satoshi,
+                        fontWeight: FontWeight.w700,
+                        height: 24 / 12,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(
-                  width: 46,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      juniorColor = false;
-                      seniorColor = true;
-                    });
-                  },
-                  child: Text(
-                    "Senior",
-                    style: TextStyle(
-                      decoration: seniorColor
-                          ? TextDecoration.underline
-                          : TextDecoration.none,
-                      decorationColor: seniorColor
-                          ? AppColors.dotColor // Color of the underline
-                          : Colors.transparent,
-                      decorationStyle: seniorColor
-                          ? TextDecorationStyle.solid
-                          : TextDecorationStyle.solid,
-                      decorationThickness: 3.0,
-                      color: seniorColor
-                          ? AppColors.dotColor
-                          : Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.darkSubHead
-                              : Color.fromRGBO(0, 0, 0, 0.50),
-                      fontSize: 12,
-                      fontFamily: FontFamily.satoshi,
-                      fontWeight: FontWeight.w700,
-                      height: 24 / 12,
+                  const SizedBox(
+                    width: 46,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        juniorColor = false;
+                        seniorColor = true;
+                      });
+                    },
+                    child: Text(
+                      "Senior",
+                      style: TextStyle(
+                        decoration: seniorColor
+                            ? TextDecoration.underline
+                            : TextDecoration.none,
+                        decorationColor: seniorColor
+                            ? AppColors.dotColor // Color of the underline
+                            : Colors.transparent,
+                        decorationStyle: seniorColor
+                            ? TextDecorationStyle.solid
+                            : TextDecorationStyle.solid,
+                        decorationThickness: 3.0,
+                        color: seniorColor
+                            ? AppColors.dotColor
+                            : Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.darkSubHead
+                                : Color.fromRGBO(0, 0, 0, 0.50),
+                        fontSize: 12,
+                        fontFamily: FontFamily.satoshi,
+                        fontWeight: FontWeight.w700,
+                        height: 24 / 12,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            )
-          ],
-        ));
+                ],
+              )
+            ],
+          )),
+    );
   }
 
   Widget _buildShowCourt(CourtList courtList) {
@@ -854,98 +866,101 @@ class HomeScreenState extends State<HomeScreen> {
           );
           return Padding(
             padding: const EdgeInsets.only(right: 20),
-            child: Container(
-              width: 145,
-              decoration: BoxDecoration(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.darkTextInput
-                    : Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
+            child: MediaQuery(
+               data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
               child: Container(
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 12,
-                        right: 12,
-                        top: 12,
-                        bottom: 8,
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6)),
-                        height: 85,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(6),
-                          child: Image.network(
-                            court
-                                .courtImageURL, // Use the image URL from the Court model
-                            // You can also use AssetImage if the image is in the assets folder
-                            // e.g., Image.asset("assets/images/court.png"),
-                            fit: BoxFit.cover,
+                width: 145,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.darkTextInput
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Container(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 12,
+                          right: 12,
+                          top: 12,
+                          bottom: 8,
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6)),
+                          height: 85,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: Image.network(
+                              court
+                                  .courtImageURL, // Use the image URL from the Court model
+                              // You can also use AssetImage if the image is in the assets folder
+                              // e.g., Image.asset("assets/images/court.png"),
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 12, right: 22),
-                      child: Stack(
-                        children: [
-                          Column(
-                            children: [
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  court.courtName,
-                                  style: TextStyle(
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? AppColors.booklight
-                                        : AppColors.allHeadColor,
-                                    fontSize: 16,
-                                    fontFamily: FontFamily.satoshi,
-                                    fontWeight: FontWeight.w500,
-                                    height: 24 / 16,
+                      Padding(
+                        padding: EdgeInsets.only(left: 12, right: 22),
+                        child: Stack(
+                          children: [
+                            Column(
+                              children: [
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    court.courtName,
+                                    style: TextStyle(
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? AppColors.booklight
+                                          : AppColors.allHeadColor,
+                                      fontSize: 16,
+                                      fontFamily: FontFamily.satoshi,
+                                      fontWeight: FontWeight.w500,
+                                      height: 24 / 16,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  "${startTime} - ${endTime}",
-                                  style: TextStyle(
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? AppColors.darkSubHead
-                                        : AppColors.hintColor,
-                                    fontSize: 12,
-                                    fontFamily: FontFamily.satoshi,
-                                    fontWeight: FontWeight.w400,
-                                    height: 16 / 12,
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    "${startTime} - ${endTime}",
+                                    style: TextStyle(
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? AppColors.darkSubHead
+                                          : AppColors.hintColor,
+                                      fontSize: 12,
+                                      fontFamily: FontFamily.satoshi,
+                                      fontWeight: FontWeight.w400,
+                                      height: 16 / 12,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 4),
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: Image.asset(
-                                "assets/images/Right.png",
-                                height: 24,
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.headingTextColor
-                                    : Colors.black,
+                              ],
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 4),
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: Image.asset(
+                                  "assets/images/Right.png",
+                                  height: 24,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : Colors.black,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -958,37 +973,40 @@ class HomeScreenState extends State<HomeScreen> {
   Widget _buildrecentBookText() {
     return Padding(
         padding: const EdgeInsets.only(top: 40, bottom: 20),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "Recent Bookings",
-              style: TextStyle(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.headingTextColor
-                    : AppColors.allHeadColor,
-                fontSize: 20,
-                fontFamily: FontFamily.satoshi,
-                fontWeight: FontWeight.w700,
-                height: 32 / 20,
+        child: MediaQuery(
+           data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Recent Bookings",
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.headingTextColor
+                      : AppColors.allHeadColor,
+                  fontSize: 20,
+                  fontFamily: FontFamily.satoshi,
+                  fontWeight: FontWeight.w700,
+                  height: 32 / 20,
+                ),
               ),
-            ),
-            const Text(
-              "See all",
-              style: TextStyle(
-                decoration: TextDecoration.underline,
-                decorationThickness: 2.0, // Set the thickness of the underline
-                decorationStyle: TextDecorationStyle.solid,
-
-                color: AppColors.dotColor,
-                fontSize: 14,
-                fontFamily: FontFamily.satoshi,
-                fontWeight: FontWeight.w700,
-                height: 24 / 14,
+              const Text(
+                "See all",
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                  decorationThickness: 2.0, // Set the thickness of the underline
+                  decorationStyle: TextDecorationStyle.solid,
+        
+                  color: AppColors.dotColor,
+                  fontSize: 14,
+                  fontFamily: FontFamily.satoshi,
+                  fontWeight: FontWeight.w700,
+                  height: 24 / 14,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ));
   }
 
@@ -1010,58 +1028,61 @@ class HomeScreenState extends State<HomeScreen> {
                 "assets/images/Nobooking.png",
               ),
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                //TextSpan
-                SizedBox(
-                  width: 147,
-                  child: RichText(
-                    text: TextSpan(
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: "No Recent Bookings  ",
-                          style: TextStyle(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? AppColors.booklight
-                                    : AppColors.subheadColor,
-                            fontSize: 12,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w400,
-                            height: 20 / 12,
+            MediaQuery(
+               data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  //TextSpan
+                  SizedBox(
+                    width: 147,
+                    child: RichText(
+                      text: TextSpan(
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: "No Recent Bookings  ",
+                            style: TextStyle(
+                              color:
+                                  Theme.of(context).brightness == Brightness.dark
+                                      ? AppColors.booklight
+                                      : AppColors.subheadColor,
+                              fontSize: 12,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w400,
+                              height: 20 / 12,
+                            ),
                           ),
-                        ),
-                        TextSpan(
-                          text:
-                              'Complete your profile ', // The first half of the sentence
-                          style: TextStyle(
-                            color: AppColors.disableButtonTextColor,
-                            fontSize: 12,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w400,
-                            height: 20 / 12,
+                          TextSpan(
+                            text:
+                                'Complete your profile ', // The first half of the sentence
+                            style: TextStyle(
+                              color: AppColors.disableButtonTextColor,
+                              fontSize: 12,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w400,
+                              height: 20 / 12,
+                            ),
                           ),
-                        ),
-                        TextSpan(
-                          text:
-                              'to start booking', // The second half of the sentence
-                          style: TextStyle(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? AppColors.darkSubHead
-                                    : AppColors.hintColor,
-                            fontSize: 12,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w400,
-                            height: 20 / 12,
+                          TextSpan(
+                            text:
+                                'to start booking', // The second half of the sentence
+                            style: TextStyle(
+                              color:
+                                  Theme.of(context).brightness == Brightness.dark
+                                      ? AppColors.darkSubHead
+                                      : AppColors.hintColor,
+                              fontSize: 12,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w400,
+                              height: 20 / 12,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             )
           ],
         ),

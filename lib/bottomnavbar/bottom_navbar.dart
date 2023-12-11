@@ -51,91 +51,94 @@ class _BottomNavBarState extends State<BottomNavBar> {
             ProfileScreen()
           ],
         ),
-        bottomNavigationBar: BottomNavigationBar(
-         
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: NavBarItem(
-                  NavBarIcon: Image.asset(
-                    'assets/images/homeNavIcon.png',
-                    width: 24, // Set the width of the icon image
-                    height: 24,
-                    color: _selectedIndex == 0
-                        ? AppColors.navIconColor
-                        : AppColors.disableNavIconColor,
+        bottomNavigationBar: MediaQuery(
+           data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          child: BottomNavigationBar(
+           
+              items: <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: NavBarItem(
+                    NavBarIcon: Image.asset(
+                      'assets/images/homeNavIcon.png',
+                      width: 24, // Set the width of the icon image
+                      height: 24,
+                      color: _selectedIndex == 0
+                          ? AppColors.navIconColor
+                          : AppColors.disableNavIconColor,
+                    ),
+                    NavBarLavel: "Home",
+                    NavIconColor:_selectedIndex == 0
+                          ? AppColors.navIconColor
+                          : AppColors.disableNavIconColor,
                   ),
-                  NavBarLavel: "Home",
-                  NavIconColor:_selectedIndex == 0
-                        ? AppColors.navIconColor
-                        : AppColors.disableNavIconColor,
+                  label: 'Home',
                 ),
-                label: 'Home',
-              ),
-              BottomNavigationBarItem(
-                icon: NavBarItem(
-                  NavBarIcon: Image.asset(
-                    'assets/images/bookingsNavIcon.png',
-                    width: 25, // Set the width of the icon image
-                    height: 25,
-                    color: _selectedIndex == 1
-                        ? AppColors.navIconColor
-                        : AppColors.disableNavIconColor,
+                BottomNavigationBarItem(
+                  icon: NavBarItem(
+                    NavBarIcon: Image.asset(
+                      'assets/images/bookingsNavIcon.png',
+                      width: 25, // Set the width of the icon image
+                      height: 25,
+                      color: _selectedIndex == 1
+                          ? AppColors.navIconColor
+                          : AppColors.disableNavIconColor,
+                    ),
+                    NavBarLavel: "Bookings",
+                      NavIconColor:_selectedIndex == 1
+                          ? AppColors.navIconColor
+                          : AppColors.disableNavIconColor,
                   ),
-                  NavBarLavel: "Bookings",
-                    NavIconColor:_selectedIndex == 1
-                        ? AppColors.navIconColor
-                        : AppColors.disableNavIconColor,
+                  label: '',
                 ),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: NavBarItem(
-                  NavBarIcon: Image.asset(
-                    'assets/images/clubinfoIcon.png',
-                    width: 25, // Set the width of the icon image
-                    height: 25,
-                    color: _selectedIndex == 2
-                        ? AppColors.navIconColor
-                        : AppColors.disableNavIconColor,
+                BottomNavigationBarItem(
+                  icon: NavBarItem(
+                    NavBarIcon: Image.asset(
+                      'assets/images/clubinfoIcon.png',
+                      width: 25, // Set the width of the icon image
+                      height: 25,
+                      color: _selectedIndex == 2
+                          ? AppColors.navIconColor
+                          : AppColors.disableNavIconColor,
+                    ),
+                    NavBarLavel: "Club Infos",
+                      NavIconColor:_selectedIndex == 2
+                          ? AppColors.navIconColor
+                          : AppColors.disableNavIconColor,
                   ),
-                  NavBarLavel: "Club Infos",
-                    NavIconColor:_selectedIndex == 2
-                        ? AppColors.navIconColor
-                        : AppColors.disableNavIconColor,
+                  label: '',
                 ),
-                label: '',
-              ),
-              BottomNavigationBarItem(
-                icon: NavBarItem(
-                  NavBarIcon: Image.asset(
-                    'assets/images/profileNavBar.png',
-                    width: 25, // Set the width of the icon image
-                    height: 25,
-                    color: _selectedIndex == 3
-                        ? AppColors.navIconColor
-                        : AppColors.disableNavIconColor,
+                BottomNavigationBarItem(
+                  icon: NavBarItem(
+                    NavBarIcon: Image.asset(
+                      'assets/images/profileNavBar.png',
+                      width: 25, // Set the width of the icon image
+                      height: 25,
+                      color: _selectedIndex == 3
+                          ? AppColors.navIconColor
+                          : AppColors.disableNavIconColor,
+                    ),
+                    NavBarLavel: "Accounts",
+                      NavIconColor:_selectedIndex == 3
+                          ? AppColors.navIconColor
+                          : AppColors.disableNavIconColor,
                   ),
-                  NavBarLavel: "Accounts",
-                    NavIconColor:_selectedIndex == 3
-                        ? AppColors.navIconColor
-                        : AppColors.disableNavIconColor,
+                  label: '',
                 ),
-                label: '',
-              ),
-             
-            ],
-            backgroundColor: 
-            Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkTextInput
-            : Color(0xFFffffff),
-            
-            type: BottomNavigationBarType.fixed,
-            currentIndex: _selectedIndex,
-            // selectedItemColor: Color(0xff41FFF4),
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            onTap: _onItemTapped,
-            elevation: 1),
+               
+              ],
+              backgroundColor: 
+              Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkTextInput
+              : Color(0xFFffffff),
+              
+              type: BottomNavigationBarType.fixed,
+              currentIndex: _selectedIndex,
+              // selectedItemColor: Color(0xff41FFF4),
+              showSelectedLabels: false,
+              showUnselectedLabels: false,
+              onTap: _onItemTapped,
+              elevation: 1),
+        ),
       ),
     );
   }
