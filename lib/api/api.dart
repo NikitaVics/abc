@@ -259,7 +259,7 @@ class Api {
 
 
   //Booking Response
-  static Future<BookingResponse> showBookingResponse(String date) async {
+  static Future<BookingResponse> showBookingResponse(DateTime date) async {
     var url = "$baseUrl/api/Booking/Get courts with slots/$date";
     Map<String, String> headers = {
       "content-Type": "application/json; charset=UTF-8",

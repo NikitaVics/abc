@@ -44,4 +44,5 @@ class AppColors {
   static const booklight = Color(0xffFEFEFE);
   static const dateColor = Color(0xff4CBC7B);
   static const warningToast = Color(0xffF2994A);
+  static const disableTime = Color(0xffEE7474);
 }

@@ -60,7 +60,7 @@ class Result {
 
 class CourtSlot {
   String courtName;
-  List<String> availableSlots;
+   final List<AvailableSlot> availableSlots;
 
   CourtSlot({
     required this.courtName,
@@ -70,7 +70,27 @@ class CourtSlot {
   factory CourtSlot.fromJson(Map<String, dynamic> json) {
     return CourtSlot(
       courtName: json['courtName'],
-      availableSlots: List<String>.from(json['availableSlots']),
+      availableSlots: List<AvailableSlot>.from(
+        json['availableSlots'].map((slotJson) =>
+            AvailableSlot.fromJson(slotJson),
+        ),
+      ),
+    );
+  }
+}
+class AvailableSlot {
+  final String timeSlot;
+  final bool isAvailable;
+
+  AvailableSlot({
+    required this.timeSlot,
+    required this.isAvailable,
+  });
+
+  factory AvailableSlot.fromJson(Map<String, dynamic> json) {
+    return AvailableSlot(
+      timeSlot: json['timeSlot'],
+      isAvailable: json['isAvailable'],
     );
   }
 }

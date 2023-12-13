@@ -1,7 +1,10 @@
 import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:motion_toast/motion_toast.dart';
 import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/filter/filter_court_screen.dart';
+import 'package:tennis_court_booking_app/bookingprocess/teamselect/teamselect_screen.dart';
+import 'package:tennis_court_booking_app/bottomnavbar/bottom_navbar.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/constants/onhover.dart';
@@ -24,7 +27,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
   //stores:---------------------------------------------------------------------
 
   //focus node:-----------------------------------------------------------------
- 
+
   bool juniorColor = false, seniorColor = false;
 
   DateTime? dateTime;
@@ -35,7 +38,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
   @override
   void initState() {
     super.initState();
-    
+
     isFirstButtonSelected = true;
     result = widget.result;
     _fetchBookingResponse();
@@ -44,7 +47,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
   void _fetchBookingResponse() async {
     await context
         .read<BookingResponseProvider>()
-        .fetchBookingResponse(result!.toUtc().toIso8601String());
+        .fetchBookingResponse(result!);
   }
 
   bool isFirstButtonSelected = false;
@@ -59,13 +62,12 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
-      
       return WillPopScope(
         onWillPop: () async {
           return await _onWilPop();
         },
         child: MediaQuery(
-           data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
           child: Scaffold(
             backgroundColor: Theme.of(context).brightness == Brightness.dark
                 ? AppColors.darkThemeback
@@ -77,29 +79,30 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
               title: Padding(
                 padding: const EdgeInsets.only(left: 0),
                 child: Container(
-                 // height: 100,
-                     decoration: BoxDecoration(
-                   
-                border: Border(
-              bottom:BorderSide(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.darkAppBarboarder
-                          : AppColors.appbarBoarder,
-                      width: 2.0,
-                    )
-            )),
+                  // height: 100,
+                  decoration: BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.darkAppBarboarder
+                        : AppColors.appbarBoarder,
+                    width: 2.0,
+                  ))),
                   child: Column(
                     children: [
-                     
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 15,top: 5),
+                        padding: const EdgeInsets.only(bottom: 15, top: 5),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             IconButton(
                               padding: EdgeInsets.zero,
                               onPressed: () {
-                                Navigator.pop(context, null);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const BottomNavBar()));
                               },
                               icon: Image.asset(
                                 "assets/images/leftIcon.png",
@@ -108,12 +111,13 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                               ),
                             ),
                             SizedBox(
-                          width: 20,
-                        ),
+                              width: 20,
+                            ),
                             Text(
                               "New Booking",
                               style: TextStyle(
-                                color: Theme.of(context).brightness == Brightness.dark
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
                                     ? AppColors.headingTextColor
                                     : AppColors.profileHead,
                                 fontSize: 20,
@@ -122,7 +126,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                 height: 32 / 20,
                               ),
                             ),
-                              SizedBox(
+                            SizedBox(
                               width: 10,
                             ),
                             IconButton(
@@ -136,11 +140,11 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                 height: 18,
                               ),
                             ),
-                          
-                             IconButton(
+                            IconButton(
                               padding: EdgeInsets.zero,
                               onPressed: () {
-                                Navigator.of(context).push(_createRoute(widget.result));
+                                Navigator.of(context)
+                                    .push(_createRoute(widget.result));
                               },
                               icon: Image.asset(
                                 "assets/images/Filter.png",
@@ -151,8 +155,6 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                           ],
                         ),
                       ),
-                      
-                     
                     ],
                   ),
                 ),
@@ -199,6 +201,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
   }
 
   Widget _buildDatePick() {
+    print(result);
     return Padding(
         padding: const EdgeInsets.only(top: 12),
         child: Container(
@@ -219,14 +222,10 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
   }
 
   Widget _buildBookingSlot() {
-    var isHover = false;
+    bool isHover = false;
 
     return Padding(
-      padding: const EdgeInsets.only(
-        top: 22,
-        bottom: 20,
-        left: 24,right: 24
-      ),
+      padding: const EdgeInsets.only(top: 22, bottom: 20, left: 24, right: 24),
       child: Consumer<BookingResponseProvider>(
         builder: (context, provider, child) {
           final bookingResponse = provider.bookingResponse;
@@ -248,7 +247,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                             color: Color.fromRGBO(0, 0, 0, 0.02),
                             blurRadius: 10,
@@ -280,14 +279,14 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                 ),
                                 Row(
                                   children: [
-                                  SizedBox(
+                                    SizedBox(
                                       width: 17,
                                       height: 17,
                                       child: Image.asset(
-                          "assets/images/informationCircle.png",
-                          //width: 18,
-                          height: 17,
-                        ),
+                                        "assets/images/informationCircle.png",
+                                        //width: 18,
+                                        height: 17,
+                                      ),
                                     ),
                                     Align(
                                       alignment: Alignment.center,
@@ -312,6 +311,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                             SizedBox(height: 27),
                             Wrap(
                               crossAxisAlignment: WrapCrossAlignment.start,
+                              runSpacing: 0.0,
                               spacing: 9.56,
                               children: court.availableSlots
                                   .map(
@@ -319,23 +319,56 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                       padding: const EdgeInsets.only(
                                         bottom: 12,
                                       ),
-                                      child:InkWell(
-                                        hoverColor: AppColors.disableButtonTextColor,
-                                          highlightColor: Colors.blue.withOpacity(0.4),
-  splashColor: Colors.green.withOpacity(0.5),
-                                        onTap: () {
-                                          
-                                            
-                                        },
-                                        child:  Container(
-                                                         
-                                                          decoration: BoxDecoration(
-                                              color: Colors.transparent,
+                                      child: InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              isHover = !isHover;
+                                            });
+                                            slot.isAvailable ==
+                                                            true
+                                                        ?
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    TeamSelectScreen(
+                                                        result: result!,
+                                                        time: slot.timeSlot,
+                                                        courtName:
+                                                            court.courtName),
+                                              ),
+                                            ): MotionToast(
+  primaryColor: AppColors.disableTime,
+  description:  Text("This timeslot is booked. Please select another one..",
+  style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.headingTextColor
+                                        : AppColors.allHeadColor,
+                                    fontSize: 16,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w400,
+                                    height: 24 / 16,
+                                  ),
+  ),
+  icon:Icons.warning,
+  animationCurve: Curves.bounceInOut,
+).show(context);
+
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                color: isHover
+                                                    ? AppColors
+                                                        .disableButtonColor
+                                                    : Colors.transparent,
                                                 borderRadius:
                                                     BorderRadius.circular(8),
                                                 border: Border.all(
-                                                    color:
-                                                        AppColors.confirmValid)),
+                                                    color: slot.isAvailable ==
+                                                            true
+                                                        ? AppColors.confirmValid
+                                                        : AppColors
+                                                            .disableTime)),
                                             child: Padding(
                                               padding: const EdgeInsets.only(
                                                   left: 17.5,
@@ -343,14 +376,14 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                                   top: 8.75,
                                                   bottom: 8.75),
                                               child: Text(
-                                                slot,
+                                                slot.timeSlot,
                                                 style: TextStyle(
-                                                  color: Theme.of(context)
-                                                              .brightness ==
-                                                          Brightness.dark
-                                                      ? AppColors
-                                                          .headingTextColor
-                                                      : AppColors.dateColor,
+                                                  color:  slot.isAvailable ==
+                                                            true
+                                                        ? AppColors.dateColor
+                                                        : AppColors
+                                                            .disableTime
+                                                       ,
                                                   fontSize: 14,
                                                   fontFamily: FontFamily.roboto,
                                                   fontWeight: FontWeight.w500,
@@ -358,8 +391,8 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                                 ),
                                               ),
                                             ),
-                                                        )
-                                        /*Container(
+                                          )
+                                          /*Container(
                                           decoration: BoxDecoration(
                                             color: Colors.transparent,
                                               borderRadius:
@@ -390,7 +423,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                             ),
                                           ),
                                         ),*/
-                                      ),
+                                          ),
                                     ),
                                   )
                                   .toList(),
@@ -415,9 +448,6 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
     );
   }
 
- 
- 
-
   // General Methods:-----------------------------------------------------------
 
   // dispose:-------------------------------------------------------------------
@@ -425,15 +455,15 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
   void dispose() {
     // Clean up the controller when the Widget is removed from the Widget tree
 
-   
     super.dispose();
   }
 }
 
-
 Route _createRoute(DateTime result) {
   return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => FilterCourtScreen(result: result,),
+    pageBuilder: (context, animation, secondaryAnimation) => FilterCourtScreen(
+      result: result,
+    ),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       const begin = Offset(0.0, 1.0);
       const end = Offset.zero;

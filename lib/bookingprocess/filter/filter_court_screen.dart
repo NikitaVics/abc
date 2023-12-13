@@ -42,7 +42,7 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
   void _fetchBookingResponse() async {
     await context
         .read<BookingResponseProvider>()
-        .fetchBookingResponse(result!.toUtc().toIso8601String());
+        .fetchBookingResponse(result!);
   }
 
   final List<String> selectedCourts = [];

@@ -7,7 +7,7 @@ class BookingResponseProvider extends ChangeNotifier {
 
   BookingResponse? get bookingResponse => _bookingResponse;
 
-  Future<void> fetchBookingResponse(String date) async {
+  Future<void> fetchBookingResponse(DateTime date) async {
     try {
      _bookingResponse = await Api.showBookingResponse(date);
       notifyListeners();
