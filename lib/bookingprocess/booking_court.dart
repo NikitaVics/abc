@@ -8,12 +8,15 @@ import 'package:tennis_court_booking_app/bottomnavbar/bottom_navbar.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/constants/onhover.dart';
+import 'package:tennis_court_booking_app/constants/shimmer.dart';
 import 'package:tennis_court_booking_app/model/bookingCourt/booking_response.dart';
 import 'package:tennis_court_booking_app/provider/booking_response_provider.dart';
 
 class BookingCourtScreen extends StatefulWidget {
   final DateTime result;
-  const BookingCourtScreen({super.key, required this.result});
+  final List<String>? selectedCourts;
+  const BookingCourtScreen(
+      {super.key, required this.result, this.selectedCourts});
 
   @override
   BookingCourtScreenState createState() => BookingCourtScreenState();
@@ -29,6 +32,8 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
   //focus node:-----------------------------------------------------------------
 
   bool juniorColor = false, seniorColor = false;
+  bool isLoad = false;
+  bool isLoading = false;
 
   DateTime? dateTime;
   DateTime? result;
@@ -41,13 +46,33 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
 
     isFirstButtonSelected = true;
     result = widget.result;
-    _fetchBookingResponse();
+    if (widget.selectedCourts != null) {
+      _fetchBookingResponsewithFilter();
+    } else {
+      _fetchBookingResponse();
+    }
   }
 
   void _fetchBookingResponse() async {
+    setState(() {
+      isLoad = true;
+    });
+    await context.read<BookingResponseProvider>().fetchBookingResponse(result!);
+    setState(() {
+      isLoad = false;
+    });
+  }
+
+  void _fetchBookingResponsewithFilter() async {
+    setState(() {
+     isLoad = true;
+    });
     await context
         .read<BookingResponseProvider>()
-        .fetchBookingResponse(result!);
+        .fetchBookingResponse(result!, widget.selectedCourts);
+        setState(() {
+       isLoad = false;
+    });
   }
 
   bool isFirstButtonSelected = false;
@@ -98,6 +123,9 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                             IconButton(
                               padding: EdgeInsets.zero,
                               onPressed: () {
+                                Provider.of<BookingResponseProvider>(context,
+                                        listen: false)
+                                    .resetState();
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -143,6 +171,9 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                             IconButton(
                               padding: EdgeInsets.zero,
                               onPressed: () {
+                                Provider.of<BookingResponseProvider>(context,
+                                        listen: false)
+                                    .resetState();
                                 Navigator.of(context)
                                     .push(_createRoute(widget.result));
                               },
@@ -194,7 +225,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
           _buildDatePick(),
           Expanded(
               //  flex: 1,
-              child: _buildBookingSlot()),
+              child: isLoad?ShimmerEffect(): _buildBookingSlot()),
         ],
       ),
     );
@@ -222,13 +253,12 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
   }
 
   Widget _buildBookingSlot() {
-    bool isHover = false;
-
     return Padding(
       padding: const EdgeInsets.only(top: 22, bottom: 20, left: 24, right: 24),
       child: Consumer<BookingResponseProvider>(
         builder: (context, provider, child) {
           final bookingResponse = provider.bookingResponse;
+          print('Booking Response: $bookingResponse');
 
           if (bookingResponse != null &&
               bookingResponse.result.courtsWithSlots.isNotEmpty) {
@@ -259,7 +289,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 14, vertical: 20),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -321,46 +351,47 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                       ),
                                       child: InkWell(
                                           onTap: () {
-                                            setState(() {
-                                              isHover = !isHover;
-                                            });
-                                            slot.isAvailable ==
-                                                            true
-                                                        ?
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    TeamSelectScreen(
-                                                        result: result!,
-                                                        time: slot.timeSlot,
-                                                        courtName:
-                                                            court.courtName),
-                                              ),
-                                            ): MotionToast(
-  primaryColor: AppColors.disableTime,
-  description:  Text("This timeslot is booked. Please select another one..",
-  style: TextStyle(
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? AppColors.headingTextColor
-                                        : AppColors.allHeadColor,
-                                    fontSize: 16,
-                                    fontFamily: FontFamily.satoshi,
-                                    fontWeight: FontWeight.w400,
-                                    height: 24 / 16,
-                                  ),
-  ),
-  icon:Icons.warning,
-  animationCurve: Curves.bounceInOut,
-).show(context);
-
+                                            slot.isAvailable
+                                                ? Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          TeamSelectScreen(
+                                                              result: result!,
+                                                              time:
+                                                                  slot.timeSlot,
+                                                              courtName: court
+                                                                  .courtName),
+                                                    ),
+                                                  )
+                                                : MotionToast(
+                                                    primaryColor:
+                                                        AppColors.disableTime,
+                                                    description: Text(
+                                                      "This timeslot is booked. Please select another one..",
+                                                      style: TextStyle(
+                                                        color: Theme.of(context)
+                                                                    .brightness ==
+                                                                Brightness.dark
+                                                            ? AppColors
+                                                                .headingTextColor
+                                                            : AppColors
+                                                                .allHeadColor,
+                                                        fontSize: 16,
+                                                        fontFamily:
+                                                            FontFamily.satoshi,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        height: 24 / 16,
+                                                      ),
+                                                    ),
+                                                    icon: Icons.warning,
+                                                    animationCurve:
+                                                        Curves.bounceInOut,
+                                                  ).show(context);
                                           },
                                           child: Container(
                                             decoration: BoxDecoration(
-                                                color: isHover
-                                                    ? AppColors
-                                                        .disableButtonColor
-                                                    : Colors.transparent,
+                                                color: Colors.transparent,
                                                 borderRadius:
                                                     BorderRadius.circular(8),
                                                 border: Border.all(
@@ -378,12 +409,10 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                               child: Text(
                                                 slot.timeSlot,
                                                 style: TextStyle(
-                                                  color:  slot.isAvailable ==
-                                                            true
-                                                        ? AppColors.dateColor
-                                                        : AppColors
-                                                            .disableTime
-                                                       ,
+                                                  color: slot.isAvailable ==
+                                                          true
+                                                      ? AppColors.dateColor
+                                                      : AppColors.disableTime,
                                                   fontSize: 14,
                                                   fontFamily: FontFamily.roboto,
                                                   fontWeight: FontWeight.w500,

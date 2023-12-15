@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:motion_toast/motion_toast.dart';
 import 'package:provider/provider.dart';
+import 'package:tennis_court_booking_app/bookingprocess/booking_court.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/provider/booking_response_provider.dart';
@@ -257,7 +258,7 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
       child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 24,horizontal: 24),
+          padding: EdgeInsets.symmetric(vertical: 24,horizontal: 24),
           child: FocusScope(
               // Manage keyboard focus
               child: selectedCourts.isEmpty
@@ -299,7 +300,15 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
                           : double.infinity,
                       isLoading: false,
                       text: "Apply Filter",
-                      onPressed: () async {},
+                      onPressed: () async {
+                         Provider.of<BookingResponseProvider>(context, listen: false).resetState();
+                         Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => BookingCourtScreen(result: widget.result,selectedCourts: selectedCourts),
+    ),
+  );
+                      },
                       buttonColor: AppColors.elevatedColor,
                       textColor: Colors.white,
                     ))),

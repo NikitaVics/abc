@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tennis_court_booking_app/model/bookingCourt/booking_response.dart';
+import 'package:tennis_court_booking_app/model/friendShow/friend_show_model.dart';
 import 'package:tennis_court_booking_app/presentation/home/model/checkstatus.dart';
 import 'package:tennis_court_booking_app/profile/model/profile_model.dart';
 import 'package:tennis_court_booking_app/tennismodel/teniscourt/court.dart';
@@ -159,8 +160,6 @@ class Api {
     return jsonDecode(response.body);
   }
 
-  
-
   static Future registerForm(String email, String name, String phoneNumber,
       String dob, String address, String image) async {
     var url = "$baseUrl/api/UsersAuth/Form Regisration";
@@ -179,14 +178,12 @@ class Api {
       "phoneNumber": phoneNumber,
       "dob": dob,
       "address": address,
-     
     });
 
     // Add image file to the request
-   request.files.add(await http.MultipartFile.fromPath(
+    request.files.add(await http.MultipartFile.fromPath(
       'image',
-      image ,
-     
+      image,
     ));
     print("image $image");
     // Add headers to the request
@@ -257,10 +254,15 @@ class Api {
     return CourtList.fromJson(jsonDecode(response.body));
   }
 
-
   //Booking Response
-  static Future<BookingResponse> showBookingResponse(DateTime date) async {
+  static Future<BookingResponse> showBookingResponse(DateTime date, [List<String>? selectedCourts]) async {
     var url = "$baseUrl/api/Booking/Get courts with slots/$date";
+
+    if (selectedCourts != null && selectedCourts.isNotEmpty) {
+      Uri uri = Uri.parse(url).replace(queryParameters: {'selectedCourts': selectedCourts});
+      url = uri.toString();
+    }
+
     Map<String, String> headers = {
       "content-Type": "application/json; charset=UTF-8",
     };
@@ -273,5 +275,25 @@ class Api {
     print(response.body);
 
     return BookingResponse.fromJson(jsonDecode(response.body));
+  }
+
+
+  //Friend show 
+   static Future<FriendShowModel> friendShow(String bearerToken) async {
+    var url = "$baseUrl/api/Friend/My Friends";
+
+    // Convert the model to a JSON string
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+    };
+
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    print(response.body);
+
+    return FriendShowModel.fromJson(jsonDecode(response.body));
   }
 }

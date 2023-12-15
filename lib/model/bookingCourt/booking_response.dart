@@ -1,40 +1,24 @@
 class BookingResponse {
+   final int statusCode;
+  final bool isSuccess;
+  final List<String> errorMessage;
   Result result;
-  int id;
-  dynamic exception;
-  int status;
-  bool isCanceled;
-  bool isCompleted;
-  bool isCompletedSuccessfully;
-  int creationOptions;
-  dynamic asyncState;
-  bool isFaulted;
-
+  
   BookingResponse({
+    required this.statusCode,
+    required this.isSuccess,
+    required this.errorMessage,
     required this.result,
-    required this.id,
-    required this.exception,
-    required this.status,
-    required this.isCanceled,
-    required this.isCompleted,
-    required this.isCompletedSuccessfully,
-    required this.creationOptions,
-    required this.asyncState,
-    required this.isFaulted,
+  
   });
 
   factory BookingResponse.fromJson(Map<String, dynamic> json) {
     return BookingResponse(
+       statusCode: json['statusCode'],
+      isSuccess: json['isSuccess'],
+      errorMessage: List<String>.from(json['errorMessage']),
       result: Result.fromJson(json['result']),
-      id: json['id'],
-      exception: json['exception'],
-      status: json['status'],
-      isCanceled: json['isCanceled'],
-      isCompleted: json['isCompleted'],
-      isCompletedSuccessfully: json['isCompletedSuccessfully'],
-      creationOptions: json['creationOptions'],
-      asyncState: json['asyncState'],
-      isFaulted: json['isFaulted'],
+     
     );
   }
 }

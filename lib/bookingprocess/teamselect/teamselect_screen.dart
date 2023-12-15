@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:motion_toast/motion_toast.dart';
 import 'package:provider/provider.dart';
+import 'package:tennis_court_booking_app/api/api.dart';
 import 'package:tennis_court_booking_app/bookingprocess/booking_court.dart';
 import 'package:tennis_court_booking_app/bookingprocess/filter/filter_court_screen.dart';
+import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/friend_show_provider.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/profile_provider.dart';
@@ -55,6 +58,8 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
     String token = await SharePref.fetchAuthToken();
     tokens = await SharePref.fetchAuthToken();
     profileProvider.fetchProfile(token);
+    final friendShow = Provider.of<FreindShowProvider>(context, listen: false);
+    friendShow.fetchfriendshow(token);
     print(name);
   }
 
@@ -466,7 +471,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
             GestureDetector(
               onTap: () {
                 setState(() {
-                  isImageVisible =!isImageVisible;
+                  isImageVisible = !isImageVisible;
                 });
               },
               child: Container(
@@ -474,20 +479,20 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                     color: Colors.transparent,
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(color: AppColors.dotColor)),
-                child:  Padding(
+                child: Padding(
                     padding: EdgeInsets.only(
                         left: 26, right: 26, top: 11, bottom: 11),
                     child: SizedBox(
                       height: 24,
                       child: isImageVisible
-              ? Icon(
-                  Icons.add,
-                  color: AppColors.dotColor,
-                )
-              : Icon(
-                  Icons.close,
-                  color: AppColors.dotColor,
-                ),
+                          ? Icon(
+                              Icons.add,
+                              color: AppColors.dotColor,
+                            )
+                          : Icon(
+                              Icons.close,
+                              color: AppColors.dotColor,
+                            ),
                     )),
               ),
             ),
@@ -503,92 +508,152 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-          color: AppColors.appbarBoarder
-          )
-        ),
-        child: Padding(padding: EdgeInsets.only(
-          left: 14,right: 14,bottom: 24
-        ),
-        
-        child: Column(
-          children: [
-            Row(
+            border: Border.all(color: AppColors.appbarBoarder)),
+        child: Padding(
+          padding: EdgeInsets.only(left: 20, right: 20, bottom: 24, top: 20),
+          child: Column(
             children: [
-              Expanded(
-                child: SizedBox(
-                  height: 48,
-                  child: Stack(
-                    children: [
-                      Positioned(
-                          left: 0,
-                          top: 0,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(110.0),
-                            child: SilentErrorImage(
-                              width: 48.0,
-                              height: 48.0,
-                              imageUrl: imageUrl!,
+              Container(
+                padding: const EdgeInsets.only(bottom: 10),
+                decoration: const BoxDecoration(
+                    border: Border(
+                        bottom: BorderSide(color: AppColors.appbarBoarder))),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 48,
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              left: 0,
+                              top: 0,
+                              child: Image.asset(
+                                'assets/images/userTeam.png',
+                                width: 48,
+                                height: 48,
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          )),
-                      Positioned(
-                        left: 35,
-                        top: 0,
-                        child: Image.asset(
-                          'assets/images/userTeam.png',
-                          width: 48,
-                          height: 48,
-                          fit: BoxFit.cover,
+                            Positioned(
+                              left: 35,
+                              top: 0,
+                              child: Image.asset(
+                                'assets/images/userTeam.png',
+                                width: 48,
+                                height: 48,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned(
+                              left: 71,
+                              top: 0,
+                              child: Image.asset(
+                                'assets/images/userTeam.png',
+                                width: 48,
+                                height: 48,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Positioned(
-                        left: 71,
-                        top: 0,
-                        child: Image.asset(
-                          'assets/images/userTeam.png',
-                          width: 48,
-                          height: 48,
-                          fit: BoxFit.cover,
-                        ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          //isImageVisible = !isImageVisible;
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: AppColors.dateColor)),
+                        child: const Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Text(
+                              "Repeat Team",
+                              style: TextStyle(
+                                color: AppColors.dateColor,
+                                fontSize: 14,
+                                fontFamily: FontFamily.satoshi,
+                                fontWeight: FontWeight.w500,
+                                height: 20 / 14,
+                              ),
+                            )),
                       ),
-                      Positioned(
-                        left: 106,
-                        top: 0,
-                        child: Image.asset(
-                          'assets/images/userTeam.png',
-                          width: 48,
-                          height: 48,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                     //isImageVisible = !isImageVisible;
-                  });
+              Consumer<FreindShowProvider>(
+                builder: (context, provider, child) {
+                  final friendResponse = provider.friendShowModel;
+                  print('Booking Response: $friendResponse');
+
+                  if (friendResponse != null &&
+                      friendResponse.result.isNotEmpty) {
+                    final friendData = friendResponse.result;
+
+                    return Container(
+                      height: 180,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemCount: (friendData.length / 4)
+                              .ceil(), // Calculate the number of rows
+                          itemBuilder: (context, rowIndex) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: List.generate(
+                                4,
+                                (indexInRow) {
+                                  final dataIndex = rowIndex * 4 + indexInRow;
+                                  if (dataIndex < friendData.length) {
+                                    final court = friendData[dataIndex];
+                                    return dataIndex == 0 && dataIndex == 4
+                                        ? Padding(
+                                            padding:
+                                                const EdgeInsets.only(left: 32),
+                                            child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        150.0),
+                                                child: SilentErrorImage(
+                                                    height: 48,
+                                                    width: 48,
+                                                    imageUrl: court)),
+                                          )
+                                        : ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(150.0),
+                                            child: SilentErrorImage(
+                                                height: 48,
+                                                width: 48,
+                                                imageUrl: court));
+                                  } else {
+                                    return SizedBox(
+                                        width:
+                                            100); // Empty space if no more data
+                                  }
+                                },
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  } else {
+                    return Text('No court data available.');
+                  }
                 },
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: AppColors.dotColor)),
-                  child:  Padding(
-                      padding: EdgeInsets.only(
-                          left: 26, right: 26, top: 11, bottom: 11),
-                      child: SizedBox(
-                        height: 24,
-                        child:Text("Add")
-                      )),
-                ),
               ),
             ],
           ),
-          ],
-        ),),
+        ),
       ),
     );
   }
