@@ -527,6 +527,7 @@ class _RegisterFormState extends State<RegisterForm> {
                   backgroundColor: AppColors
                       .elevatedColor, // Change background color on hover
                 ),
+                
                 onPressed: isChecked
                     ? () async {
                         FocusManager.instance.primaryFocus?.unfocus();
@@ -535,15 +536,15 @@ class _RegisterFormState extends State<RegisterForm> {
                         bool phoneValid = await validatePhone();
                         bool addressValid = await validateAddress();
                         bool dobValid = await validateDOB();
-                        setState(() {
-                          isLoading = true;
-                        });
+                        
                         if (nameValid &&
                             phoneValid &&
                             addressValid &&
                             dobValid &&
                             isChecked ) {
-                          
+                          setState(() {
+                          isLoading = true;
+                        });
                           print("result ${result!}");
                           value
                               .registerFormApi(
@@ -552,7 +553,7 @@ class _RegisterFormState extends State<RegisterForm> {
                                   _userPhoneController.text,
                                   result!.toUtc().toIso8601String(),
                                   _userAddressController.text,
-                                  imageFile!.path)
+                                  imageFile?.path)
                               .then((val) {
                             if (val['statusCode'] == 200) {
                               Navigator.of(context).push(

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tennis_court_booking_app/model/bookingCourt/booking_response.dart';
+import 'package:tennis_court_booking_app/model/coachshow/Coach_show_model.dart';
 import 'package:tennis_court_booking_app/model/friendShow/friend_show_model.dart';
 import 'package:tennis_court_booking_app/presentation/home/model/checkstatus.dart';
 import 'package:tennis_court_booking_app/profile/model/profile_model.dart';
@@ -161,7 +162,7 @@ class Api {
   }
 
   static Future registerForm(String email, String name, String phoneNumber,
-      String dob, String address, String image) async {
+      String dob, String address, String? image) async {
     var url = "$baseUrl/api/UsersAuth/Form Regisration";
 
     // Convert the model to a JSON string
@@ -181,11 +182,14 @@ class Api {
     });
 
     // Add image file to the request
+    if (image != null && image.isNotEmpty) {
     request.files.add(await http.MultipartFile.fromPath(
       'image',
       image,
     ));
     print("image $image");
+  }
+
     // Add headers to the request
     //request.headers.addAll(headers);
     try {
@@ -295,5 +299,27 @@ class Api {
     print(response.body);
 
     return FriendShowModel.fromJson(jsonDecode(response.body));
+  }
+
+  //Coach Show
+  static Future<CoachShowModel> CoachShow(DateTime date,String time) async {
+    var url = "$baseUrl/api/Management/Coach/Show images of all available coaches";
+
+    // Convert the model to a JSON string
+    Uri uri = Uri.parse('$url?selectedDate=$date&selectedSlot=$time');
+     url = uri.toString();
+   Map<String, String> headers = {
+      "content-Type": "application/json; charset=UTF-8",
+    };
+ 
+
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    print(response.body);
+
+    return CoachShowModel.fromJson(jsonDecode(response.body));
   }
 }

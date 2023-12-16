@@ -161,7 +161,7 @@ class ProfileScreenState extends State<ProfileScreen> {
             } else {
               final profileData = provider.profileModel!;
               imageUrl = profileData.result.imageUrl;
-              name = profileData.result.name;
+              name = profileData.result.name??"";
               return Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.start,

@@ -84,17 +84,17 @@ class HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Consumer2<CheckStatusProvider, ProfileProvider>(
       builder: (context, checkStatusProvider, profileProvider, child) {
-        if (checkStatusProvider.checkStatus == null ||
-            profileProvider.profileModel == null) {
+        if (checkStatusProvider.checkStatus == null 
+            ) {
           profileProvider.fetchProfile(tokens ?? "");
           checkStatusProvider.checkRegistrationStatus(tokens ?? "");
 
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         } else {
           imageUrl = profileProvider.profileModel?.result.imageUrl;
-          name = profileProvider.profileModel!.result.name;
+          name = profileProvider.profileModel?.result.name??"";
           hasErrorMessage = checkStatusProvider.checkStatus!.result;
           List<String> nameParts = name.split(' ');
 
@@ -104,7 +104,7 @@ class HomeScreenState extends State<HomeScreen> {
           print("Nope $hasErrorMessage");
 
           return loading == true
-              ? Center(
+              ? const Center(
                   child: CircularProgressIndicator(),
                 )
               : Scaffold(
@@ -150,10 +150,10 @@ class HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ),
                                   hasErrorMessage!
-                                      ? SizedBox(
+                                      ? const SizedBox(
                                           width: 20,
                                         )
-                                      : SizedBox(
+                                      : const SizedBox(
                                           width: 10,
                                         ),
                                   Padding(
@@ -192,50 +192,52 @@ class HomeScreenState extends State<HomeScreen> {
                                       ],
                                     ),
                                   ),
-                                  hasErrorMessage!
-                                      ? const SizedBox()
-                                      : SizedBox(
-                                          height: 34,
-                                          child: OutlinedButton(
-                                            onPressed: () async {
-                                              SharedPreferences pref =
-                                                  await SharedPreferences
-                                                      .getInstance();
-                                              String? email =
-                                                  await SharePref.fetchEmail();
-                                              Navigator.of(context).push(
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      RegisterForm(email: email!),
+                                  Expanded(child: Container()),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 20),
+                                    child: hasErrorMessage!
+                                        ? const SizedBox()
+                                        : SizedBox(
+                                            height: 34,
+                                            child: OutlinedButton(
+                                              onPressed: () async {
+                                                SharedPreferences pref =
+                                                    await SharedPreferences
+                                                        .getInstance();
+                                                String? email =
+                                                    await SharePref.fetchEmail();
+                                                Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        RegisterForm(email: email!),
+                                                  ),
+                                                );
+                                              },
+                                              style: OutlinedButton.styleFrom(
+                                                backgroundColor:
+                                                    AppColors.errorback,
+                                                foregroundColor:
+                                                    AppColors.errorColor,
+                                                side: BorderSide(
+                                                    color: AppColors.errorColor),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
                                                 ),
-                                              );
-                                            },
-                                            style: OutlinedButton.styleFrom(
-                                              backgroundColor:
-                                                  AppColors.errorback,
-                                              foregroundColor:
-                                                  AppColors.errorColor,
-                                              side: BorderSide(
-                                                  color: AppColors.errorColor),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
                                               ),
-                                            ),
-                                            child: const Text(
-                                              'Complete profile',
-                                              style: TextStyle(
-                                                fontFamily: FontFamily.satoshi,
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                                height: 24 / 14,
+                                              child: const Text(
+                                                'Complete profile',
+                                                style: TextStyle(
+                                                  fontFamily: FontFamily.satoshi,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w400,
+                                                  height: 24 / 14,
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
-                                  Expanded(
-                                    child: Container(),
                                   ),
+                                
                                   Padding(
                                     padding: const EdgeInsets.only(right: 24),
                                     child: Align(

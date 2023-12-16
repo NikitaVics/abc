@@ -194,7 +194,7 @@ Future sendOtpforlogin(String email,String otp) async {
     return res;
   }
 
-  Future registerFormApi(String email,String name,String phoneNumber,String dob,String address,String imageUrl) async {
+  Future registerFormApi(String email,String name,String phoneNumber,String dob,String address,String? imageUrl) async {
     //updateRegisterLoader(true);
     var body = {
   "email":email,
@@ -202,9 +202,9 @@ Future sendOtpforlogin(String email,String otp) async {
   "phoneNumber": phoneNumber,
   "dob": dob,
   "address":address,
-  if (imageUrl != null ) "imageUrl": imageUrl,
+  "imageUrl": imageUrl,
     };
-    var res = await Api.registerForm(email,name,phoneNumber,dob,address,imageUrl );
+    var res = await Api.registerForm(email,name,phoneNumber,dob,address,imageUrl??"" );
     //updateRegisterLoader(false);
     return res;
   }

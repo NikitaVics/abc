@@ -1,9 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:motion_toast/motion_toast.dart';
 import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/api/api.dart';
 import 'package:tennis_court_booking_app/bookingprocess/booking_court.dart';
 import 'package:tennis_court_booking_app/bookingprocess/filter/filter_court_screen.dart';
+import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/coach_show_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/friend_show_provider.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
@@ -40,6 +43,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
   DateTime? dateTime;
   DateTime? result;
   String? imageUrl;
+  String? coachImage;
   //SignInProvider? provider;
 
   @override
@@ -60,6 +64,8 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
     profileProvider.fetchProfile(token);
     final friendShow = Provider.of<FreindShowProvider>(context, listen: false);
     friendShow.fetchfriendshow(token);
+    final coachShow = Provider.of<CoachShowProvider>(context, listen: false);
+    coachShow.fetchfriendshow(widget.result, widget.time);
     print(name);
   }
 
@@ -67,10 +73,13 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
     await context.read<BookingResponseProvider>().fetchBookingResponse(result!);
   }
 
+  List<String> selectedImageUrls = [];
+
   bool isFirstButtonSelected = false;
   bool isSecondButtonSelected = false;
   bool isFormDone = false;
   bool isImageVisible = true;
+  bool isImage = true;
   String name = "";
   String? tokens;
   Future _onWilPop() async {
@@ -181,19 +190,24 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
             } else {
               final profileData = provider.profileModel!;
               imageUrl = profileData.result.imageUrl;
-              name = profileData.result.name;
+              name = profileData.result.name ?? "";
               return Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   _buildDatePick(),
-                  _buildImage(isImageVisible),
+                  _buildImage(isImageVisible, isImage),
                   _buildAddTeam(),
                   Padding(
                     padding: const EdgeInsets.only(top: 28.92),
                     child: _buildImageProfile(!isImageVisible),
-                  )
+                  ),
+                  _buildCoach(),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 28.92),
+                    child: _buildCoachProfile(!isImage),
+                  ),
                   /* Expanded(
                 //  flex: 1,
                 child: _buildBookingSlot()),*/
@@ -390,9 +404,9 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
         ));
   }
 
-  Widget _buildImage(bool isVisible) {
+  Widget _buildImage(bool isVisible, bool isVisi) {
     return Visibility(
-      visible: isVisible,
+      visible: isVisible && isVisi,
       child: Image.asset("assets/images/teamsadd.png"),
     );
   }
@@ -434,36 +448,27 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                             imageUrl: imageUrl!,
                           ),
                         )),
-                    Positioned(
-                      left: 35,
-                      top: 0,
-                      child: Image.asset(
-                        'assets/images/userTeam.png',
-                        width: 48,
-                        height: 48,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Positioned(
-                      left: 71,
-                      top: 0,
-                      child: Image.asset(
-                        'assets/images/userTeam.png',
-                        width: 48,
-                        height: 48,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Positioned(
-                      left: 106,
-                      top: 0,
-                      child: Image.asset(
-                        'assets/images/userTeam.png',
-                        width: 48,
-                        height: 48,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                  ...List.generate(
+    3, // Ensure the list has three items
+    (index) {
+      String imageUrl =
+          index < selectedImageUrls.length ? selectedImageUrls[index] : "assets/images/userTeam.png";
+      double leftPad = (35 * (index+1)).toDouble();
+      return Positioned(
+        left: leftPad,
+        top: 0,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(150.0),
+          child: SilentErrorImage(
+            height: 48,
+            width: 48,
+            imageUrl: imageUrl,
+          ),
+        ),
+      );
+    },
+  ),
+                  
                   ],
                 ),
               ),
@@ -523,40 +528,30 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                     Expanded(
                       child: SizedBox(
                         height: 48,
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              left: 0,
-                              top: 0,
-                              child: Image.asset(
-                                'assets/images/userTeam.png',
-                                width: 48,
-                                height: 48,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Positioned(
-                              left: 35,
-                              top: 0,
-                              child: Image.asset(
-                                'assets/images/userTeam.png',
-                                width: 48,
-                                height: 48,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            Positioned(
-                              left: 71,
-                              top: 0,
-                              child: Image.asset(
-                                'assets/images/userTeam.png',
-                                width: 48,
-                                height: 48,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ],
-                        ),
+                        child:
+                        Stack(
+  children: List.generate(
+    3, // Ensure the list has three items
+    (index) {
+      String imageUrl =
+          index < selectedImageUrls.length ? selectedImageUrls[index] : "assets/images/userTeam.png";
+      double leftPad = (35 * index).toDouble();
+      return Positioned(
+        left: leftPad,
+        top: 0,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(150.0),
+          child: SilentErrorImage(
+            height: 48,
+            width: 48,
+            imageUrl: imageUrl,
+          ),
+        ),
+      );
+    },
+  ),
+),
+
                       ),
                     ),
                     GestureDetector(
@@ -614,30 +609,39 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                                   final dataIndex = rowIndex * 4 + indexInRow;
                                   if (dataIndex < friendData.length) {
                                     final court = friendData[dataIndex];
-                                    return dataIndex == 0 && dataIndex == 4
-                                        ? Padding(
-                                            padding:
-                                                const EdgeInsets.only(left: 32),
-                                            child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        150.0),
-                                                child: SilentErrorImage(
-                                                    height: 48,
-                                                    width: 48,
-                                                    imageUrl: court)),
-                                          )
-                                        : ClipRRect(
+                                     final isSelected = selectedImageUrls.contains(court);
+                                    return GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                        if (isSelected) {
+                        selectedImageUrls.remove(court);
+                      } else {
+                        selectedImageUrls.add(court);
+                      }
+                                        });
+                                      },
+                                      child: Container(
+                                         decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(150.0),
+                      border: Border.all(
+                        color: isSelected ? Colors.green : Colors.transparent,
+                        width: 2.0,
+                      ),
+                    ),
+                                        child: ClipRRect(
+                                          
                                             borderRadius:
                                                 BorderRadius.circular(150.0),
                                             child: SilentErrorImage(
                                                 height: 48,
                                                 width: 48,
-                                                imageUrl: court));
+                                                imageUrl: court)),
+                                      ),
+                                    );
                                   } else {
                                     return SizedBox(
                                         width:
-                                            100); // Empty space if no more data
+                                            48); // Empty space if no more data
                                   }
                                 },
                               ),
@@ -657,6 +661,212 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
       ),
     );
   }
+
+  Widget _buildCoach() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 31, bottom: 21),
+          child: Text(
+            "Add coach",
+            style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.headingTextColor
+                  : AppColors.subheadColor,
+              fontSize: 16,
+              fontFamily: FontFamily.satoshi,
+              fontWeight: FontWeight.w500,
+              height: 24 / 16,
+            ),
+          ),
+        ),
+        Row(
+          children: [
+            Expanded(
+              child: SizedBox(
+                height: 48,
+                child: Stack(
+                  children: [
+                    Positioned(
+                        left: 0,
+                        top: 0,
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(150.0),
+                            child: SilentErrorImage(
+                                height: 48,
+                                width: 48,
+                                imageUrl: coachImage ??
+                                    "assets/images/userTeam.png"))),
+                  ],
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  isImage = !isImage;
+                });
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(color: AppColors.dotColor)),
+                child: Padding(
+                    padding: EdgeInsets.only(
+                        left: 26, right: 26, top: 11, bottom: 11),
+                    child: SizedBox(
+                      height: 24,
+                      child: isImage
+                          ? Icon(
+                              Icons.add,
+                              color: AppColors.dotColor,
+                            )
+                          : Icon(
+                              Icons.close,
+                              color: AppColors.dotColor,
+                            ),
+                    )),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCoachProfile(bool visibilityShow) {
+    return Visibility(
+      visible: visibilityShow,
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.appbarBoarder)),
+        child: Padding(
+          padding: EdgeInsets.only(left: 20, right: 20, bottom: 24, top: 20),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.only(bottom: 10),
+                decoration: const BoxDecoration(
+                    border: Border(
+                        bottom: BorderSide(color: AppColors.appbarBoarder))),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 48,
+                        child: Stack(
+                          children: [
+                            Positioned(
+                              left: 0,
+                              top: 0,
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(150.0),
+                                  child: SilentErrorImage(
+                                      height: 48,
+                                      width: 48,
+                                      imageUrl: coachImage ??
+                                          "assets/images/userTeam.png")),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          //isImageVisible = !isImageVisible;
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: AppColors.dateColor)),
+                        child: const Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Text(
+                              "Repeat Coach",
+                              style: TextStyle(
+                                color: AppColors.dateColor,
+                                fontSize: 14,
+                                fontFamily: FontFamily.satoshi,
+                                fontWeight: FontWeight.w500,
+                                height: 20 / 14,
+                              ),
+                            )),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Consumer<CoachShowProvider>(
+                builder: (context, provider, child) {
+                  final coachResponse = provider.coachShowModel;
+                  print('Booking Response: $coachResponse');
+
+                  if (coachResponse != null &&
+                      coachResponse.result.isNotEmpty) {
+                    final friendData = coachResponse.result;
+
+                    return Container(
+                      height: 180,
+                      child: ListView.builder(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: (friendData.length / 4)
+                            .ceil(), // Calculate the number of rows
+                        itemBuilder: (context, rowIndex) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 32),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: List.generate(
+                                4,
+                                (indexInRow) {
+                                  final dataIndex = rowIndex * 4 + indexInRow;
+                                  if (dataIndex < friendData.length) {
+                                    final court = friendData[dataIndex];
+                                    return GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          coachImage = court;
+                                        });
+                                      },
+                                      child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(150.0),
+                                          child: SilentErrorImage(
+                                              height: 48,
+                                              width: 48,
+                                              imageUrl: court)),
+                                    );
+                                  } else {
+                                    return SizedBox(
+                                        width:
+                                            48); // Empty space if no more data
+                                  }
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  } else {
+                    return Text('No court data available.');
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   // General Methods:-----------------------------------------------------------
 
   // dispose:-------------------------------------------------------------------
@@ -711,7 +921,7 @@ class SilentErrorImage extends StatelessWidget {
           (BuildContext context, Object exception, StackTrace? stackTrace) {
         // Return an empty container (or any other widget) to silently handle errors
         return Image.asset(
-          "assets/images/userImage.png",
+          "assets/images/userTeam.png",
           width: width,
           height: height,
         );

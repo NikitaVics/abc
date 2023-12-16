@@ -22,9 +22,9 @@ class ProfileModel {
 }
 
 class Profile {
-  final String imageUrl;
-  final String name;
-  final String phoneNumber;
+  final String? imageUrl;
+  final String? name;
+  final String? phoneNumber;
 
   Profile({
     required this.imageUrl,
@@ -34,9 +34,9 @@ class Profile {
 
   factory Profile.fromJson(Map<String, dynamic> json) {
     return Profile(
-      imageUrl: json['imageUrl'],
-      name: json['name'],
-      phoneNumber: json['phoneNumber'],
+      imageUrl: json['imageUrl']?? '',
+      name: json['name']?? '',
+      phoneNumber: json['phoneNumber']?? '',
     );
   }
 }
