@@ -4,7 +4,7 @@ class CoachShowModel {
   int statusCode;
   bool isSuccess;
   List<String> errorMessage;
-  List<String> result;
+  List<Coach> result; // Updated type here
 
   CoachShowModel({
     required this.statusCode,
@@ -18,7 +18,21 @@ class CoachShowModel {
       statusCode: json['statusCode'],
       isSuccess: json['isSuccess'],
       errorMessage: List<String>.from(json['errorMessage']),
-      result: List<String>.from(json['result']),
+      result: List<Coach>.from(json['result'].map((coachJson) => Coach.fromJson(coachJson))),
+    );
+  }
+}
+
+class Coach {
+  final int coachId;
+  final String imageUrl;
+
+  Coach({required this.coachId, required this.imageUrl});
+
+  factory Coach.fromJson(Map<String, dynamic> json) {
+    return Coach(
+      coachId: json['coachId'],
+      imageUrl: json['imageUrl'],
     );
   }
 }

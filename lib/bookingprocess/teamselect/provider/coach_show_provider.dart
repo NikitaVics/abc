@@ -9,7 +9,7 @@ class CoachShowProvider extends ChangeNotifier {
 
   Future<void> fetchfriendshow(DateTime date, String time) async {
     try {
-       _coachShowModel = await Api.CoachShow(date, time);
+       _coachShowModel = await Api.coachShow(date, time);
       notifyListeners();
     } catch (error) {
       // Handle errors, maybe log them or show a snackbar

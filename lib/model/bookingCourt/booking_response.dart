@@ -1,24 +1,22 @@
 class BookingResponse {
-   final int statusCode;
+  final int statusCode;
   final bool isSuccess;
   final List<String> errorMessage;
   Result result;
-  
+
   BookingResponse({
     required this.statusCode,
     required this.isSuccess,
     required this.errorMessage,
     required this.result,
-  
   });
 
   factory BookingResponse.fromJson(Map<String, dynamic> json) {
     return BookingResponse(
-       statusCode: json['statusCode'],
+      statusCode: json['statusCode'],
       isSuccess: json['isSuccess'],
       errorMessage: List<String>.from(json['errorMessage']),
       result: Result.fromJson(json['result']),
-     
     );
   }
 }
@@ -43,25 +41,29 @@ class Result {
 }
 
 class CourtSlot {
+  int courtId;
   String courtName;
-   final List<AvailableSlot> availableSlots;
+  final List<AvailableSlot> availableSlots;
 
   CourtSlot({
+    required this.courtId,
     required this.courtName,
     required this.availableSlots,
   });
 
   factory CourtSlot.fromJson(Map<String, dynamic> json) {
     return CourtSlot(
+      courtId: json['courtId'],
       courtName: json['courtName'],
       availableSlots: List<AvailableSlot>.from(
-        json['availableSlots'].map((slotJson) =>
-            AvailableSlot.fromJson(slotJson),
+        json['availableSlots'].map(
+          (slotJson) => AvailableSlot.fromJson(slotJson),
         ),
       ),
     );
   }
 }
+
 class AvailableSlot {
   final String timeSlot;
   final bool isAvailable;

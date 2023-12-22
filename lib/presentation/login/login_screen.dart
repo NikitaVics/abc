@@ -363,7 +363,7 @@ class LoginScreenState extends State<LoginScreen> {
                   isLoading = true;
                 });
                 value.loginApi(email.text,password.text).then((val) {
-                  if (val["statusCode"] == 200) {
+                  if (val != null &&val["statusCode"] == 200) {
                   
                     pref.setString('authToken', val['result']['token']);
                     pref.setString('email', val['result']['user']['email']);
@@ -380,12 +380,16 @@ class LoginScreenState extends State<LoginScreen> {
                     });
                   } else {
                     setState(() {
-                      loginError = true;
-                      AnimatedToast.showToastMessage(
+                     
+                    if(val!=null)
+                    {
+                       loginError = true;
+                        AnimatedToast.showToastMessage(
                         context,
                         val["errorMessage"][0],
                         const Color.fromRGBO(87, 87, 87, 0.93),
                       );
+                    }
                          isLoading = false;
                     });
                   }

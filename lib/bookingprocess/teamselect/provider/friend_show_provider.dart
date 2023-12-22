@@ -7,9 +7,9 @@ class FreindShowProvider extends ChangeNotifier {
 
   FriendShowModel? get  friendShowModel => _friendShowModel;
 
-  Future<void> fetchfriendshow(String token) async {
+  Future<void> fetchfriendshow(String token,DateTime date, String time) async {
     try {
-       _friendShowModel = await Api.friendShow(token);
+       _friendShowModel = await Api.friendShow(token,date,time);
       notifyListeners();
     } catch (error) {
       // Handle errors, maybe log them or show a snackbar

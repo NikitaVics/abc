@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tennis_court_booking_app/model/bookingCourt/booking_response.dart';
 import 'package:tennis_court_booking_app/model/coachshow/Coach_show_model.dart';
+import 'package:tennis_court_booking_app/model/courtInfo/court_info.dart';
 import 'package:tennis_court_booking_app/model/friendShow/friend_show_model.dart';
 import 'package:tennis_court_booking_app/presentation/home/model/checkstatus.dart';
 import 'package:tennis_court_booking_app/profile/model/profile_model.dart';
@@ -23,6 +24,7 @@ class Api {
     };
 
     // Set the request headers if needed
+    print(body);
 
     http.Response response = await http.post(
       Uri.parse(url),
@@ -31,10 +33,16 @@ class Api {
     );
 
     print(response.body);
+     print('Status code: ${response.statusCode}');
 
-    final jsonData = json.decode(response.body);
-    // Add this line to print the received data
-    return jsonData;
+ if (response.body.isNotEmpty) {
+  return jsonDecode(response.body);
+} else {
+  // Handle empty response
+  print('Empty response from the server');
+  return null; // or handle as needed
+}
+   
   }
 
   static Future forgotPassword(body) async {
@@ -183,12 +191,12 @@ class Api {
 
     // Add image file to the request
     if (image != null && image.isNotEmpty) {
-    request.files.add(await http.MultipartFile.fromPath(
-      'image',
-      image,
-    ));
-    print("image $image");
-  }
+      request.files.add(await http.MultipartFile.fromPath(
+        'image',
+        image,
+      ));
+      print("image $image");
+    }
 
     // Add headers to the request
     //request.headers.addAll(headers);
@@ -259,11 +267,13 @@ class Api {
   }
 
   //Booking Response
-  static Future<BookingResponse> showBookingResponse(DateTime date, [List<String>? selectedCourts]) async {
+  static Future<BookingResponse> showBookingResponse(DateTime date,
+      [List<String>? selectedCourts]) async {
     var url = "$baseUrl/api/Booking/Get courts with slots/$date";
 
     if (selectedCourts != null && selectedCourts.isNotEmpty) {
-      Uri uri = Uri.parse(url).replace(queryParameters: {'selectedCourts': selectedCourts});
+      Uri uri = Uri.parse(url)
+          .replace(queryParameters: {'selectedCourts': selectedCourts});
       url = uri.toString();
     }
 
@@ -281,11 +291,12 @@ class Api {
     return BookingResponse.fromJson(jsonDecode(response.body));
   }
 
-
-  //Friend show 
-   static Future<FriendShowModel> friendShow(String bearerToken) async {
+  //Friend show
+  static Future<FriendShowModel> friendShow(
+      String bearerToken, DateTime date, String time) async {
     var url = "$baseUrl/api/Friend/My Friends";
-
+    Uri uri = Uri.parse('$url?selectedDate=$date&selectedSlot=$time');
+    url = uri.toString();
     // Convert the model to a JSON string
     Map<String, String> headers = {
       'Authorization': 'Bearer $bearerToken',
@@ -302,16 +313,16 @@ class Api {
   }
 
   //Coach Show
-  static Future<CoachShowModel> CoachShow(DateTime date,String time) async {
-    var url = "$baseUrl/api/Management/Coach/Show images of all available coaches";
+  static Future<CoachShowModel> coachShow(DateTime date, String time) async {
+    var url =
+        "$baseUrl/api/Management/Coach/Show images of all available coaches";
 
     // Convert the model to a JSON string
     Uri uri = Uri.parse('$url?selectedDate=$date&selectedSlot=$time');
-     url = uri.toString();
-   Map<String, String> headers = {
+    url = uri.toString();
+    Map<String, String> headers = {
       "content-Type": "application/json; charset=UTF-8",
     };
- 
 
     http.Response response = await http.get(
       Uri.parse(url),
@@ -321,5 +332,23 @@ class Api {
     print(response.body);
 
     return CoachShowModel.fromJson(jsonDecode(response.body));
+  }
+
+//Court Info
+  static Future<CourtInfo> courtInfoResponse(int id) async {
+    var url = "$baseUrl/api/TennisCourt/ViewCourtInfoAndFacility/$id";
+
+    Map<String, String> headers = {
+      "content-Type": "application/json; charset=UTF-8",
+    };
+    print(url);
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    print(response.body);
+
+    return CourtInfo.fromJson(jsonDecode(response.body));
   }
 }

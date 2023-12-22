@@ -45,4 +45,8 @@ class AppColors {
   static const dateColor = Color(0xff4CBC7B);
   static const warningToast = Color(0xffF2994A);
   static const disableTime = Color(0xffEE7474);
+  static const bookingShowColor = Color(0xffE9F7EF);
+  static const totalbookingColor = Color(0xff82D0A3);
+  static const cancelBooking = Color(0xffF39E9E);
+  static const cancelBack = Color(0xffFDEEEE);
 }

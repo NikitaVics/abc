@@ -403,94 +403,135 @@ class HomeScreenState extends State<HomeScreen> {
               const SizedBox(
                 height: 20,
               ),
-              Container(
-                height: 72,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8.0),
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.darkTextInput
-                      : Colors.white,
-                ),
-                child: Row(children: [
-                  SizedBox(
-                    width: 21,
+              hasErrorMessage!?
+              GestureDetector(
+                 onTap: () async {
+                              result = await showDatePicker(
+                                context: context,
+                                initialDate: dateTime ?? DateTime.now(),
+                                firstDate:DateTime.now(),
+                                lastDate: DateTime(2101),
+                                helpText: "Select Date",
+                                builder: (BuildContext context, Widget? child) {
+                                  return Theme(
+                                    data: ThemeData.light().copyWith(
+                                      primaryColor: AppColors.darkSubHead,
+                                      hintColor: Colors.teal,
+                                      colorScheme: const ColorScheme.light(
+                                              primary: AppColors.dotColor)
+                                          .copyWith(background: Colors.blueGrey),
+                                    ),
+                                    child: child!,
+                                  );
+                                },
+                              );
+                              if (result != null) {
+                                setState(() {
+                                  dateTime = result;
+                                  results = result;
+                                  // _userDobController.text = DateFormat('dd/MM/yyyy').format(result!);
+                      
+                                  print("yp${result!.toLocal().toString()}");
+                                });
+                              }
+                            },
+                child: Container(
+                  height: 72,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.darkTextInput
+                        : Colors.white,
                   ),
-                  results != null
-                      ? Text(
-                          DateFormat('dd/MM/yyyy').format(results!),
-                          style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? AppColors.darkSubHead
-                                : AppColors.subheadColor,
-                            fontSize: 14,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w700,
-                            height: 24 / 14,
+                  child: Row(children: [
+                    SizedBox(
+                      width: 21,
+                    ),
+                    results != null
+                        ? Text(
+                            DateFormat('dd/MM/yyyy').format(results!),
+                            style: TextStyle(
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? AppColors.darkSubHead
+                                  : AppColors.subheadColor,
+                              fontSize: 14,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w700,
+                              height: 24 / 14,
+                            ),
+                          )
+                        : Text(
+                            "Select Date",
+                            style: TextStyle(
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? AppColors.darkSubHead
+                                  : AppColors.subheadColor,
+                              fontSize: 14,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w700,
+                              height: 24 / 14,
+                            ),
                           ),
-                        )
-                      : Text(
-                          "Select Date",
-                          style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? AppColors.darkSubHead
-                                : AppColors.subheadColor,
-                            fontSize: 14,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w700,
-                            height: 24 / 14,
+                    const SizedBox(width: 8),
+                    Image.asset(
+                      "assets/images/calender.png",
+                      height: 18,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.darkSubHead
+                          : AppColors.subheadColor,
+                    )
+                   
+                  ]),
+                ),
+              ): GestureDetector(
+                onTap: () async {
+                              showAlertDialog(context);
+                            },
+                child: Container(
+                  height: 72,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.darkTextInput
+                        : Colors.white,
+                  ),
+                  child: Row(children: [
+                    SizedBox(
+                      width: 21,
+                    ),
+                    results != null
+                        ? Text(
+                            DateFormat('dd/MM/yyyy').format(results!),
+                            style: TextStyle(
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? AppColors.darkSubHead
+                                  : AppColors.subheadColor,
+                              fontSize: 14,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w700,
+                              height: 24 / 14,
+                            ),
+                          )
+                        : Text(
+                            "Select Date",
+                            style: TextStyle(
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? AppColors.darkSubHead
+                                  : AppColors.subheadColor,
+                              fontSize: 14,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w700,
+                              height: 24 / 14,
+                            ),
                           ),
-                        ),
-                  const SizedBox(width: 8),
-                  hasErrorMessage!
-                      ? GestureDetector(
-                          child: Image.asset(
-                            "assets/images/calender.png",
-                            height: 18,
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? AppColors.darkSubHead
-                                : AppColors.subheadColor,
-                          ),
-                          onTap: () async {
-                            result = await showDatePicker(
-                              context: context,
-                              initialDate: dateTime ?? DateTime.now(),
-                              firstDate:DateTime.now(),
-                              lastDate: DateTime(2101),
-                              helpText: "Select Date",
-                              builder: (BuildContext context, Widget? child) {
-                                return Theme(
-                                  data: ThemeData.light().copyWith(
-                                    primaryColor: AppColors.darkSubHead,
-                                    hintColor: Colors.teal,
-                                    colorScheme: const ColorScheme.light(
-                                            primary: AppColors.dotColor)
-                                        .copyWith(background: Colors.blueGrey),
-                                  ),
-                                  child: child!,
-                                );
-                              },
-                            );
-                            if (result != null) {
-                              setState(() {
-                                dateTime = result;
-                                results = result;
-                                // _userDobController.text = DateFormat('dd/MM/yyyy').format(result!);
-        
-                                print("yp${result!.toLocal().toString()}");
-                              });
-                            }
-                          },
-                        )
-                      : GestureDetector(
-                          child: Image.asset(
-                            "assets/images/calender.png",
-                            height: 18,
-                          ),
-                          onTap: () async {
-                            showAlertDialog(context);
-                          },
-                        )
-                ]),
+                    const SizedBox(width: 8),
+                    
+                   Image.asset(
+                     "assets/images/calender.png",
+                     height: 18,
+                   )
+                  ]),
+                ),
               )
             ],
           ),
@@ -895,8 +936,7 @@ class HomeScreenState extends State<HomeScreen> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(6),
                             child: Image.network(
-                              court
-                                  .courtImageURL, // Use the image URL from the Court model
+                              court.courtImageURLs[0] , // Use the image URL from the Court model
                               // You can also use AssetImage if the image is in the assets folder
                               // e.g., Image.asset("assets/images/court.png"),
                               fit: BoxFit.cover,

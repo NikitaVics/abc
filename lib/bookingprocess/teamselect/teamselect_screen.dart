@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:motion_toast/motion_toast.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +15,7 @@ import 'package:tennis_court_booking_app/profile/profileprovider/profile_provide
 import 'package:tennis_court_booking_app/provider/booking_response_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
+import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 
 class TeamSelectScreen extends StatefulWidget {
   final DateTime result;
@@ -39,6 +41,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
   //focus node:-----------------------------------------------------------------
 
   bool juniorColor = false, seniorColor = false;
+  int selectedImageIndex = -1; 
 
   DateTime? dateTime;
   DateTime? result;
@@ -63,7 +66,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
     tokens = await SharePref.fetchAuthToken();
     profileProvider.fetchProfile(token);
     final friendShow = Provider.of<FreindShowProvider>(context, listen: false);
-    friendShow.fetchfriendshow(token);
+    friendShow.fetchfriendshow(token,widget.result, widget.time);
     final coachShow = Provider.of<CoachShowProvider>(context, listen: false);
     coachShow.fetchfriendshow(widget.result, widget.time);
     print(name);
@@ -173,7 +176,12 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
       color: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkThemeback
           : Colors.white,
-      child: _buildRightSide(),
+      child:Column(
+        children: [
+          Expanded(child: Center(child: _buildRightSide())),
+         isImageVisible && isImage?_buildSignInButton(): _buildSignInButton2()
+        ],
+      ),
     );
   }
 
@@ -448,27 +456,27 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                             imageUrl: imageUrl!,
                           ),
                         )),
-                  ...List.generate(
-    3, // Ensure the list has three items
-    (index) {
-      String imageUrl =
-          index < selectedImageUrls.length ? selectedImageUrls[index] : "assets/images/userTeam.png";
-      double leftPad = (35 * (index+1)).toDouble();
-      return Positioned(
-        left: leftPad,
-        top: 0,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(150.0),
-          child: SilentErrorImage(
-            height: 48,
-            width: 48,
-            imageUrl: imageUrl,
-          ),
-        ),
-      );
-    },
-  ),
-                  
+                    ...List.generate(
+                      3, // Ensure the list has three items
+                      (index) {
+                        String imageUrl = index < selectedImageUrls.length
+                            ? selectedImageUrls[index]
+                            : "assets/images/userTeam.png";
+                        double leftPad = (35 * (index + 1)).toDouble();
+                        return Positioned(
+                          left: leftPad,
+                          top: 0,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(150.0),
+                            child: SilentErrorImage(
+                              height: 48,
+                              width: 48,
+                              imageUrl: imageUrl,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -528,30 +536,29 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                     Expanded(
                       child: SizedBox(
                         height: 48,
-                        child:
-                        Stack(
-  children: List.generate(
-    3, // Ensure the list has three items
-    (index) {
-      String imageUrl =
-          index < selectedImageUrls.length ? selectedImageUrls[index] : "assets/images/userTeam.png";
-      double leftPad = (35 * index).toDouble();
-      return Positioned(
-        left: leftPad,
-        top: 0,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(150.0),
-          child: SilentErrorImage(
-            height: 48,
-            width: 48,
-            imageUrl: imageUrl,
-          ),
-        ),
-      );
-    },
-  ),
-),
-
+                        child: Stack(
+                          children: List.generate(
+                            3, // Ensure the list has three items
+                            (index) {
+                              String imageUrl = index < selectedImageUrls.length
+                                  ? selectedImageUrls[index]
+                                  : "assets/images/userTeam.png";
+                              double leftPad = (35 * index).toDouble();
+                              return Positioned(
+                                left: leftPad,
+                                top: 0,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(150.0),
+                                  child: SilentErrorImage(
+                                    height: 48,
+                                    width: 48,
+                                    imageUrl: imageUrl,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
                       ),
                     ),
                     GestureDetector(
@@ -609,33 +616,58 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                                   final dataIndex = rowIndex * 4 + indexInRow;
                                   if (dataIndex < friendData.length) {
                                     final court = friendData[dataIndex];
-                                     final isSelected = selectedImageUrls.contains(court);
+                                    final isSelected =
+                                        selectedImageUrls.contains(court.imageUrl);
                                     return GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                        if (isSelected) {
-                        selectedImageUrls.remove(court);
-                      } else {
-                        selectedImageUrls.add(court);
-                      }
+                                          if (isSelected) {
+                                            selectedImageUrls.remove(court.imageUrl);
+                                          } else {
+                                            selectedImageUrls.add(court.imageUrl);
+                                          }
                                         });
                                       },
-                                      child: Container(
-                                         decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(150.0),
-                      border: Border.all(
-                        color: isSelected ? Colors.green : Colors.transparent,
-                        width: 2.0,
-                      ),
-                    ),
+                                      child:isSelected? Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(150.0),
+                                          border: Border.all(
+                                            color: AppColors.dateColor,
+                                               
+                                            width: 2.0,
+                                          ),
+                                        ),
+                                        child: AvatarGlow(
+                                           glowColor: AppColors.dateColor, 
+          
+            duration: Duration(milliseconds:3000), 
+            repeat: true, 
+            
+                                          child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(150.0),
+                                              child: SilentErrorImage(
+                                                  height: 48,
+                                                  width: 48,
+                                                  imageUrl: court.imageUrl)),
+                                        ),
+                                      ):Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(150.0),
+                                          border: Border.all(
+                                            color:  Colors.transparent,
+                                            width: 2.0,
+                                          ),
+                                        ),
                                         child: ClipRRect(
-                                          
                                             borderRadius:
                                                 BorderRadius.circular(150.0),
                                             child: SilentErrorImage(
                                                 height: 48,
                                                 width: 48,
-                                                imageUrl: court)),
+                                                imageUrl: court.imageUrl)),
                                       ),
                                     );
                                   } else {
@@ -832,16 +864,43 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                                     return GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          coachImage = court;
+                                           selectedImageIndex = dataIndex;
+                                          coachImage = court.imageUrl;
                                         });
                                       },
-                                      child: ClipRRect(
+                                      child:selectedImageIndex==dataIndex?
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(150.0),
+                                          border: Border.all(
+                                            color: AppColors.dateColor,
+                                               
+                                            width: 2.0,
+                                          ),
+                                        ),
+                                        child: AvatarGlow(
+                                           glowColor: AppColors.dateColor, 
+          
+            duration: Duration(milliseconds:3000), 
+            repeat: true, 
+            
+                                          child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(150.0),
+                                              child: SilentErrorImage(
+                                                  height: 48,
+                                                  width: 48,
+                                                  imageUrl: court.imageUrl)),
+                                        ),
+                                      )
+                                      : ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(150.0),
                                           child: SilentErrorImage(
                                               height: 48,
                                               width: 48,
-                                              imageUrl: court)),
+                                              imageUrl:  court.imageUrl)),
                                     );
                                   } else {
                                     return SizedBox(
@@ -867,6 +926,117 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
     );
   }
 
+ Widget _buildSignInButton() {
+   int remainingImages = 3 - selectedImageUrls.length;
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+      child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 24,horizontal: 24),
+          child: FocusScope(
+              // Manage keyboard focus
+              child: selectedImageUrls.length!=3 
+                  ? CustomElevatedButton(
+                      height: 60,
+                      width: MediaQuery.of(context).orientation ==
+                              Orientation.landscape
+                          ? 70
+                          : double.infinity,
+                      isLoading: false,
+                      text: "Confirm Booking",
+                      onPressed: () async {
+                        MotionToast(
+  primaryColor: AppColors.warningToast,
+  description:  Text("Please select $remainingImages more friend..",
+  style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.headingTextColor
+                                        : AppColors.allHeadColor,
+                                    fontSize: 16,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w400,
+                                    height: 24 / 16,
+                                  ),
+  ),
+  icon:Icons.warning,
+  animationCurve: Curves.bounceInOut,
+).show(context);
+                      },
+                      buttonColor: AppColors.disableButtonColor,
+                      textColor: AppColors.disableButtonTextColor,
+                    )
+                  : CustomElevatedButton(
+                      height: 60,
+                      width: MediaQuery.of(context).orientation ==
+                              Orientation.landscape
+                          ? 70
+                          : double.infinity,
+                      isLoading: false,
+                      text: "Confirm Booking",
+                      onPressed: () async {
+                        
+                      },
+                      buttonColor: AppColors.elevatedColor,
+                      textColor: Colors.white,
+                    ))),
+    );
+  }
+
+  Widget _buildSignInButton2() {
+   int remainingImages = 3 - selectedImageUrls.length;
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+      child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 24,horizontal: 24),
+          child: FocusScope(
+              // Manage keyboard focus
+              child: selectedImageUrls.length!=3 
+                  ? CustomElevatedButton(
+                      height: 60,
+                      width: MediaQuery.of(context).orientation ==
+                              Orientation.landscape
+                          ? 70
+                          : double.infinity,
+                      isLoading: false,
+                      text: "Confirm Team",
+                      onPressed: () async {
+                        MotionToast(
+  primaryColor: AppColors.warningToast,
+  description:  Text("Please select $remainingImages more friend..",
+  style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.headingTextColor
+                                        : AppColors.allHeadColor,
+                                    fontSize: 16,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w400,
+                                    height: 24 / 16,
+                                  ),
+  ),
+  icon:Icons.warning,
+  animationCurve: Curves.bounceInOut,
+).show(context);
+                      },
+                      buttonColor: AppColors.disableButtonColor,
+                      textColor: AppColors.disableButtonTextColor,
+                    )
+                  : CustomElevatedButton(
+                      height: 60,
+                      width: MediaQuery.of(context).orientation ==
+                              Orientation.landscape
+                          ? 70
+                          : double.infinity,
+                      isLoading: false,
+                      text: "Confirm Team",
+                      onPressed: () async {
+                        
+                      },
+                      buttonColor: AppColors.elevatedColor,
+                      textColor: Colors.white,
+                    ))),
+    );
+  }
   // General Methods:-----------------------------------------------------------
 
   // dispose:-------------------------------------------------------------------

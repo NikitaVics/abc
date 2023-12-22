@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/coach_show_provider.dart';
+import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/court_info_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/friend_show_provider.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/courtshowprovider.dart';
@@ -63,6 +64,9 @@ class _MyAppState extends State<MyApp> {
         ),
          ChangeNotifierProvider<ThemeModeNotifier>(
           create: (context) =>ThemeModeNotifier(initialThemeMode: ThemeMode.light),
+        ),
+         ChangeNotifierProvider<CourtInfoProvider>(
+          create: (context) =>CourtInfoProvider(),
         ),
        ],
        child:Builder(

@@ -165,18 +165,11 @@ Future sendOtpforlogin(String email,String otp) async {
       'password': password,
     };
 
-    try {
-      var res = await Api.login(body);
+  var res = await Api.login(body);
       print('Response: $res');
       // Parse the 'res' here, if needed.
       updateLoginLoader(false);
       return res;
-    } catch (e) {
-      print('Error while decoding JSON: $e');
-      // Handle the error appropriately.
-      updateLoginLoader(false);
-      return null; // Or throw an exception, depending on your requirements.
-    }
   }
 
 

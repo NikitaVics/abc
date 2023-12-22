@@ -1,8 +1,12 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:date_picker_timeline/date_picker_widget.dart';
+import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:motion_toast/motion_toast.dart';
 import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/filter/filter_court_screen.dart';
+import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/court_info_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/teamselect_screen.dart';
 import 'package:tennis_court_booking_app/bottomnavbar/bottom_navbar.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
@@ -10,7 +14,10 @@ import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/constants/onhover.dart';
 import 'package:tennis_court_booking_app/constants/shimmer.dart';
 import 'package:tennis_court_booking_app/model/bookingCourt/booking_response.dart';
+import 'package:tennis_court_booking_app/model/courtInfo/court_info.dart';
 import 'package:tennis_court_booking_app/provider/booking_response_provider.dart';
+import 'dart:ui' as ui;
+import 'package:intl/intl.dart';
 
 class BookingCourtScreen extends StatefulWidget {
   final DateTime result;
@@ -34,16 +41,19 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
   bool juniorColor = false, seniorColor = false;
   bool isLoad = false;
   bool isLoading = false;
+  final CarouselController _controller = CarouselController();
+  int current = 0;
 
   DateTime? dateTime;
   DateTime? result;
   String? imageUrl;
+  int id = 0;
   //SignInProvider? provider;
 
   @override
   void initState() {
     super.initState();
-
+    _fetchCourtInfoResponse();
     isFirstButtonSelected = true;
     result = widget.result;
     if (widget.selectedCourts != null) {
@@ -51,6 +61,10 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
     } else {
       _fetchBookingResponse();
     }
+  }
+
+  Future<void> _fetchCourtInfoResponse() async {
+    await context.read<CourtInfoProvider>().fetchCourtInfo(id);
   }
 
   void _fetchBookingResponse() async {
@@ -63,20 +77,22 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
     });
   }
 
+  final GlobalKey _dotsRowKey = GlobalKey();
   void _fetchBookingResponsewithFilter() async {
     setState(() {
-     isLoad = true;
+      isLoad = true;
     });
     await context
         .read<BookingResponseProvider>()
         .fetchBookingResponse(result!, widget.selectedCourts);
-        setState(() {
-       isLoad = false;
+    setState(() {
+      isLoad = false;
     });
   }
 
   bool isFirstButtonSelected = false;
   bool isSecondButtonSelected = false;
+  bool showInfoSheet = false;
   bool isFormDone = false;
   String name = "";
   String? tokens;
@@ -225,7 +241,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
           _buildDatePick(),
           Expanded(
               //  flex: 1,
-              child: isLoad?ShimmerEffect(): _buildBookingSlot()),
+              child: isLoad ? ShimmerEffect() : _buildBookingSlot()),
         ],
       ),
     );
@@ -307,34 +323,68 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                     height: 24 / 16,
                                   ),
                                 ),
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                      width: 17,
-                                      height: 17,
-                                      child: Image.asset(
-                                        "assets/images/informationCircle.png",
-                                        //width: 18,
+                                GestureDetector(
+                                  onTap: () {
+                                        setState(() {
+                                          id = court.courtId;
+                                          print(id);
+                                        });
+                                        print("hi");
+
+                                        showAnimatedDialog(
+                                          barrierDismissible: true,
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return FutureBuilder<void>(
+                                              future: _fetchCourtInfoResponse(),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.connectionState ==
+                                                    ConnectionState.done) {
+                                                  return buidSheet();
+                                                } else {
+                                                  // You can return a loading indicator or null while waiting for the future
+                                                  return CircularProgressIndicator();
+                                                }
+                                              },
+                                            );
+                                          },
+                                          animationType: DialogTransitionType
+                                              .slideFromBottomFade,
+                                          curve: Curves.fastOutSlowIn,
+                                          duration: const Duration(seconds: 1),
+                                        );
+
+                                       
+                                      },
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 17,
                                         height: 17,
-                                      ),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        " INFO",
-                                        style: TextStyle(
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? AppColors.headingTextColor
-                                              : AppColors.bookingInvalid,
-                                          fontSize: 10.50,
-                                          fontFamily: FontFamily.satoshi,
-                                          fontWeight: FontWeight.w500,
-                                          height: 21 / 10,
+                                        child: Image.asset(
+                                          "assets/images/informationCircle.png",
+                                          //width: 18,
+                                          height: 17,
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                      Align(
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          " INFO",
+                                          style: TextStyle(
+                                            color: Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? AppColors.headingTextColor
+                                                : AppColors.bookingInvalid,
+                                            fontSize: 10.50,
+                                            fontFamily: FontFamily.satoshi,
+                                            fontWeight: FontWeight.w500,
+                                            height: 21 / 10,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 )
                               ],
                             ),
@@ -477,6 +527,191 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
     );
   }
 
+/*DraggableScrollableSheet(
+        initialChildSize: 0.5,
+        maxChildSize: 0.8,
+        minChildSize: 0.4,
+        builder: (_, controller) => Container(
+              color: Colors.pink,
+              child: ListView(
+                controller: controller,
+                children: [Text("Hi"), Text("Bye")],
+              ),
+            ));*/
+  Widget buidSheet() {
+    double screenWidth = MediaQuery.of(context).size.width;
+  double containerWidth = screenWidth - 48; // 24 padding on each side
+  double containerHeight = MediaQuery.of(context).size.height / 1.5;
+ 
+
+    return Dialog(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(12.0)),
+      ),
+      insetPadding: const EdgeInsets.only(left: 0, right: 0),
+      child: Consumer<CourtInfoProvider>(
+        builder: (context, provider, child) {
+          final courtInfo = provider.courtinfo;
+          print('Booking Response: $courtInfo');
+          int _currentPage = 0;
+
+          if (courtInfo != null && courtInfo.result != null) {
+            final courtData = courtInfo.result;
+            print(courtData!.courtId);
+            String startTime = DateFormat('h a').format(
+              DateFormat('HH:mm:ss').parse(courtData.startTime),
+            );
+            String endTime = DateFormat('h a').format(
+              DateFormat('HH:mm:ss').parse(courtData.endTime),
+            );
+
+            // Use courtinfo.result.imageurl for CarouselSlider items
+            List<String> imageUrls = courtData.courtImageURLs;
+
+            // Instantiate CarouselController
+
+            return Container(
+              width: containerWidth,
+              height: containerHeight,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                          height: 200,
+                          child: MyHomePage(
+                            width: containerWidth,
+                            height: 231,
+                            imageUrls: imageUrls,
+                          )),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 24, right: 24),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              courtData.courtName,
+                              style: TextStyle(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.booklight
+                                    : AppColors.allHeadColor,
+                                fontSize: 20,
+                                fontFamily: FontFamily.satoshi,
+                                fontWeight: FontWeight.w700,
+                                height: 32 / 16,
+                              ),
+                            ),
+                            Text(
+                              "${startTime} - ${endTime}",
+                              style: TextStyle(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.darkSubHead
+                                    : AppColors.confirmValid,
+                                fontSize: 12,
+                                fontFamily: FontFamily.satoshi,
+                                fontWeight: FontWeight.w400,
+                                height: 16 / 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(left: 24, right: 24, top: 4),
+                        child: Text(
+                          "Lorem ipsum dolor sit amet consectetur. Sed mauris arcu arcu placerat varius facilisis nibh volutpat. Leo egestas massa cras diam venenatis tincidunt. Diam fringilla lorem.",
+                          style: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.darkSubHead
+                                : AppColors.subheadColor,
+                            fontSize: 14,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w400,
+                            height: 24 / 14,
+                          ),
+                        ),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 24, right: 24, top: 19.2),
+                        child: Divider(
+                          color: AppColors.appbarBoarder,
+                          thickness: 1,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 24, right: 24, top: 13.5),
+                        child: Text(
+                          "Available facilities",
+                          style: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.darkSubHead
+                                : AppColors.subheadColor,
+                            fontSize: 16,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w500,
+                            height: 24 / 16,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 24, right: 24, top: 20),
+                        child: SizedBox(
+                          height: 54,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: courtData.facilities.length,
+                            itemBuilder: (context, index) {
+                              Facility facility = courtData.facilities[index];
+                              return Padding(
+                                  padding: const EdgeInsets.only(right: 20),
+                                  child: Column(
+                                    children: [
+                                      Image.asset(
+                                        "assets/images/parking.png",
+                                        height: 24,
+                                        width: 24,
+                                      ),
+                                      SizedBox(
+                                        height: 14,
+                                      ),
+                                      Text(
+                                        facility.facilityName,
+                                        style: TextStyle(
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? AppColors.darkSubHead
+                                              : AppColors.allHeadColor,
+                                          fontSize: 12,
+                                          fontFamily: FontFamily.satoshi,
+                                          fontWeight: FontWeight.w400,
+                                          height: 16 / 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ));
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          } else {
+            return Text('No court data available.');
+          }
+        },
+      ),
+    );
+  }
+
   // General Methods:-----------------------------------------------------------
 
   // dispose:-------------------------------------------------------------------
@@ -485,6 +720,37 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
     // Clean up the controller when the Widget is removed from the Widget tree
 
     super.dispose();
+  }
+}
+
+class SilentErrorImage extends StatelessWidget {
+  final String imageUrl;
+  final double width;
+  final double height;
+
+  const SilentErrorImage(
+      {super.key,
+      required this.imageUrl,
+      required this.width,
+      required this.height});
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.network(
+      imageUrl,
+      width: width,
+      height: height,
+      fit: BoxFit.fill,
+      errorBuilder:
+          (BuildContext context, Object exception, StackTrace? stackTrace) {
+        // Return an empty container (or any other widget) to silently handle errors
+        return Image.asset(
+          "assets/images/userTeam.png",
+          width: width,
+          height: height,
+        );
+      },
+    );
   }
 }
 
@@ -506,4 +772,88 @@ Route _createRoute(DateTime result) {
       );
     },
   );
+}
+
+class MyHomePage extends StatefulWidget {
+  final List<String> imageUrls;
+  final double height;
+  final double width;
+
+  MyHomePage(
+      {required this.imageUrls, required this.height, required this.width});
+
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _currentPage = 0;
+  bool _isCarouselPaused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    return Container(
+      width: screenWidth,
+      child: Stack(
+        children: [
+          CarouselSlider(
+            items: widget.imageUrls.map((imageUrl) {
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _isCarouselPaused = !_isCarouselPaused;
+                  });
+                },
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                   width: double.infinity,
+                ),
+              );
+            }).toList(),
+            options: CarouselOptions(
+              autoPlay: !_isCarouselPaused,
+              enlargeCenterPage: true,
+              pauseAutoPlayOnTouch: true,
+              //  aspectRatio: screenWidth / screenHeight,
+              viewportFraction: 1.0, // Take the full screen width
+              onPageChanged: (index, reason) {
+                setState(() {
+                  _currentPage = index;
+                });
+              },
+            ),
+          ),
+          Positioned(
+            bottom: 28.0, // Adjust the position as needed
+            left: 0.0,
+            right: 0.0,
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _isCarouselPaused = !_isCarouselPaused;
+                });
+              },
+              child: DotsIndicator(
+                mainAxisSize: MainAxisSize.min,
+                dotsCount: widget.imageUrls.length,
+                position: _currentPage,
+                decorator: DotsDecorator(
+                  size: ui.Size.square(8.0),
+                  activeSize: ui.Size(15.75, 8.0),
+                  activeShape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5.0)),
+                  color: AppColors.nondotcolor,
+                  activeColor: AppColors.dotColor,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
