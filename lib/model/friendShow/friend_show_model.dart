@@ -3,6 +3,7 @@ class FriendShowModel {
   bool isSuccess;
   List<String> errorMessage;
   List<Friend> result;
+ 
 
   FriendShowModel({
     required this.statusCode,

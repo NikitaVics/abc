@@ -241,7 +241,9 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
           _buildDatePick(),
           Expanded(
               //  flex: 1,
-              child: isLoad ? ShimmerEffect() : _buildBookingSlot()),
+              child: isLoad ? Center(
+                child: Image.asset("assets/images/loading.gif"),
+              ) : _buildBookingSlot()),
         ],
       ),
     );

@@ -7,7 +7,9 @@ import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/api/api.dart';
 import 'package:tennis_court_booking_app/bookingprocess/booking_court.dart';
 import 'package:tennis_court_booking_app/bookingprocess/filter/filter_court_screen.dart';
+import 'package:tennis_court_booking_app/bookingprocess/final_booking_screen.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/coach_show_provider.dart';
+import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/complete_booking_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/friend_show_provider.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
@@ -41,13 +43,14 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
   //focus node:-----------------------------------------------------------------
 
   bool juniorColor = false, seniorColor = false;
-  int selectedImageIndex = -1; 
+  int selectedImageIndex = -1;
 
   DateTime? dateTime;
   DateTime? result;
   String? imageUrl;
   String? coachImage;
   //SignInProvider? provider;
+  bool isConfirmedTeam = false;
 
   @override
   void initState() {
@@ -66,7 +69,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
     tokens = await SharePref.fetchAuthToken();
     profileProvider.fetchProfile(token);
     final friendShow = Provider.of<FreindShowProvider>(context, listen: false);
-    friendShow.fetchfriendshow(token,widget.result, widget.time);
+    friendShow.fetchfriendshow(token, widget.result, widget.time);
     final coachShow = Provider.of<CoachShowProvider>(context, listen: false);
     coachShow.fetchfriendshow(widget.result, widget.time);
     print(name);
@@ -77,7 +80,8 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
   }
 
   List<String> selectedImageUrls = [];
-
+  List<int> friendId = [];
+  int coachId = 0;
   bool isFirstButtonSelected = false;
   bool isSecondButtonSelected = false;
   bool isFormDone = false;
@@ -176,10 +180,12 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
       color: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkThemeback
           : Colors.white,
-      child:Column(
+      child: Column(
         children: [
           Expanded(child: Center(child: _buildRightSide())),
-         isImageVisible && isImage?_buildSignInButton(): _buildSignInButton2()
+          isImageVisible && isImage
+              ? _buildSignInButton()
+              : _buildSignInButton2()
         ],
       ),
     );
@@ -193,7 +199,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
           builder: (context, provider, child) {
             if (provider.profileModel == null) {
               return Center(
-                child: CircularProgressIndicator(),
+                child: Image.asset("asset/images/loading.gif"),
               );
             } else {
               final profileData = provider.profileModel!;
@@ -616,59 +622,72 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                                   final dataIndex = rowIndex * 4 + indexInRow;
                                   if (dataIndex < friendData.length) {
                                     final court = friendData[dataIndex];
-                                    final isSelected =
-                                        selectedImageUrls.contains(court.imageUrl);
+                                    final isSelected = selectedImageUrls
+                                        .contains(court.imageUrl);
                                     return GestureDetector(
                                       onTap: () {
                                         setState(() {
                                           if (isSelected) {
-                                            selectedImageUrls.remove(court.imageUrl);
+                                            selectedImageUrls
+                                                .remove(court.imageUrl);
+                                            friendId.remove(court.id);
                                           } else {
-                                            selectedImageUrls.add(court.imageUrl);
+                                            selectedImageUrls
+                                                .add(court.imageUrl);
+                                            if (friendId.length < 3 &&
+                                                !friendId.contains(court.id)) {
+                                              friendId.add(court.id);
+                                            }
                                           }
                                         });
                                       },
-                                      child:isSelected? Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(150.0),
-                                          border: Border.all(
-                                            color: AppColors.dateColor,
-                                               
-                                            width: 2.0,
-                                          ),
-                                        ),
-                                        child: AvatarGlow(
-                                           glowColor: AppColors.dateColor, 
-          
-            duration: Duration(milliseconds:3000), 
-            repeat: true, 
-            
-                                          child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(150.0),
-                                              child: SilentErrorImage(
-                                                  height: 48,
-                                                  width: 48,
-                                                  imageUrl: court.imageUrl)),
-                                        ),
-                                      ):Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(150.0),
-                                          border: Border.all(
-                                            color:  Colors.transparent,
-                                            width: 2.0,
-                                          ),
-                                        ),
-                                        child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(150.0),
-                                            child: SilentErrorImage(
-                                                height: 48,
-                                                width: 48,
-                                                imageUrl: court.imageUrl)),
-                                      ),
+                                      child: isSelected
+                                          ? Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        150.0),
+                                                border: Border.all(
+                                                  color: AppColors.dateColor,
+                                                  width: 2.0,
+                                                ),
+                                              ),
+                                              child: AvatarGlow(
+                                                glowColor: AppColors.dateColor,
+                                                duration: Duration(
+                                                    milliseconds: 3000),
+                                                repeat: true,
+                                                child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            150.0),
+                                                    child: SilentErrorImage(
+                                                        height: 48,
+                                                        width: 48,
+                                                        imageUrl:
+                                                            court.imageUrl)),
+                                              ),
+                                            )
+                                          : Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        150.0),
+                                                border: Border.all(
+                                                  color: Colors.transparent,
+                                                  width: 2.0,
+                                                ),
+                                              ),
+                                              child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          150.0),
+                                                  child: SilentErrorImage(
+                                                      height: 48,
+                                                      width: 48,
+                                                      imageUrl:
+                                                          court.imageUrl)),
+                                            ),
                                     );
                                   } else {
                                     return SizedBox(
@@ -864,43 +883,45 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                                     return GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                           selectedImageIndex = dataIndex;
+                                          selectedImageIndex = dataIndex;
                                           coachImage = court.imageUrl;
+                                          coachId = court.coachId;
                                         });
                                       },
-                                      child:selectedImageIndex==dataIndex?
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(150.0),
-                                          border: Border.all(
-                                            color: AppColors.dateColor,
-                                               
-                                            width: 2.0,
-                                          ),
-                                        ),
-                                        child: AvatarGlow(
-                                           glowColor: AppColors.dateColor, 
-          
-            duration: Duration(milliseconds:3000), 
-            repeat: true, 
-            
-                                          child: ClipRRect(
+                                      child: selectedImageIndex == dataIndex
+                                          ? Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        150.0),
+                                                border: Border.all(
+                                                  color: AppColors.dateColor,
+                                                  width: 2.0,
+                                                ),
+                                              ),
+                                              child: AvatarGlow(
+                                                glowColor: AppColors.dateColor,
+                                                duration: Duration(
+                                                    milliseconds: 3000),
+                                                repeat: true,
+                                                child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            150.0),
+                                                    child: SilentErrorImage(
+                                                        height: 48,
+                                                        width: 48,
+                                                        imageUrl:
+                                                            court.imageUrl)),
+                                              ),
+                                            )
+                                          : ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(150.0),
                                               child: SilentErrorImage(
                                                   height: 48,
                                                   width: 48,
                                                   imageUrl: court.imageUrl)),
-                                        ),
-                                      )
-                                      : ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(150.0),
-                                          child: SilentErrorImage(
-                                              height: 48,
-                                              width: 48,
-                                              imageUrl:  court.imageUrl)),
                                     );
                                   } else {
                                     return SizedBox(
@@ -926,15 +947,16 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
     );
   }
 
- Widget _buildSignInButton() {
-   int remainingImages = 3 - selectedImageUrls.length;
+  Widget _buildSignInButton() {
+      final completeBookingProvider = Provider.of<CompleteBookingProvider>(context);
+    int remainingImages = 3 - selectedImageUrls.length;
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
       child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 24,horizontal: 24),
+          padding: EdgeInsets.symmetric(vertical: 24, horizontal: 24),
           child: FocusScope(
               // Manage keyboard focus
-              child: selectedImageUrls.length!=3 
+              child: selectedImageUrls.length != 3
                   ? CustomElevatedButton(
                       height: 60,
                       width: MediaQuery.of(context).orientation ==
@@ -945,22 +967,23 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                       text: "Confirm Booking",
                       onPressed: () async {
                         MotionToast(
-  primaryColor: AppColors.warningToast,
-  description:  Text("Please select $remainingImages more friend..",
-  style: TextStyle(
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? AppColors.headingTextColor
-                                        : AppColors.allHeadColor,
-                                    fontSize: 16,
-                                    fontFamily: FontFamily.satoshi,
-                                    fontWeight: FontWeight.w400,
-                                    height: 24 / 16,
-                                  ),
-  ),
-  icon:Icons.warning,
-  animationCurve: Curves.bounceInOut,
-).show(context);
+                          primaryColor: AppColors.warningToast,
+                          description: Text(
+                            "Please select $remainingImages more friend..",
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.headingTextColor
+                                  : AppColors.allHeadColor,
+                              fontSize: 16,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w400,
+                              height: 24 / 16,
+                            ),
+                          ),
+                          icon: Icons.warning,
+                          animationCurve: Curves.bounceInOut,
+                        ).show(context);
                       },
                       buttonColor: AppColors.disableButtonColor,
                       textColor: AppColors.disableButtonTextColor,
@@ -974,7 +997,27 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                       isLoading: false,
                       text: "Confirm Booking",
                       onPressed: () async {
-                        
+                        print("Updated friendId: $friendId");
+                         print("Updated coachId: $coachId");
+                         
+                        await completeBookingProvider.completeBookingApi(
+             tokens!,
+              widget.result, // Replace with your bookingDate
+              coachId, // Replace with your coachId
+              widget.courtName,
+              widget.time,
+              friendId, // Replace with your friendIds
+            );
+         if (completeBookingProvider.finalBookModel != null) {
+      print("API Result: ${completeBookingProvider.finalBookModel!.result}");
+       Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => FinalBookingScreen(id: completeBookingProvider.finalBookModel!.result),
+    ),
+  );
+    }
+              
                       },
                       buttonColor: AppColors.elevatedColor,
                       textColor: Colors.white,
@@ -983,14 +1026,14 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
   }
 
   Widget _buildSignInButton2() {
-   int remainingImages = 3 - selectedImageUrls.length;
+    int remainingImages = 3 - selectedImageUrls.length;
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
       child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 24,horizontal: 24),
+          padding: EdgeInsets.symmetric(vertical: 24, horizontal: 24),
           child: FocusScope(
               // Manage keyboard focus
-              child: selectedImageUrls.length!=3 
+              child: selectedImageUrls.length != 3
                   ? CustomElevatedButton(
                       height: 60,
                       width: MediaQuery.of(context).orientation ==
@@ -1001,22 +1044,23 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                       text: "Confirm Team",
                       onPressed: () async {
                         MotionToast(
-  primaryColor: AppColors.warningToast,
-  description:  Text("Please select $remainingImages more friend..",
-  style: TextStyle(
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? AppColors.headingTextColor
-                                        : AppColors.allHeadColor,
-                                    fontSize: 16,
-                                    fontFamily: FontFamily.satoshi,
-                                    fontWeight: FontWeight.w400,
-                                    height: 24 / 16,
-                                  ),
-  ),
-  icon:Icons.warning,
-  animationCurve: Curves.bounceInOut,
-).show(context);
+                          primaryColor: AppColors.warningToast,
+                          description: Text(
+                            "Please select $remainingImages more friend..",
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.headingTextColor
+                                  : AppColors.allHeadColor,
+                              fontSize: 16,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w400,
+                              height: 24 / 16,
+                            ),
+                          ),
+                          icon: Icons.warning,
+                          animationCurve: Curves.bounceInOut,
+                        ).show(context);
                       },
                       buttonColor: AppColors.disableButtonColor,
                       textColor: AppColors.disableButtonTextColor,
@@ -1030,7 +1074,11 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                       isLoading: false,
                       text: "Confirm Team",
                       onPressed: () async {
-                        
+                        setState(() {
+                          isImageVisible = true;
+                          isImage = true;
+                          //_buildSignInButton();
+                        });
                       },
                       buttonColor: AppColors.elevatedColor,
                       textColor: Colors.white,

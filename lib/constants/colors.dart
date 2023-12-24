@@ -9,7 +9,7 @@ class AppColors {
   static const transparent = Colors.transparent;
   static const allHeadColor = Color(0xff1D1D1F);
   static const subheadColor = Color(0xff434345);
-  static const Color textInputField = Color(0xffF8F8F8);
+  static const textInputField = Color(0xffF8F8F8);
   static const hintColor = Color(0xff7C7C7D);
   static const forgotpass = Color(0xff71D58D);
   static const appbarBoarder = Color(0xffD3D3D3);

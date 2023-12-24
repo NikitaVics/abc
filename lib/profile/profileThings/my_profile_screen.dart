@@ -15,6 +15,7 @@ import 'package:tennis_court_booking_app/profile/profileprovider/profile_provide
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:tennis_court_booking_app/theme/theme_manager.dart';
+import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_noneditable.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
 
@@ -40,7 +41,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   //focus node:-----------------------------------------------------------------
   late FocusNode _passwordFocusNode;
   bool juniorColor = false, seniorColor = false;
-
+bool isSelected = false;
   DateTime? dateTime;
   DateTime? result;
   String? imageUrl;
@@ -55,6 +56,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
     profile();
   }
 
+  FocusNode myFocusNode = FocusNode();
   bool isFormDone = false;
   String name = "";
   String? tokens;
@@ -146,29 +148,20 @@ class MyProfileScreenState extends State<MyProfileScreen> {
     return Material(
       color: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkThemeback
-          : AppColors.homeBack,
+          : Colors.white,
       child: Stack(
         children: <Widget>[
           MediaQuery.of(context).orientation == Orientation.landscape
-              ? Row(
-                  children: <Widget>[
-                    Expanded(child: _buildLeftSide()),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: _buildRightSide(),
-                          ),
-                          // _buildSignInButton()
-                        ],
-                      ),
-                    ),
+              ? Column(
+                  children: [
+                    Expanded(child: _buildRightSide()),
+                    isEdited ? _buildSignInButton() : SizedBox()
                   ],
                 )
               : Column(
                   children: [
                     Expanded(child: _buildRightSide()),
-                    // _buildSignInButton()
+                    isEdited ? _buildSignInButton() : SizedBox()
                   ],
                 ),
         ],
@@ -209,10 +202,14 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   _buildLoginText(),
+                  isEdited
+                      ? const SizedBox()
+                      : const SizedBox(
+                          height: 20,
+                        ),
                   _buildProfilePerfomence(),
-                 
                   _buildPerfomenceEveryBooking(),
-                   SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
                 ],
@@ -277,8 +274,8 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                     child: Text(
                       isEdited ? "Discard" : "Edit Profile",
                       style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.dotColor
+                        color: isEdited
+                            ? AppColors.errorColor
                             : AppColors.dotColor,
                         fontSize: 14,
                         fontFamily: FontFamily.satoshi,
@@ -298,6 +295,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   }
 
   Widget _buildProfilePerfomence() {
+    Color borderColor = AppColors.appbarBoarder;
     final themeNotifier = context.watch<ThemeModeNotifier>();
     final textScaleFactor = MediaQuery.of(context).textScaleFactor;
     return Padding(
@@ -313,55 +311,70 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                 TextFieldNonEditable(
                   width: MediaQuery.of(context).size.width,
                   controller: nameController,
+                  focusBorderColor: AppColors.focusTextBoarder,
+                  fillColor:
+                      isEdited ? AppColors.textInputField : Colors.transparent,
                   boarderColor: isEdited
-                      ? AppColors.appbarBoarder
-                      : AppColors.disableButtonColor,
-                  color: isEdited
-                      ? Colors.transparent
-                      : AppColors.disableButtonColor,
-                  hintColor: AppColors.hintColor,
-                  hint: name,
+                      ? AppColors.transparent
+                      : AppColors.appbarBoarder,
+                  color:
+                      isEdited ? AppColors.textInputField : Colors.transparent,
+                  hintColor:
+                      isEdited ? AppColors.hintColor : AppColors.subheadColor,
+                  hint: isEdited ? "User Name " : name,
                   obscure: false,
                   textInputType: TextInputType.name,
                   textInputAction: TextInputAction.next,
                   editable: isEdited,
                 ),
-                 const SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Row(
                   children: [
-                     TextFieldNonEditable(
-                      width: MediaQuery.of(context).size.width/5.5,
-                                     controller: phonePrefixController,
-                                     boarderColor: isEdited
-                      ? AppColors.appbarBoarder
-                      : AppColors.disableButtonColor,
-                                     color: isEdited
-                      ? Colors.transparent
-                      : AppColors.disableButtonColor,
-                                     hintColor: AppColors.hintColor,
-                                     hint: name,
-                                     obscure: false,
-                                     textInputType: TextInputType.name,
-                                     textInputAction: TextInputAction.next,
-                                     editable: isEdited,
-                                   ),
-                SizedBox(
-                  width: 8,
-                ),
+                    TextFieldNonEditable(
+                      width: MediaQuery.of(context).size.width / 5.5,
+                      controller: phonePrefixController,
+                      focusBorderColor: AppColors.focusTextBoarder,
+                      fillColor: isEdited
+                          ? AppColors.textInputField
+                          : Colors.transparent,
+                      boarderColor: isEdited
+                          ? AppColors.transparent
+                          : AppColors.appbarBoarder,
+                      color: isEdited
+                          ? AppColors.textInputField
+                          : Colors.transparent,
+                      hintColor: isEdited
+                          ? AppColors.hintColor
+                          : AppColors.subheadColor,
+                      hint: isEdited ? "+973 " : name,
+                      obscure: false,
+                      textInputType: TextInputType.name,
+                      textInputAction: TextInputAction.next,
+                      editable: isEdited,
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
                     Expanded(
                       child: TextFieldNonEditable(
-                        width: MediaQuery.of(context).size.width/1.5,
+                        width: MediaQuery.of(context).size.width / 1.5,
                         controller: phoneController,
+                        focusBorderColor: AppColors.focusTextBoarder,
+                        fillColor: isEdited
+                            ? AppColors.textInputField
+                            : Colors.transparent,
                         boarderColor: isEdited
-                            ? AppColors.appbarBoarder
-                            : AppColors.disableButtonColor,
+                            ? AppColors.transparent
+                            : AppColors.appbarBoarder,
                         color: isEdited
-                            ? Colors.transparent
-                            : AppColors.disableButtonColor,
-                        hintColor: AppColors.hintColor,
-                        hint: name,
+                            ? AppColors.textInputField
+                            : Colors.transparent,
+                        hintColor: isEdited
+                            ? AppColors.hintColor
+                            : AppColors.subheadColor,
+                        hint: isEdited ? "Phone Number " : name,
                         obscure: false,
                         textInputType: TextInputType.name,
                         textInputAction: TextInputAction.next,
@@ -370,45 +383,66 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                     ),
                   ],
                 ),
-                 const SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 TextFieldNonEditable(
                   width: MediaQuery.of(context).size.width,
                   controller: genderController,
-                  boarderColor: isEdited
-                      ? AppColors.appbarBoarder
-                      : AppColors.disableButtonColor,
-                  color: isEdited
-                      ? Colors.transparent
-                      : AppColors.disableButtonColor,
-                  hintColor: AppColors.hintColor,
+                  focusBorderColor: AppColors.focusTextBoarder,
+                  fillColor: Colors.transparent,
+                  boarderColor: AppColors.appbarBoarder,
+                  color: Colors.transparent,
+                  hintColor: AppColors.subheadColor,
                   hint: name,
                   obscure: false,
-                  textInputType: TextInputType.name,
-                  textInputAction: TextInputAction.next,
-                  editable: isEdited,
+                  textInputType: TextInputType.text,
+                  editable: false,
                 ),
-                 const SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
-                TextFieldNonEditable(
-                  width: MediaQuery.of(context).size.width,
-                  controller: passwordController,
-                  boarderColor: isEdited
-                      ? AppColors.appbarBoarder
-                      : AppColors.disableButtonColor,
-                  color: isEdited
-                      ? Colors.transparent
-                      : AppColors.disableButtonColor,
-                  hintColor: AppColors.hintColor,
-                  hint: name,
-                  obscure: false,
-                  textInputType: TextInputType.name,
-                  textInputAction: TextInputAction.next,
-                  editable: isEdited,
-                )
-
+                isEdited
+                    ? GestureDetector(
+                        onTap: () {
+                         isSelected = !isSelected;
+    setState(() {});
+                        },
+                        child: Container(
+                          height: 56,
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: AppColors.textInputField,
+                              border: Border.all(
+                                  color:isSelected?borderColor:AppColors.focusTextBoarder, width: 1)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Change Password",
+                                style: TextStyle(
+                                  color: AppColors.subheadColor,
+                                  fontSize: 16,
+                                  fontFamily: FontFamily.satoshi,
+                                  fontWeight: FontWeight.w400,
+                                  height: 24 / 16,
+                                ),
+                              ),
+                              IconButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: () {},
+                                icon: Image.asset(
+                                  "assets/images/Right.png",
+                                  //width: 18,
+                                  height: 24,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : const SizedBox()
               ],
             ),
           ),
@@ -427,120 +461,157 @@ class MyProfileScreenState extends State<MyProfileScreen> {
               children: [
                 Expanded(
                   child: Container(
-                   
                     height: 104,
                     decoration: BoxDecoration(
-                      color: AppColors.bookingShowColor,
-                      border: Border.all(color: AppColors.confirmValid),
-                      borderRadius: BorderRadius.circular(8)
-                    ),
+                        color: AppColors.bookingShowColor,
+                        border: Border.all(color: AppColors.confirmValid),
+                        borderRadius: BorderRadius.circular(8)),
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 10,bottom: 10,left: 10,right: 10),
+                      padding: const EdgeInsets.only(
+                          top: 10, bottom: 10, left: 10, right: 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("20",
-                          style:TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? AppColors.confirmValid
-                                : AppColors.confirmValid,
-                            fontSize: 32,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w700,
-                            height: 40 / 32,
-                          ) ,),
+                          Text(
+                            "20",
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.confirmValid
+                                  : AppColors.confirmValid,
+                              fontSize: 32,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w700,
+                              height: 40 / 32,
+                            ),
+                          ),
                           Padding(
                             padding: const EdgeInsets.only(right: 10),
-                            child: Text("Total Number of ",
-                            style:TextStyle(
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? AppColors.totalbookingColor
-                                  : AppColors.totalbookingColor,
-                              fontSize: 12,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w400,
-                              height: 20 / 12,
-                            ) ,),
+                            child: Text(
+                              "Total Number of ",
+                              style: TextStyle(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.totalbookingColor
+                                    : AppColors.totalbookingColor,
+                                fontSize: 12,
+                                fontFamily: FontFamily.satoshi,
+                                fontWeight: FontWeight.w400,
+                                height: 20 / 12,
+                              ),
+                            ),
                           ),
-                           Padding(
+                          Padding(
                             padding: const EdgeInsets.only(right: 10),
-                            child: Text("Bookings",
-                            style:TextStyle(
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? AppColors.totalbookingColor
-                                  : AppColors.totalbookingColor,
-                              fontSize: 12,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w400,
-                              height: 20 / 12,
-                            ) ,),
+                            child: Text(
+                              "Bookings",
+                              style: TextStyle(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.totalbookingColor
+                                    : AppColors.totalbookingColor,
+                                fontSize: 12,
+                                fontFamily: FontFamily.satoshi,
+                                fontWeight: FontWeight.w400,
+                                height: 20 / 12,
+                              ),
+                            ),
                           )
                         ],
                       ),
                     ),
                   ),
                 ),
-                SizedBox(width: 20,),
+                SizedBox(
+                  width: 20,
+                ),
                 Expanded(
                   child: Container(
                     height: 104,
                     decoration: BoxDecoration(
-                      color: AppColors.cancelBack,
-                      border: Border.all(color: AppColors.errorColor),
-                      borderRadius: BorderRadius.circular(8)
-                    ),
+                        color: AppColors.cancelBack,
+                        border: Border.all(color: AppColors.errorColor),
+                        borderRadius: BorderRadius.circular(8)),
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("20",
-                          style:TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? AppColors.errorColor
-                                : AppColors.errorColor,
-                            fontSize: 32,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w700,
-                            height: 40 / 32,
-                          ) ,),
+                          Text(
+                            "20",
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.errorColor
+                                  : AppColors.errorColor,
+                              fontSize: 32,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w700,
+                              height: 40 / 32,
+                            ),
+                          ),
                           Padding(
                             padding: const EdgeInsets.only(right: 10),
-                            child: Text("Cancelled ",
-                            style:TextStyle(
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? AppColors.cancelBooking
-                                  : AppColors.cancelBooking,
-                              fontSize: 12,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w400,
-                              height: 20 / 12,
-                            ) ,),
+                            child: Text(
+                              "Cancelled ",
+                              style: TextStyle(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.cancelBooking
+                                    : AppColors.cancelBooking,
+                                fontSize: 12,
+                                fontFamily: FontFamily.satoshi,
+                                fontWeight: FontWeight.w400,
+                                height: 20 / 12,
+                              ),
+                            ),
                           ),
-                           Padding(
+                          Padding(
                             padding: const EdgeInsets.only(right: 10),
-                            child: Text("Bookings",
-                            style:TextStyle(
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? AppColors.cancelBooking
-                                  : AppColors.cancelBooking,
-                              fontSize: 12,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w400,
-                              height: 20 / 12,
-                            ) ,),
+                            child: Text(
+                              "Bookings",
+                              style: TextStyle(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.cancelBooking
+                                    : AppColors.cancelBooking,
+                                fontSize: 12,
+                                fontFamily: FontFamily.satoshi,
+                                fontWeight: FontWeight.w400,
+                                height: 20 / 12,
+                              ),
+                            ),
                           )
                         ],
                       ),
                     ),
                   ),
                 ),
-
-
               ],
             ),
           ),
         ));
+  }
+
+  Widget _buildSignInButton() {
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+      child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 24, horizontal: 24),
+          child: FocusScope(
+              // Manage keyboard focus
+              child: CustomElevatedButton(
+            height: 60,
+            width: MediaQuery.of(context).orientation == Orientation.landscape
+                ? 70
+                : double.infinity,
+            isLoading: false,
+            text: "Update profile",
+            onPressed: () async {},
+            buttonColor: AppColors.elevatedColor,
+            textColor: Colors.white,
+          ))),
+    );
   }
 
   // General Methods:-----------------------------------------------------------

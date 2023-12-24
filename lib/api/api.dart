@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tennis_court_booking_app/model/bookResultofUser/bookresult_of_user.dart';
 import 'package:tennis_court_booking_app/model/bookingCourt/booking_response.dart';
 import 'package:tennis_court_booking_app/model/coachshow/Coach_show_model.dart';
 import 'package:tennis_court_booking_app/model/courtInfo/court_info.dart';
+import 'package:tennis_court_booking_app/model/finalBookModel/final_book_model.dart';
 import 'package:tennis_court_booking_app/model/friendShow/friend_show_model.dart';
 import 'package:tennis_court_booking_app/presentation/home/model/checkstatus.dart';
 import 'package:tennis_court_booking_app/profile/model/profile_model.dart';
+import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/tennismodel/teniscourt/court.dart';
 
 class Api {
@@ -33,16 +36,15 @@ class Api {
     );
 
     print(response.body);
-     print('Status code: ${response.statusCode}');
+    print('Status code: ${response.statusCode}');
 
- if (response.body.isNotEmpty) {
-  return jsonDecode(response.body);
-} else {
-  // Handle empty response
-  print('Empty response from the server');
-  return null; // or handle as needed
-}
-   
+    if (response.body.isNotEmpty) {
+      return jsonDecode(response.body);
+    } else {
+      // Handle empty response
+      print('Empty response from the server');
+      return null; // or handle as needed
+    }
   }
 
   static Future forgotPassword(body) async {
@@ -294,7 +296,7 @@ class Api {
   //Friend show
   static Future<FriendShowModel> friendShow(
       String bearerToken, DateTime date, String time) async {
-    var url = "$baseUrl/api/Friend/My Friends";
+    var url = "$baseUrl/api/Friend/Available Friends";
     Uri uri = Uri.parse('$url?selectedDate=$date&selectedSlot=$time');
     url = uri.toString();
     // Convert the model to a JSON string
@@ -323,7 +325,7 @@ class Api {
     Map<String, String> headers = {
       "content-Type": "application/json; charset=UTF-8",
     };
-
+    print(url);
     http.Response response = await http.get(
       Uri.parse(url),
       headers: headers,
@@ -331,7 +333,13 @@ class Api {
 
     print(response.body);
 
-    return CoachShowModel.fromJson(jsonDecode(response.body));
+    if (response.statusCode == 200) {
+      print(response.body);
+      return CoachShowModel.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception(
+          'Failed to load data, status code: ${response.statusCode}');
+    }
   }
 
 //Court Info
@@ -339,6 +347,7 @@ class Api {
     var url = "$baseUrl/api/TennisCourt/ViewCourtInfoAndFacility/$id";
 
     Map<String, String> headers = {
+      
       "content-Type": "application/json; charset=UTF-8",
     };
     print(url);
@@ -350,5 +359,55 @@ class Api {
     print(response.body);
 
     return CourtInfo.fromJson(jsonDecode(response.body));
+  }
+
+  //Booking Confirm
+  static Future<FinalBookModel> bookingConfirm(String bearerToken,
+  DateTime bookingDate,
+  int coachId,
+  String courtName,
+   String slot,
+   List<int> friendIds) async {
+    var url = "$baseUrl/api/Booking/Make Booking";
+    final Map<String, dynamic> body = {
+    "bookingDate": bookingDate.toIso8601String(),
+    "coachId": coachId,
+    "courtName":courtName,
+    "slot": slot,
+    "friendIds":friendIds
+  };
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+      "content-Type": "application/json;  charset=UTF-8",
+    };
+    http.Response response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+   
+    print(response.body);
+
+    // final jsonData = json.decode(response.body);
+    return FinalBookModel.fromJson(jsonDecode(response.body));
+  }
+  //Book result of user
+   static Future<BookedResultOfUser> bookResultOfUserResponse(String bearerToken,int id) async {
+    var url = "$baseUrl/api/Booking/GetConfirmedBooking/$id";
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+      "content-Type": "application/json; charset=UTF-8",
+    };
+    print(url);
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    print(response.body);
+
+    return BookedResultOfUser.fromJson(jsonDecode(response.body));
   }
 }
