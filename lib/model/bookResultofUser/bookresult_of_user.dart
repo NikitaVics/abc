@@ -89,10 +89,9 @@ class TennisCourt {
     return TennisCourt(
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
-      courtImages: List<CourtImage>.from(
-        (json['courtImages'] as List<dynamic>? ?? [])
-            .map((item) => CourtImage.fromJson(item)),
-      ),
+     courtImages: (json['courtImages'] as List<dynamic>? ?? [])
+          .map((item) => CourtImage.fromJson(item))
+          .toList(),
     );
   }
 }

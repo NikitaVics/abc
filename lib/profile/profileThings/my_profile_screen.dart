@@ -10,6 +10,7 @@ import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
 
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
+import 'package:tennis_court_booking_app/profile/profileprovider/myprofile_provider.dart';
 
 import 'package:tennis_court_booking_app/profile/profileprovider/profile_provider.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
@@ -41,7 +42,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   //focus node:-----------------------------------------------------------------
   late FocusNode _passwordFocusNode;
   bool juniorColor = false, seniorColor = false;
-bool isSelected = false;
+  bool isSelected = false;
   DateTime? dateTime;
   DateTime? result;
   String? imageUrl;
@@ -59,6 +60,9 @@ bool isSelected = false;
   FocusNode myFocusNode = FocusNode();
   bool isFormDone = false;
   String name = "";
+  String userName = "";
+  String phoneNum = "";
+  String gen = "";
   String? tokens;
   Future<void> profile() async {
     final profileProvider =
@@ -66,6 +70,9 @@ bool isSelected = false;
     String token = await SharePref.fetchAuthToken();
     tokens = await SharePref.fetchAuthToken();
     profileProvider.fetchProfile(token);
+    final myProfileProv =
+        Provider.of<MyProfileProvider>(context, listen: false);
+    myProfileProv.fetchProfile(token);
     print(name);
   }
 
@@ -186,16 +193,20 @@ bool isSelected = false;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Consumer<ProfileProvider>(
-          builder: (context, provider, child) {
+        child: Consumer2<ProfileProvider, MyProfileProvider>(
+          builder: (context, provider, providers, child) {
             if (provider.profileModel == null) {
               return Center(
                 child: CircularProgressIndicator(),
               );
             } else {
               final profileData = provider.profileModel!;
+              final myprofileData = providers.myProfile;
               imageUrl = profileData.result.imageUrl;
               name = profileData.result.name ?? "";
+              userName = myprofileData?.result.userName ?? "";
+              phoneNum = myprofileData?.result.phoneNumber ?? "";
+              gen = myprofileData?.result.gender ?? "";
               return Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -209,7 +220,7 @@ bool isSelected = false;
                         ),
                   _buildProfilePerfomence(),
                   _buildPerfomenceEveryBooking(),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                 ],
@@ -267,7 +278,9 @@ bool isSelected = false;
                           isEdited = false;
                         } else {
                           isEdited = true;
-                          nameController.text = name;
+                          nameController.text = userName;
+                          phoneController.text = phoneNum;
+                          genderController.text = gen;
                         }
                       });
                     },
@@ -300,41 +313,23 @@ bool isSelected = false;
     final textScaleFactor = MediaQuery.of(context).textScaleFactor;
     return Padding(
         padding: const EdgeInsets.only(top: 20),
-        child: Center(
-          child: MediaQuery(
-            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-            child: Column(
-              children: [
-                const SizedBox(
-                  height: 20,
-                ),
-                TextFieldNonEditable(
-                  width: MediaQuery.of(context).size.width,
-                  controller: nameController,
-                  focusBorderColor: AppColors.focusTextBoarder,
-                  fillColor:
-                      isEdited ? AppColors.textInputField : Colors.transparent,
-                  boarderColor: isEdited
-                      ? AppColors.transparent
-                      : AppColors.appbarBoarder,
-                  color:
-                      isEdited ? AppColors.textInputField : Colors.transparent,
-                  hintColor:
-                      isEdited ? AppColors.hintColor : AppColors.subheadColor,
-                  hint: isEdited ? "User Name " : name,
-                  obscure: false,
-                  textInputType: TextInputType.name,
-                  textInputAction: TextInputAction.next,
-                  editable: isEdited,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Row(
+        child: Consumer<MyProfileProvider>(builder: (context, provider, child) {
+          if (provider.myProfile == null) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            return Center(
+              child: MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                child: Column(
                   children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
                     TextFieldNonEditable(
-                      width: MediaQuery.of(context).size.width / 5.5,
-                      controller: phonePrefixController,
+                      width: MediaQuery.of(context).size.width,
+                      controller: nameController,
                       focusBorderColor: AppColors.focusTextBoarder,
                       fillColor: isEdited
                           ? AppColors.textInputField
@@ -348,105 +343,139 @@ bool isSelected = false;
                       hintColor: isEdited
                           ? AppColors.hintColor
                           : AppColors.subheadColor,
-                      hint: isEdited ? "+973 " : name,
+                      hint: isEdited ? "User Name " : userName,
                       obscure: false,
                       textInputType: TextInputType.name,
                       textInputAction: TextInputAction.next,
                       editable: isEdited,
                     ),
-                    SizedBox(
-                      width: 8,
+                    const SizedBox(
+                      height: 20,
                     ),
-                    Expanded(
-                      child: TextFieldNonEditable(
-                        width: MediaQuery.of(context).size.width / 1.5,
-                        controller: phoneController,
-                        focusBorderColor: AppColors.focusTextBoarder,
-                        fillColor: isEdited
-                            ? AppColors.textInputField
-                            : Colors.transparent,
-                        boarderColor: isEdited
-                            ? AppColors.transparent
-                            : AppColors.appbarBoarder,
-                        color: isEdited
-                            ? AppColors.textInputField
-                            : Colors.transparent,
-                        hintColor: isEdited
-                            ? AppColors.hintColor
-                            : AppColors.subheadColor,
-                        hint: isEdited ? "Phone Number " : name,
-                        obscure: false,
-                        textInputType: TextInputType.name,
-                        textInputAction: TextInputAction.next,
-                        editable: isEdited,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                TextFieldNonEditable(
-                  width: MediaQuery.of(context).size.width,
-                  controller: genderController,
-                  focusBorderColor: AppColors.focusTextBoarder,
-                  fillColor: Colors.transparent,
-                  boarderColor: AppColors.appbarBoarder,
-                  color: Colors.transparent,
-                  hintColor: AppColors.subheadColor,
-                  hint: name,
-                  obscure: false,
-                  textInputType: TextInputType.text,
-                  editable: false,
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                isEdited
-                    ? GestureDetector(
-                        onTap: () {
-                         isSelected = !isSelected;
-    setState(() {});
-                        },
-                        child: Container(
-                          height: 56,
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              color: AppColors.textInputField,
-                              border: Border.all(
-                                  color:isSelected?borderColor:AppColors.focusTextBoarder, width: 1)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                "Change Password",
-                                style: TextStyle(
-                                  color: AppColors.subheadColor,
-                                  fontSize: 16,
-                                  fontFamily: FontFamily.satoshi,
-                                  fontWeight: FontWeight.w400,
-                                  height: 24 / 16,
-                                ),
-                              ),
-                              IconButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: () {},
-                                icon: Image.asset(
-                                  "assets/images/Right.png",
-                                  //width: 18,
-                                  height: 24,
-                                ),
-                              ),
-                            ],
+                    Row(
+                      children: [
+                        TextFieldNonEditable(
+                          width: MediaQuery.of(context).size.width / 5.5,
+                          controller: phonePrefixController,
+                          focusBorderColor: AppColors.focusTextBoarder,
+                          fillColor: isEdited
+                              ? AppColors.textInputField
+                              : Colors.transparent,
+                          boarderColor: isEdited
+                              ? AppColors.transparent
+                              : AppColors.appbarBoarder,
+                          color: isEdited
+                              ? AppColors.textInputField
+                              : Colors.transparent,
+                          hintColor: isEdited
+                              ? AppColors.hintColor
+                              : AppColors.subheadColor,
+                          hint: isEdited ? "+973 " : name,
+                          obscure: false,
+                          textInputType: TextInputType.name,
+                          textInputAction: TextInputAction.next,
+                          editable: isEdited,
+                        ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Expanded(
+                          child: TextFieldNonEditable(
+                            width: MediaQuery.of(context).size.width / 1.5,
+                            controller: phoneController,
+                            focusBorderColor: AppColors.focusTextBoarder,
+                            fillColor: isEdited
+                                ? AppColors.textInputField
+                                : Colors.transparent,
+                            boarderColor: isEdited
+                                ? AppColors.transparent
+                                : AppColors.appbarBoarder,
+                            color: isEdited
+                                ? AppColors.textInputField
+                                : Colors.transparent,
+                            hintColor: isEdited
+                                ? AppColors.hintColor
+                                : AppColors.subheadColor,
+                            hint: isEdited ? "Phone Number " : phoneNum,
+                            obscure: false,
+                            textInputType: TextInputType.name,
+                            textInputAction: TextInputAction.next,
+                            editable: isEdited,
                           ),
                         ),
-                      )
-                    : const SizedBox()
-              ],
-            ),
-          ),
-        ));
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    TextFieldNonEditable(
+                      width: MediaQuery.of(context).size.width,
+                      controller: genderController,
+                      focusBorderColor: AppColors.focusTextBoarder,
+                      fillColor: Colors.transparent,
+                      boarderColor: AppColors.appbarBoarder,
+                      color: Colors.transparent,
+                      hintColor: AppColors.subheadColor,
+                      hint:gen,
+                      obscure: false,
+                      textInputType: TextInputType.text,
+                      editable: false,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    isEdited
+                        ? GestureDetector(
+                            onTap: () {
+                              isSelected = !isSelected;
+                              setState(() {});
+                            },
+                            child: Container(
+                              height: 56,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: AppColors.textInputField,
+                                  border: Border.all(
+                                      color: isSelected
+                                          ? borderColor
+                                          : AppColors.focusTextBoarder,
+                                      width: 1)),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    "Change Password",
+                                    style: TextStyle(
+                                      color: AppColors.subheadColor,
+                                      fontSize: 16,
+                                      fontFamily: FontFamily.satoshi,
+                                      fontWeight: FontWeight.w400,
+                                      height: 24 / 16,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    padding: EdgeInsets.zero,
+                                    onPressed: () {},
+                                    icon: Image.asset(
+                                      "assets/images/Right.png",
+                                      //width: 18,
+                                      height: 24,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : const SizedBox()
+                  ],
+                ),
+              ),
+            );
+          }
+        }));
   }
 
   Widget _buildPerfomenceEveryBooking() {

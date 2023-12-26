@@ -8,6 +8,7 @@ import 'package:tennis_court_booking_app/model/courtInfo/court_info.dart';
 import 'package:tennis_court_booking_app/model/finalBookModel/final_book_model.dart';
 import 'package:tennis_court_booking_app/model/friendShow/friend_show_model.dart';
 import 'package:tennis_court_booking_app/presentation/home/model/checkstatus.dart';
+import 'package:tennis_court_booking_app/profile/model/my_profile.dart';
 import 'package:tennis_court_booking_app/profile/model/profile_model.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/tennismodel/teniscourt/court.dart';
@@ -409,5 +410,24 @@ class Api {
     print(response.body);
 
     return BookedResultOfUser.fromJson(jsonDecode(response.body));
+  }
+
+  //My profile view
+  static Future<MyProfile> MyprofileShow(String bearerToken) async {
+    var url = "$baseUrl/api/Profile/My Profile";
+
+    // Convert the model to a JSON string
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+    };
+
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    print(response.body);
+
+    return MyProfile.fromJson(jsonDecode(response.body));
   }
 }
