@@ -65,7 +65,8 @@ class BookedResult {
       teamId: json['teamId'] ?? 0,
       teamMembers: List<TeamMember>.from(
         (json['teamMembers'] as List<dynamic>? ?? [])
-            .map((item) => TeamMember.fromJson(item)),
+            .map((item) => TeamMember.fromJson(item))
+            .toList(),
       ),
       userId: json['userId'] ?? 0,
       userName: json['userName'] ?? '',

@@ -49,4 +49,5 @@ class AppColors {
   static const totalbookingColor = Color(0xff82D0A3);
   static const cancelBooking = Color(0xffF39E9E);
   static const cancelBack = Color(0xffFDEEEE);
+  static const roundColorBooking = Color(0xff35A756);
 }

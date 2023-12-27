@@ -63,6 +63,8 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   String userName = "";
   String phoneNum = "";
   String gen = "";
+  String bookCount = "";
+  String cancelBook = "";
   String? tokens;
   Future<void> profile() async {
     final profileProvider =
@@ -207,6 +209,8 @@ class MyProfileScreenState extends State<MyProfileScreen> {
               userName = myprofileData?.result.userName ?? "";
               phoneNum = myprofileData?.result.phoneNumber ?? "";
               gen = myprofileData?.result.gender ?? "";
+              bookCount = myprofileData?.result.totalBookings.toString() ?? "0";
+              cancelBook = myprofileData?.result.totalCancelledBookings.toString() ?? "0";
               return Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -281,6 +285,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                           nameController.text = userName;
                           phoneController.text = phoneNum;
                           genderController.text = gen;
+                          isSelected = true;
                         }
                       });
                     },
@@ -416,7 +421,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                       boarderColor: AppColors.appbarBoarder,
                       color: Colors.transparent,
                       hintColor: AppColors.subheadColor,
-                      hint:gen,
+                      hint: gen,
                       obscure: false,
                       textInputType: TextInputType.text,
                       editable: false,
@@ -502,7 +507,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "20",
+                            bookCount,
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
@@ -567,7 +572,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "20",
+                           cancelBook,
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
