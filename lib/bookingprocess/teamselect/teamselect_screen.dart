@@ -81,7 +81,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
 
   List<String> selectedImageUrls = [];
   List<int> friendId = [];
-  int coachId = 0;
+  int coachid=0;
   bool isFirstButtonSelected = false;
   bool isSecondButtonSelected = false;
   bool isFormDone = false;
@@ -89,6 +89,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
   bool isImage = true;
   String name = "";
   String? tokens;
+  bool isProcessing = false;
   Future _onWilPop() async {
     Navigator.pop(context);
   }
@@ -885,7 +886,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                                         setState(() {
                                           selectedImageIndex = dataIndex;
                                           coachImage = court.imageUrl;
-                                          coachId = court.coachId;
+                                          coachid = court.coachId;
                                         });
                                       },
                                       child: selectedImageIndex == dataIndex
@@ -994,16 +995,19 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                               Orientation.landscape
                           ? 70
                           : double.infinity,
-                      isLoading: false,
+                      isLoading: isProcessing,
                       text: "Confirm Booking",
-                      onPressed: () async {
+                      onPressed:    () async {
+                          setState(() {
+            isProcessing = true;
+         });
                         print("Updated friendId: $friendId");
-                         print("Updated coachId: $coachId");
+                         print("Updated coachId: $coachid");
                          
                         await completeBookingProvider.completeBookingApi(
              tokens!,
               widget.result, // Replace with your bookingDate
-              coachId, // Replace with your coachId
+              coachid, // Replace with your coachId
               widget.courtName,
               widget.time,
               friendId, // Replace with your friendIds
@@ -1016,9 +1020,15 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
       builder: (context) => FinalBookingScreen(id: completeBookingProvider.finalBookModel!.result),
     ),
   );
+  setState(() {
+            isProcessing = false;
+         });
     }
               
-                      },
+                      },             
+                      
+                      
+                   
                       buttonColor: AppColors.elevatedColor,
                       textColor: Colors.white,
                     ))),

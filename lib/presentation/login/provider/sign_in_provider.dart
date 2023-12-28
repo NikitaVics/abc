@@ -219,4 +219,27 @@ Future sendOtpforlogin(String email,String otp) async {
       return null; // Or throw an exception, depending on your requirements.
     }
   }
+
+  Future changePasswordApi(String oldPassword,String password,String confirmPassword,String bearerToken) async {
+    //updateForgotPasswordLoader(true);
+    var body = {
+      "currentPassword":oldPassword,
+  "newPassoword": password,
+  "secondNewPassword": confirmPassword
+
+    };
+    try {
+      var res = await Api.changePassword(body, bearerToken);
+      print('Response: $res');
+    
+      // Parse the 'res' here, if needed.
+      //updateForgotPasswordLoader(false);
+      return res;
+    } catch (e) {
+      print('Error while decoding JSON: $e');
+      // Handle the error appropriately.
+      //updateForgotPasswordLoader(false);
+      return null; // Or throw an exception, depending on your requirements.
+    }
+  }
 }

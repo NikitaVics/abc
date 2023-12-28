@@ -6,6 +6,7 @@ import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/model/login/login_response_model.dart';
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
+import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
@@ -22,16 +23,19 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
   //text controllers:-----------------------------------------------------------
   final TextEditingController _password = TextEditingController();
   final TextEditingController _confirmpassword = TextEditingController();
+  final TextEditingController _oldpassword = TextEditingController();
 
   //predefine bool value for error:---------------------------------------------
   bool emailError = false,
       passwordError = false,
       confirmPasswordError = false,
+      oldPassError = false,
       loginError = false;
   String emailErrorText = '',
       passwordErrorText = '',
       loginErrorMessage = '',
-      confirmPasswordErrorText = '';
+      confirmPasswordErrorText = '',
+      oldPassErrorText = '';
   bool isEmailValidationSuccessful = false;
   bool isPasswordValidationSuccessful = false;
   LoginResponse? loginResponse;
@@ -41,6 +45,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
   //focus node:-----------------------------------------------------------------
   late FocusNode _passwordFocusNode;
   late FocusNode _confirmpasswordFocusNode;
+  late FocusNode _oldPassFocusNode;
   SignInProvider? provider;
   bool isLoading = false;
   List<bool> isPasswordValid(String password) {
@@ -65,6 +70,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
     ];
   }
 
+  String? tokens;
   bool _isMenuVisible = false;
   @override
   void initState() {
@@ -79,29 +85,87 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
     _confirmpasswordFocusNode.addListener(() {
       validateConfirmPassword();
     });
+    _oldPassFocusNode = FocusNode();
+    _oldPassFocusNode.addListener(() {
+      validateoldPassword();
+    });
+     profile();
     provider = Provider.of<SignInProvider>(context, listen: false);
+   
+  }
+
+  Future<void> profile() async {
+    String token = await SharePref.fetchAuthToken();
+    tokens = await SharePref.fetchAuthToken();
   }
 
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
-      return GestureDetector(
-        onTap: () {
-          FocusManager.instance.primaryFocus?.unfocus();
-        },
-        child: Scaffold(
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkThemeback
-              : AppColors.lightThemeback,
-          primary: true,
-          appBar: const CustomAppBar(
-            isBoarder: true,
-            title: "Forgot Password",
-            isProgress: false,
-            step: 0,
+      return Scaffold(
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.darkThemeback
+            : AppColors.lightThemeback,
+        primary: true,
+        appBar: AppBar(
+          toolbarHeight: 70,
+          automaticallyImplyLeading: false,
+          title: Padding(
+            padding: const EdgeInsets.only(left: 0),
+            child: Container(
+              // height: 100,
+              decoration: BoxDecoration(
+                  border: Border(
+                      bottom: BorderSide(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkAppBarboarder
+                    : AppColors.appbarBoarder,
+                width: 2.0,
+              ))),
+              child: Column(
+                children: [
+                  Padding(
+                      padding: const EdgeInsets.only(bottom: 15, top: 5),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            padding: EdgeInsets.zero,
+                            onPressed: () {
+                              Navigator.pop(context, null);
+                            },
+                            icon: Image.asset(
+                              "assets/images/leftIcon.png",
+                              //width: 18,
+                              height: 26,
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            "Change Password ",
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.headingTextColor
+                                  : AppColors.allHeadColor,
+                              fontSize: 20,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w700,
+                              height: 28 / 20,
+                            ),
+                          ),
+                          const Spacer(flex: 2)
+                        ],
+                      )),
+                ],
+              ),
+            ),
           ),
-          body: _buildBody(),
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkTextInput
+              : Colors.white,
+          elevation: 0,
         ),
+        body: _buildBody(),
       );
     });
   }
@@ -115,19 +179,10 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
       child: Stack(
         children: <Widget>[
           MediaQuery.of(context).orientation == Orientation.landscape
-              ? Row(
-                  children: <Widget>[
-                    Expanded(child: _buildLeftSide()),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: _buildRightSide(),
-                          ),
-                          _buildSignInButton()
-                        ],
-                      ),
-                    ),
+              ? Column(
+                  children: [
+                    Expanded(child: Center(child: _buildRightSide())),
+                    _buildSignInButton()
                   ],
                 )
               : Column(
@@ -141,19 +196,6 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
     );
   }
 
-  Widget _buildLeftSide() {
-    return SizedBox(
-      width: 300,
-      child: SizedBox.expand(
-        child: Image.asset(
-          "assets/images/onboard_back_one.png",
-          //Assets.carBackground,
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-  }
-
   Widget _buildRightSide() {
     return SingleChildScrollView(
       child: Padding(
@@ -163,8 +205,10 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            _buildLoginText(),
-            const SizedBox(height: 20.0),
+            SizedBox(
+              height: 20,
+            ),
+            _buildCurrentPasswordField(),
             _buildPasswordField(),
             _buildConfirmPasswordField()
           ],
@@ -173,35 +217,28 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
     );
   }
 
-  Widget _buildLoginText() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Enter New ",
-          style: TextStyle(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? AppColors.headingTextColor
-                : AppColors.allHeadColor,
-            fontSize: 32,
-            fontFamily: FontFamily.satoshi,
-            fontWeight: FontWeight.w700,
-            height: 40 / 32,
-          ),
-        ),
-        Text(
-          "Password",
-          style: TextStyle(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? AppColors.headingTextColor
-                : AppColors.allHeadColor,
-            fontSize: 32,
-            fontFamily: FontFamily.satoshi,
-            fontWeight: FontWeight.w700,
-            height: 40 / 32,
-          ),
-        ),
-      ],
+  Widget _buildCurrentPasswordField() {
+    return TextFieldWidget(
+      read: false,
+      hint: "Current Password",
+      hintColor: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkhint
+          : AppColors.hintColor,
+      isObscure: true,
+      padding: const EdgeInsets.only(top: 0.0),
+      textController: _oldpassword,
+      focusNode: _oldPassFocusNode,
+      errorBorderColor: oldPassError
+          ? AppColors.errorColor // Border color for validation error
+          : AppColors.textInputField,
+      focusBorderColor:
+          oldPassError ? AppColors.errorColor : AppColors.focusTextBoarder,
+      onChanged: (value) {
+        setState(() {
+          oldPassError = false; // Reset the error flag
+        });
+      },
+      errorText: oldPassError ? oldPassErrorText : " ",
     );
   }
 
@@ -354,8 +391,12 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                     isLoading = true;
                   });
                   value
-                      .resetPasswordApi(
-                          widget.email, _password.text, _confirmpassword.text)
+                      .changePasswordApi(
+                    _oldpassword.text,
+                    _password.text,
+                    _confirmpassword.text,
+                    tokens!,
+                  )
                       .then((val) {
                     if (val["statusCode"] == 200) {
                       Navigator.of(context).push(
@@ -364,12 +405,12 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                         ),
                       );
                       setState(() {
-                    isLoading = false;
-                  });
+                        isLoading = false;
+                      });
                       print(val);
                     } else {
                       setState(() {
-                          isLoading = false;
+                        isLoading = false;
                         print(val['errorMessage']);
                       });
                     }
@@ -400,6 +441,8 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
     // Clean up the controller when the Widget is removed from the Widget tree
 
     _passwordFocusNode.dispose();
+    _confirmpasswordFocusNode.dispose();
+    _oldPassFocusNode.dispose();
     super.dispose();
   }
 
@@ -419,6 +462,19 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
   }
 
   Future<bool> validateConfirmPassword() async {
+    setState(() {
+      if (_oldpassword.text.isEmpty) {
+        oldPassError = true;
+        oldPassErrorText = 'Please enter your current password';
+      } else {
+        oldPassError = false;
+      }
+    });
+
+    return !oldPassError;
+  }
+
+  Future<bool> validateoldPassword() async {
     setState(() {
       if (_confirmpassword.text.isEmpty) {
         confirmPasswordError = true;

@@ -10,6 +10,7 @@ import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
 
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
+import 'package:tennis_court_booking_app/profile/passwardChange/password_change.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/myprofile_provider.dart';
 
 import 'package:tennis_court_booking_app/profile/profileprovider/profile_provider.dart';
@@ -35,12 +36,47 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController genderController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  final TextEditingController _confirmpassword = TextEditingController();
+
   //predefine bool value for error:---------------------------------------------
+  bool emailError = false,
+      passwordError = false,
+      confirmPasswordError = false,
+      loginError = false;
+  String emailErrorText = '',
+      passwordErrorText = '',
+      loginErrorMessage = '',
+      confirmPasswordErrorText = '';
+      late FocusNode _passwordFocusNode;
+  late FocusNode _confirmpasswordFocusNode;
+  //predefine bool value for error:---------------------------------------------
+ List<bool> isPasswordValid(String password) {
+    // Define regular expressions for each condition
+    final lowercaseRegex = RegExp(r'[a-z]');
+    final uppercaseRegex = RegExp(r'[A-Z]');
+    final digitRegex = RegExp(r'[0-9]');
+    final specialCharRegex = RegExp(r'[!@#\$%^&*()_+{}\[\]:;<>,.?~\\-]');
+
+    final isLengthValid = password.length >= 8;
+    final hasLowercase = lowercaseRegex.hasMatch(password);
+    final hasUppercase = uppercaseRegex.hasMatch(password);
+    final hasDigit = digitRegex.hasMatch(password);
+    final hasSpecialChar = specialCharRegex.hasMatch(password);
+
+    return [
+      isLengthValid,
+      hasLowercase,
+      hasUppercase,
+      hasDigit,
+      hasSpecialChar
+    ];
+  }
 
   //stores:---------------------------------------------------------------------
 
   //focus node:-----------------------------------------------------------------
-  late FocusNode _passwordFocusNode;
+  
   bool juniorColor = false, seniorColor = false;
   bool isSelected = false;
   DateTime? dateTime;
@@ -49,11 +85,20 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   bool state = false;
   bool lightState = true;
   //SignInProvider? provider;
-
+  bool _isMenuVisible = false;
   @override
   void initState() {
     super.initState();
-    _passwordFocusNode = FocusNode();
+     _passwordFocusNode = FocusNode();
+    _passwordFocusNode.addListener(() {
+      setState(() {
+        _isMenuVisible = _passwordFocusNode.hasFocus;
+      });
+    });
+    _confirmpasswordFocusNode = FocusNode();
+    _confirmpasswordFocusNode.addListener(() {
+      //validateConfirmPassword();
+    });
     profile();
   }
 
@@ -210,7 +255,9 @@ class MyProfileScreenState extends State<MyProfileScreen> {
               phoneNum = myprofileData?.result.phoneNumber ?? "";
               gen = myprofileData?.result.gender ?? "";
               bookCount = myprofileData?.result.totalBookings.toString() ?? "0";
-              cancelBook = myprofileData?.result.totalCancelledBookings.toString() ?? "0";
+              cancelBook =
+                  myprofileData?.result.totalCancelledBookings.toString() ??
+                      "0";
               return Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -285,7 +332,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                           nameController.text = userName;
                           phoneController.text = phoneNum;
                           genderController.text = gen;
-                          isSelected = true;
+                        
                         }
                       });
                     },
@@ -432,8 +479,24 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                     isEdited
                         ? GestureDetector(
                             onTap: () {
-                              isSelected = !isSelected;
-                              setState(() {});
+                              setState(() {
+                                isSelected = true;
+                              });
+                               setState(() {
+      isSelected = true;
+    });
+    if (isSelected == true) {
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => changePaasword(),
+      ).whenComplete(() {
+        setState(() {
+          isSelected = false;
+        });
+      });
+    }
                             },
                             child: Container(
                               height: 56,
@@ -443,9 +506,9 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                                   borderRadius: BorderRadius.circular(8),
                                   color: AppColors.textInputField,
                                   border: Border.all(
-                                      color: isSelected
-                                          ? borderColor
-                                          : AppColors.focusTextBoarder,
+                                      color: isSelected==true
+                                          ?AppColors.focusTextBoarder 
+                                          : borderColor,
                                       width: 1)),
                               child: Row(
                                 mainAxisAlignment:
@@ -481,6 +544,93 @@ class MyProfileScreenState extends State<MyProfileScreen> {
             );
           }
         }));
+  }
+
+  Widget changePaasword() {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.85,
+      maxChildSize: 0.9,
+      minChildSize: 0.45,
+      builder: (_, controller) => Padding(
+        padding: const EdgeInsets.only(left: 10,right: 10,bottom: 10),
+        child: GestureDetector(
+           onTap: () {
+          // Dismiss the keyboard by unfocusing the current focus.
+          FocusScope.of(_).unfocus();
+        },
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+          color: Colors.pink,
+            ),
+          
+           child:  ClipRRect(
+             borderRadius: BorderRadius.circular(16),
+            child: PasswordChangeScreen(email: ""))
+        ),
+      ),
+    ),
+  );
+}
+  Widget _buildChangePassText() {
+    return Row(
+      children: [
+        IconButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: () {
+                            Navigator.pop(context, null);
+                          },
+                          icon: Image.asset(
+                            "assets/images/leftIcon.png",
+                            //width: 18,
+                            height: 26,
+                          ),
+                        ),
+                         const Spacer(),
+        Text(
+          "Change Password ",
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.headingTextColor
+                : AppColors.allHeadColor,
+            fontSize: 20,
+            fontFamily: FontFamily.satoshi,
+            fontWeight: FontWeight.w700,
+            height: 28 / 20,
+          ),
+        ),
+         const Spacer(flex: 2)
+      ],
+    );
+  }
+
+  Widget _buildCurrentPasswordField() {
+    return Padding(
+       padding: const EdgeInsets.only(top:20,left: 12,right: 12),
+      child: TextFieldWidget(
+        read: false,
+        hint: "Current Password",
+        hintColor: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.darkhint
+            : AppColors.hintColor,
+        isObscure: true,
+        padding: const EdgeInsets.only(top: 0.0),
+        textController: _confirmpassword,
+        focusNode: _confirmpasswordFocusNode,
+        errorBorderColor: confirmPasswordError
+            ? AppColors.errorColor // Border color for validation error
+            : AppColors.textInputField,
+        focusBorderColor: confirmPasswordError
+            ? AppColors.errorColor
+            : AppColors.focusTextBoarder,
+        onChanged: (value) {
+          setState(() {
+            confirmPasswordError = false; // Reset the error flag
+          });
+        },
+        errorText: confirmPasswordError ? confirmPasswordErrorText : " ",
+      ),
+    );
   }
 
   Widget _buildPerfomenceEveryBooking() {
@@ -572,7 +722,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                           cancelBook,
+                            cancelBook,
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark

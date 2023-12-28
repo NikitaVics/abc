@@ -430,4 +430,21 @@ class Api {
 
     return MyProfile.fromJson(jsonDecode(response.body));
   }
+   static Future changePassword(body,String bearerToken) async {
+    var url = "$baseUrl/api/UsersAuth/Change Password";
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+      "content-Type": "application/json;  charset=UTF-8",
+    };
+    http.Response response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    print(response.body);
+
+    // final jsonData = json.decode(response.body);
+    return jsonDecode(response.body);
+  }
 }

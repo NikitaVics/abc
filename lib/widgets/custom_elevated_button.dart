@@ -42,9 +42,11 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
             borderRadius: BorderRadius.circular(8),
           ),
           backgroundColor:
-              widget.buttonColor, // Change background color on hover
+             widget.isLoading? widget.buttonColor:widget.buttonColor, 
+             disabledBackgroundColor: widget.buttonColor
+             // Change background color on hover
         ),
-        onPressed: widget.onPressed,
+        onPressed:widget.isLoading?null: widget.onPressed,
         child:  widget.isLoading
                         ? const SizedBox(
                             height: 24,
