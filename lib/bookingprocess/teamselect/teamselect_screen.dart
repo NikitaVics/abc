@@ -81,7 +81,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
 
   List<String> selectedImageUrls = [];
   List<int> friendId = [];
-  int coachid=0;
+  int? coachid;
   bool isFirstButtonSelected = false;
   bool isSecondButtonSelected = false;
   bool isFormDone = false;
@@ -957,39 +957,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
           padding: EdgeInsets.symmetric(vertical: 24, horizontal: 24),
           child: FocusScope(
               // Manage keyboard focus
-              child: selectedImageUrls.length != 3
-                  ? CustomElevatedButton(
-                      height: 60,
-                      width: MediaQuery.of(context).orientation ==
-                              Orientation.landscape
-                          ? 70
-                          : double.infinity,
-                      isLoading: false,
-                      text: "Confirm Booking",
-                      onPressed: () async {
-                        MotionToast(
-                          primaryColor: AppColors.warningToast,
-                          description: Text(
-                            "Please select $remainingImages more friend..",
-                            style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.headingTextColor
-                                  : AppColors.allHeadColor,
-                              fontSize: 16,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w400,
-                              height: 24 / 16,
-                            ),
-                          ),
-                          icon: Icons.warning,
-                          animationCurve: Curves.bounceInOut,
-                        ).show(context);
-                      },
-                      buttonColor: AppColors.disableButtonColor,
-                      textColor: AppColors.disableButtonTextColor,
-                    )
-                  : CustomElevatedButton(
+              child: CustomElevatedButton(
                       height: 60,
                       width: MediaQuery.of(context).orientation ==
                               Orientation.landscape
@@ -1007,7 +975,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                         await completeBookingProvider.completeBookingApi(
              tokens!,
               widget.result, // Replace with your bookingDate
-              coachid, // Replace with your coachId
+              coachid??0, // Replace with your coachId
               widget.courtName,
               widget.time,
               friendId, // Replace with your friendIds
@@ -1043,39 +1011,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
           padding: EdgeInsets.symmetric(vertical: 24, horizontal: 24),
           child: FocusScope(
               // Manage keyboard focus
-              child: selectedImageUrls.length != 3
-                  ? CustomElevatedButton(
-                      height: 60,
-                      width: MediaQuery.of(context).orientation ==
-                              Orientation.landscape
-                          ? 70
-                          : double.infinity,
-                      isLoading: false,
-                      text: "Confirm Team",
-                      onPressed: () async {
-                        MotionToast(
-                          primaryColor: AppColors.warningToast,
-                          description: Text(
-                            "Please select $remainingImages more friend..",
-                            style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.headingTextColor
-                                  : AppColors.allHeadColor,
-                              fontSize: 16,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w400,
-                              height: 24 / 16,
-                            ),
-                          ),
-                          icon: Icons.warning,
-                          animationCurve: Curves.bounceInOut,
-                        ).show(context);
-                      },
-                      buttonColor: AppColors.disableButtonColor,
-                      textColor: AppColors.disableButtonTextColor,
-                    )
-                  : CustomElevatedButton(
+              child:  CustomElevatedButton(
                       height: 60,
                       width: MediaQuery.of(context).orientation ==
                               Orientation.landscape

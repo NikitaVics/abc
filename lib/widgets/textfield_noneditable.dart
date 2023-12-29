@@ -7,6 +7,7 @@ import 'package:tennis_court_booking_app/constants/font_family.dart';
 class TextFieldNonEditable extends StatefulWidget {
   TextEditingController? controller;
   final Color focusBorderColor;
+  final FocusNode? focusNode;
   Color fillColor;
   Color? color;
   Color boarderColor;
@@ -40,6 +41,7 @@ class TextFieldNonEditable extends StatefulWidget {
     this.color,
     this.editable,
     this.iconData,
+    this.focusNode,
     
     this.textInputAction,
    
@@ -81,7 +83,7 @@ class _TextFieldNonEditableState extends State<TextFieldNonEditable> {
           ),
         ),
         child: TextFormField(
-          
+          focusNode: widget.focusNode,
           autofocus: true,
           initialValue: widget.initialValue,
           controller: widget.controller,

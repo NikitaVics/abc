@@ -173,7 +173,7 @@ class Api {
   }
 
   static Future registerForm(String email, String name, String phoneNumber,
-      String dob, String address, String? image) async {
+      String dob, String address, String? image,String gender,String coutryCode,String? document) async {
     var url = "$baseUrl/api/UsersAuth/Form Regisration";
 
     // Convert the model to a JSON string
@@ -185,6 +185,9 @@ class Api {
 
     // Add fields to the request
     request.fields.addAll({
+      
+      "CountryCode":coutryCode,
+      "Gender":gender,
       "email": email,
       "name": name,
       "phoneNumber": phoneNumber,
@@ -199,6 +202,13 @@ class Api {
         image,
       ));
       print("image $image");
+    }
+    if (document != null && document.isNotEmpty) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'Document',
+       document,
+      ));
+      print("image $document");
     }
 
     // Add headers to the request
@@ -348,7 +358,6 @@ class Api {
     var url = "$baseUrl/api/TennisCourt/ViewCourtInfoAndFacility/$id";
 
     Map<String, String> headers = {
-      
       "content-Type": "application/json; charset=UTF-8",
     };
     print(url);
@@ -363,20 +372,25 @@ class Api {
   }
 
   //Booking Confirm
-  static Future<FinalBookModel> bookingConfirm(String bearerToken,
-  DateTime bookingDate,
-  int coachId,
-  String courtName,
-   String slot,
-   List<int> friendIds) async {
+  static Future<FinalBookModel> bookingConfirm(
+      String bearerToken,
+      DateTime bookingDate,
+      int coachId,
+      String courtName,
+      String slot,
+      List<int> friendIds) async {
     var url = "$baseUrl/api/Booking/Make Booking";
     final Map<String, dynamic> body = {
-    "bookingDate": bookingDate.toIso8601String(),
-    "coachId": coachId,
-    "courtName":courtName,
-    "slot": slot,
-    "friendIds":friendIds
-  };
+      "bookingDate": bookingDate.toIso8601String(),
+      "courtName": courtName,
+      "slot": slot,
+      "friendIds": friendIds
+    };
+    if (coachId != 0) {
+      body["coachId"] = coachId;
+    }
+    print(coachId);
+    print(friendIds);
 
     Map<String, String> headers = {
       'Authorization': 'Bearer $bearerToken',
@@ -387,14 +401,16 @@ class Api {
       headers: headers,
       body: jsonEncode(body),
     );
-   
+
     print(response.body);
 
     // final jsonData = json.decode(response.body);
     return FinalBookModel.fromJson(jsonDecode(response.body));
   }
+
   //Book result of user
-   static Future<BookedResultOfUser> bookResultOfUserResponse(String bearerToken,int id) async {
+  static Future<BookedResultOfUser> bookResultOfUserResponse(
+      String bearerToken, int id) async {
     var url = "$baseUrl/api/Booking/GetConfirmedBooking/$id";
 
     Map<String, String> headers = {
@@ -430,7 +446,8 @@ class Api {
 
     return MyProfile.fromJson(jsonDecode(response.body));
   }
-   static Future changePassword(body,String bearerToken) async {
+
+  static Future changePassword(body, String bearerToken) async {
     var url = "$baseUrl/api/UsersAuth/Change Password";
     Map<String, String> headers = {
       'Authorization': 'Bearer $bearerToken',
@@ -447,4 +464,53 @@ class Api {
     // final jsonData = json.decode(response.body);
     return jsonDecode(response.body);
   }
+
+  //Update Profile
+   static Future updateProfile(String bearerToken, String username, String phoneNumber,
+      String countryCode, bool deleteImage, String? image) async {
+    var url = "$baseUrl/api/Profile/Update Profile";
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+      "content-Type": "application/json;  charset=UTF-8",
+    };
+    // Convert the model to a JSON string
+
+    var request = http.MultipartRequest(
+      'PUT',
+     
+      Uri.parse(url),
+    );
+ request.headers.addAll(headers);
+    // Add fields to the request
+    request.fields.addAll({
+       'UserName': username, // Add your values
+    'CountryCode': countryCode, // Add your values
+    'PhoneNumber': phoneNumber, // Add your values
+    'DeleteCurrentImage': deleteImage.toString(), // Add your values
+    });
+
+    // Add image file to the request
+    if (image != null && image.isNotEmpty) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'Image',
+        image,
+      ));
+      print("image $image");
+    }
+
+    // Add headers to the request
+    //request.headers.addAll(headers);
+    try {
+      http.StreamedResponse response = await request.send();
+      var responseData = await response.stream.bytesToString();
+      var jsonData = json.decode(responseData);
+      print(jsonData);
+      return jsonData;
+    } catch (error) {
+      print("Error: $error");
+      // Handle the error or return an appropriate response.
+      return null;
+    }
+  }
+
 }

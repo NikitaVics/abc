@@ -187,17 +187,11 @@ Future sendOtpforlogin(String email,String otp) async {
     return res;
   }
 
-  Future registerFormApi(String email,String name,String phoneNumber,String dob,String address,String? imageUrl) async {
+  Future registerFormApi(String email, String name, String phoneNumber,
+      String dob, String address, String? image,String gender,String coutryCode,String? document) async {
     //updateRegisterLoader(true);
-    var body = {
-  "email":email,
-  "name": name,
-  "phoneNumber": phoneNumber,
-  "dob": dob,
-  "address":address,
-  "imageUrl": imageUrl,
-    };
-    var res = await Api.registerForm(email,name,phoneNumber,dob,address,imageUrl??"" );
+  
+    var res = await Api.registerForm(email,name,phoneNumber,dob,address,image,gender,coutryCode,document );
     //updateRegisterLoader(false);
     return res;
   }
@@ -241,5 +235,14 @@ Future sendOtpforlogin(String email,String otp) async {
       //updateForgotPasswordLoader(false);
       return null; // Or throw an exception, depending on your requirements.
     }
+  }
+
+   Future updateProfile(String bearerToken,String username, String phoneNumber,
+      String countryCode, bool deleteImage, String? image) async {
+    //updateRegisterLoader(true);
+    
+    var res = await Api.updateProfile(bearerToken,username, phoneNumber, countryCode, deleteImage, image);
+    //updateRegisterLoader(false);
+    return res;
   }
 }

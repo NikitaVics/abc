@@ -1,7 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:io';
+
+import 'package:country_picker/country_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,6 +15,7 @@ import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
 
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
+import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/profile/passwardChange/password_change.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/myprofile_provider.dart';
 
@@ -17,6 +23,7 @@ import 'package:tennis_court_booking_app/profile/profileprovider/profile_provide
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:tennis_court_booking_app/theme/theme_manager.dart';
+import 'package:tennis_court_booking_app/widgets/animated_toast.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_noneditable.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
@@ -38,6 +45,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController _password = TextEditingController();
   final TextEditingController _confirmpassword = TextEditingController();
+  FocusNode _focusNode = FocusNode();
 
   //predefine bool value for error:---------------------------------------------
   bool emailError = false,
@@ -48,10 +56,11 @@ class MyProfileScreenState extends State<MyProfileScreen> {
       passwordErrorText = '',
       loginErrorMessage = '',
       confirmPasswordErrorText = '';
-      late FocusNode _passwordFocusNode;
+  late FocusNode _passwordFocusNode;
   late FocusNode _confirmpasswordFocusNode;
+  bool isLoading = false;
   //predefine bool value for error:---------------------------------------------
- List<bool> isPasswordValid(String password) {
+  List<bool> isPasswordValid(String password) {
     // Define regular expressions for each condition
     final lowercaseRegex = RegExp(r'[a-z]');
     final uppercaseRegex = RegExp(r'[A-Z]');
@@ -76,7 +85,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   //stores:---------------------------------------------------------------------
 
   //focus node:-----------------------------------------------------------------
-  
+
   bool juniorColor = false, seniorColor = false;
   bool isSelected = false;
   DateTime? dateTime;
@@ -89,7 +98,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   @override
   void initState() {
     super.initState();
-     _passwordFocusNode = FocusNode();
+    _passwordFocusNode = FocusNode();
     _passwordFocusNode.addListener(() {
       setState(() {
         _isMenuVisible = _passwordFocusNode.hasFocus;
@@ -111,6 +120,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   String bookCount = "";
   String cancelBook = "";
   String? tokens;
+   File? imageFile;
   Future<void> profile() async {
     final profileProvider =
         Provider.of<ProfileProvider>(context, listen: false);
@@ -289,19 +299,31 @@ class MyProfileScreenState extends State<MyProfileScreen> {
         child: MediaQuery(
           data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            ClipRRect(
-                borderRadius: BorderRadius.circular(150.0),
-                child: imageUrl != null && imageUrl!.isNotEmpty
-                    ? SilentErrorImage(
-                        width: 80.0,
-                        height: 80.0,
-                        imageUrl: imageUrl!,
-                      )
-                    : Image.asset(
-                        "assets/images/userImage.png",
-                        width: 80.0,
-                        height: 80.0,
-                      )),
+            GestureDetector(
+              onTap: () async {
+                Map<Permission, PermissionStatus> statuses = await [
+                  Permission.storage,
+                  Permission.camera,
+                ].request();
+                if (statuses[Permission.storage]!.isGranted &&
+                    statuses[Permission.camera]!.isGranted) {
+                  showImagePicker(context);
+                } else {}
+              },
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(150.0),
+                  child: imageUrl != null && imageUrl!.isNotEmpty
+                      ? SilentErrorImage(
+                          width: 80.0,
+                          height: 80.0,
+                          imageUrl: imageUrl!,
+                        )
+                      : Image.asset(
+                          "assets/images/userImage.png",
+                          width: 80.0,
+                          height: 80.0,
+                        )),
+            ),
             SizedBox(
               height: 8,
             ),
@@ -332,7 +354,6 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                           nameController.text = userName;
                           phoneController.text = phoneNum;
                           genderController.text = gen;
-                        
                         }
                       });
                     },
@@ -406,27 +427,48 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                     ),
                     Row(
                       children: [
-                        TextFieldNonEditable(
-                          width: MediaQuery.of(context).size.width / 5.5,
-                          controller: phonePrefixController,
-                          focusBorderColor: AppColors.focusTextBoarder,
-                          fillColor: isEdited
-                              ? AppColors.textInputField
-                              : Colors.transparent,
-                          boarderColor: isEdited
-                              ? AppColors.transparent
-                              : AppColors.appbarBoarder,
-                          color: isEdited
-                              ? AppColors.textInputField
-                              : Colors.transparent,
-                          hintColor: isEdited
-                              ? AppColors.hintColor
-                              : AppColors.subheadColor,
-                          hint: isEdited ? "+973 " : name,
-                          obscure: false,
-                          textInputType: TextInputType.name,
-                          textInputAction: TextInputAction.next,
-                          editable: isEdited,
+                        InkWell(
+                          onTap: isEdited == true
+                              ? () {
+                                  if (isEdited == true) {
+                                    FocusScope.of(context)
+                                        .requestFocus(_focusNode);
+                                    showCountryPicker(
+                                      context: context,
+                                      showPhoneCode: true,
+                                      onSelect: (Country country) {
+                                        phonePrefixController.text =
+                                            "+ ${country.phoneCode}";
+                                      },
+                                    );
+                                  }
+                                }
+                              : null,
+                          child: TextFieldNonEditable(
+                            width: MediaQuery.of(context).size.width / 5.5,
+                            focusNode: _focusNode,
+                            controller: phonePrefixController,
+                            focusBorderColor: isEdited
+                                ? AppColors.focusTextBoarder
+                                : AppColors.appbarBoarder,
+                            fillColor: isEdited
+                                ? AppColors.textInputField
+                                : Colors.transparent,
+                            boarderColor: isEdited
+                                ? AppColors.transparent
+                                : AppColors.appbarBoarder,
+                            color: isEdited
+                                ? AppColors.textInputField
+                                : Colors.transparent,
+                            hintColor: isEdited
+                                ? AppColors.hintColor
+                                : AppColors.subheadColor,
+                            hint: isEdited ? "+973 " : name,
+                            obscure: false,
+                            textInputType: TextInputType.name,
+                            textInputAction: TextInputAction.next,
+                            editable: false,
+                          ),
                         ),
                         SizedBox(
                           width: 8,
@@ -460,43 +502,46 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                     const SizedBox(
                       height: 20,
                     ),
-                    TextFieldNonEditable(
-                      width: MediaQuery.of(context).size.width,
-                      controller: genderController,
-                      focusBorderColor: AppColors.focusTextBoarder,
-                      fillColor: Colors.transparent,
-                      boarderColor: AppColors.appbarBoarder,
-                      color: Colors.transparent,
-                      hintColor: AppColors.subheadColor,
-                      hint: gen,
-                      obscure: false,
-                      textInputType: TextInputType.text,
-                      editable: false,
-                    ),
+                    isEdited
+                        ? const SizedBox()
+                        : TextFieldNonEditable(
+                            width: MediaQuery.of(context).size.width,
+                            controller: genderController,
+                            focusBorderColor: AppColors.focusTextBoarder,
+                            fillColor: Colors.transparent,
+                            boarderColor: AppColors.appbarBoarder,
+                            color: Colors.transparent,
+                            hintColor: AppColors.subheadColor,
+                            hint: gen,
+                            obscure: false,
+                            textInputType: TextInputType.text,
+                            editable: false,
+                          ),
                     const SizedBox(
                       height: 20,
                     ),
                     isEdited
-                        ? GestureDetector(
+                        ? const SizedBox()
+                        : GestureDetector(
                             onTap: () {
                               setState(() {
                                 isSelected = true;
                               });
-                               setState(() {
-      isSelected = true;
-    });
-    if (isSelected == true) {
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (context) => changePaasword(),
-      ).whenComplete(() {
-        setState(() {
-          isSelected = false;
-        });
-      });
-    }
+                              setState(() {
+                                isSelected = true;
+                              });
+                              if (isSelected == true) {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.transparent,
+                                  builder: (context) => changePaasword(),
+                                ).whenComplete(() {
+                                  setState(() {
+                                    isSelected = false;
+                                  });
+                                });
+                              }
                             },
                             child: Container(
                               height: 56,
@@ -506,8 +551,8 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                                   borderRadius: BorderRadius.circular(8),
                                   color: AppColors.textInputField,
                                   border: Border.all(
-                                      color: isSelected==true
-                                          ?AppColors.focusTextBoarder 
+                                      color: isSelected == true
+                                          ? AppColors.focusTextBoarder
                                           : borderColor,
                                       width: 1)),
                               child: Row(
@@ -537,7 +582,6 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                               ),
                             ),
                           )
-                        : const SizedBox()
                   ],
                 ),
               ),
@@ -552,41 +596,40 @@ class MyProfileScreenState extends State<MyProfileScreen> {
       maxChildSize: 0.9,
       minChildSize: 0.45,
       builder: (_, controller) => Padding(
-        padding: const EdgeInsets.only(left: 10,right: 10,bottom: 10),
+        padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
         child: GestureDetector(
-           onTap: () {
-          // Dismiss the keyboard by unfocusing the current focus.
-          FocusScope.of(_).unfocus();
-        },
+          onTap: () {
+            // Dismiss the keyboard by unfocusing the current focus.
+            FocusScope.of(_).unfocus();
+          },
           child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-          color: Colors.pink,
-            ),
-          
-           child:  ClipRRect(
-             borderRadius: BorderRadius.circular(16),
-            child: PasswordChangeScreen(email: ""))
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: Colors.pink,
+              ),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: PasswordChangeScreen(email: ""))),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
+
   Widget _buildChangePassText() {
     return Row(
       children: [
         IconButton(
-                          padding: EdgeInsets.zero,
-                          onPressed: () {
-                            Navigator.pop(context, null);
-                          },
-                          icon: Image.asset(
-                            "assets/images/leftIcon.png",
-                            //width: 18,
-                            height: 26,
-                          ),
-                        ),
-                         const Spacer(),
+          padding: EdgeInsets.zero,
+          onPressed: () {
+            Navigator.pop(context, null);
+          },
+          icon: Image.asset(
+            "assets/images/leftIcon.png",
+            //width: 18,
+            height: 26,
+          ),
+        ),
+        const Spacer(),
         Text(
           "Change Password ",
           style: TextStyle(
@@ -599,37 +642,8 @@ class MyProfileScreenState extends State<MyProfileScreen> {
             height: 28 / 20,
           ),
         ),
-         const Spacer(flex: 2)
+        const Spacer(flex: 2)
       ],
-    );
-  }
-
-  Widget _buildCurrentPasswordField() {
-    return Padding(
-       padding: const EdgeInsets.only(top:20,left: 12,right: 12),
-      child: TextFieldWidget(
-        read: false,
-        hint: "Current Password",
-        hintColor: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkhint
-            : AppColors.hintColor,
-        isObscure: true,
-        padding: const EdgeInsets.only(top: 0.0),
-        textController: _confirmpassword,
-        focusNode: _confirmpasswordFocusNode,
-        errorBorderColor: confirmPasswordError
-            ? AppColors.errorColor // Border color for validation error
-            : AppColors.textInputField,
-        focusBorderColor: confirmPasswordError
-            ? AppColors.errorColor
-            : AppColors.focusTextBoarder,
-        onChanged: (value) {
-          setState(() {
-            confirmPasswordError = false; // Reset the error flag
-          });
-        },
-        errorText: confirmPasswordError ? confirmPasswordErrorText : " ",
-      ),
     );
   }
 
@@ -778,23 +792,63 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   }
 
   Widget _buildSignInButton() {
-    return MediaQuery(
-      data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+    return Align(
+      alignment: Alignment.bottomCenter,
       child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 24, horizontal: 24),
-          child: FocusScope(
-              // Manage keyboard focus
-              child: CustomElevatedButton(
-            height: 60,
-            width: MediaQuery.of(context).orientation == Orientation.landscape
-                ? 70
-                : double.infinity,
-            isLoading: false,
-            text: "Update profile",
-            onPressed: () async {},
-            buttonColor: AppColors.elevatedColor,
-            textColor: Colors.white,
-          ))),
+        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 19),
+        child: FocusScope(
+          // Manage keyboard focus
+          child: Consumer<SignInProvider>(builder: (context, value, child) {
+            void loginButtonPressed() async {
+              FocusManager.instance.primaryFocus?.unfocus();
+              SharedPreferences pref = await SharedPreferences.getInstance();
+              setState(() {
+                loginError = false;
+              });
+
+              setState(() {
+                isLoading = true;
+              });
+              value
+                  .updateProfile(tokens!, nameController.text, phoneController.text,
+                      phonePrefixController.text, false, imageFile?.path??null)
+                  .then((val) {
+                if (val != null && val["statusCode"] == 200) {
+                  setState(() {
+                    isEdited = false;
+                    isLoading = false;
+                  });
+                } else {
+                  setState(() {
+                    if (val != null) {
+                      loginError = true;
+                      AnimatedToast.showToastMessage(
+                        context,
+                        val["errorMessage"][0],
+                        const Color.fromRGBO(87, 87, 87, 0.93),
+                      );
+                    }
+                    isLoading = false;
+                  });
+                }
+              });
+            }
+
+            return CustomElevatedButton(
+              height: 60,
+              width: MediaQuery.of(context).orientation == Orientation.landscape
+                  ? 70
+                  : double.infinity,
+              isLoading: isLoading,
+              text: "Login",
+              onPressed:
+                  passwordError & emailError ? () {} : loginButtonPressed,
+              buttonColor: AppColors.elevatedColor,
+              textColor: Colors.white,
+            );
+          }),
+        ),
+      ),
     );
   }
 
@@ -807,6 +861,80 @@ class MyProfileScreenState extends State<MyProfileScreen> {
 
     _passwordFocusNode.dispose();
     super.dispose();
+  }
+    final picker = ImagePicker();
+
+  void showImagePicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (builder) {
+        return Card(
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height / 5.2,
+            margin: const EdgeInsets.only(top: 8.0),
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: InkWell(
+                    child: Container(
+                        height: 135,
+                        color: const Color(0xffF3F3F3),
+                        padding: const EdgeInsets.all(16.0),
+                        child:
+                            Center(child: Icon(Icons.browse_gallery_outlined))),
+                    onTap: () {
+                      _imgFromGallery();
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+                Container(
+                  height: 135, // Adjust the height as needed
+                  width: 1, // Adjust the width as needed
+                  color: Colors.black,
+                ),
+                Expanded(
+                  child: InkWell(
+                    child: Container(
+                        height: 135,
+                        color: const Color(0xffF3F3F3),
+                        padding: const EdgeInsets.all(16.0),
+                        child: Center(child: Icon(Icons.camera))),
+                    onTap: () {
+                      _imgFromCamera();
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  _imgFromGallery() async {
+    final pickedFile =
+        await picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
+    if (pickedFile != null) {
+      setState(() {
+        imageFile = File(pickedFile.path);
+      });
+    }
+  }
+
+  _imgFromCamera() async {
+    final pickedFile =
+        await picker.pickImage(source: ImageSource.camera, imageQuality: 50);
+    if (pickedFile != null) {
+      setState(() {
+        imageFile = File(pickedFile.path);
+      });
+    }
   }
 }
 
