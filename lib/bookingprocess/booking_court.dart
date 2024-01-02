@@ -1,3 +1,4 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:dots_indicator/dots_indicator.dart';
@@ -241,9 +242,42 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
           _buildDatePick(),
           Expanded(
               //  flex: 1,
-              child: isLoad ? Center(
-                child: Image.asset("assets/images/loading.gif"),
-              ) : _buildBookingSlot()),
+              child: isLoad
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 215,
+                            child: Image.asset(
+                              "assets/images/loadinggif.gif",
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          SizedBox(height: 5,),
+                          AnimatedTextKit(
+                            animatedTexts: [
+                              WavyAnimatedText(
+                                'Loading...',
+                                textStyle: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : AppColors.subheadColor,
+                                  fontSize: 20,
+                                  fontFamily: FontFamily.satoshi,
+                                  fontWeight: FontWeight.w500,
+                                  height: 34 / 20,
+                                ),
+                              ),
+                            ],
+                            repeatForever: true,
+                            isRepeatingAnimation: true,
+                          ),
+                        ],
+                      ),
+                    )
+                  : _buildBookingSlot()),
         ],
       ),
     );
@@ -327,37 +361,35 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                 ),
                                 GestureDetector(
                                   onTap: () {
-                                        setState(() {
-                                          id = court.courtId;
-                                          print(id);
-                                        });
-                                        print("hi");
+                                    setState(() {
+                                      id = court.courtId;
+                                      print(id);
+                                    });
+                                    print("hi");
 
-                                        showAnimatedDialog(
-                                          barrierDismissible: true,
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return FutureBuilder<void>(
-                                              future: _fetchCourtInfoResponse(),
-                                              builder: (context, snapshot) {
-                                                if (snapshot.connectionState ==
-                                                    ConnectionState.done) {
-                                                  return buidSheet();
-                                                } else {
-                                                  // You can return a loading indicator or null while waiting for the future
-                                                  return CircularProgressIndicator();
-                                                }
-                                              },
-                                            );
+                                    showAnimatedDialog(
+                                      barrierDismissible: true,
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return FutureBuilder<void>(
+                                          future: _fetchCourtInfoResponse(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.done) {
+                                              return buidSheet();
+                                            } else {
+                                              // You can return a loading indicator or null while waiting for the future
+                                              return CircularProgressIndicator();
+                                            }
                                           },
-                                          animationType: DialogTransitionType
-                                              .slideFromBottomFade,
-                                          curve: Curves.fastOutSlowIn,
-                                          duration: const Duration(seconds: 1),
                                         );
-
-                                       
                                       },
+                                      animationType: DialogTransitionType
+                                          .slideFromBottomFade,
+                                      curve: Curves.fastOutSlowIn,
+                                      duration: const Duration(seconds: 1),
+                                    );
+                                  },
                                   child: Row(
                                     children: [
                                       SizedBox(
@@ -374,10 +406,11 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                         child: Text(
                                           " INFO",
                                           style: TextStyle(
-                                            color: Theme.of(context).brightness ==
-                                                    Brightness.dark
-                                                ? AppColors.headingTextColor
-                                                : AppColors.bookingInvalid,
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? AppColors.headingTextColor
+                                                    : AppColors.bookingInvalid,
                                             fontSize: 10.50,
                                             fontFamily: FontFamily.satoshi,
                                             fontWeight: FontWeight.w500,
@@ -522,7 +555,24 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
               },
             );
           } else {
-            return Text('No court data available.');
+            return AnimatedTextKit(
+              animatedTexts: [
+                WavyAnimatedText(
+                  'Loading...',
+                  textStyle: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.headingTextColor
+                        : AppColors.subheadColor,
+                    fontSize: 20,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w500,
+                    height: 34 / 20,
+                  ),
+                ),
+              ],
+              repeatForever: true,
+              isRepeatingAnimation: true,
+            );
           }
         },
       ),
@@ -542,9 +592,8 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
             ));*/
   Widget buidSheet() {
     double screenWidth = MediaQuery.of(context).size.width;
-  double containerWidth = screenWidth - 48; // 24 padding on each side
-  double containerHeight = MediaQuery.of(context).size.height / 1.5;
- 
+    double containerWidth = screenWidth - 48; // 24 padding on each side
+    double containerHeight = MediaQuery.of(context).size.height / 1.5;
 
     return Dialog(
       shape: const RoundedRectangleBorder(
@@ -629,9 +678,10 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                         child: Text(
                           "Lorem ipsum dolor sit amet consectetur. Sed mauris arcu arcu placerat varius facilisis nibh volutpat. Leo egestas massa cras diam venenatis tincidunt. Diam fringilla lorem.",
                           style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? AppColors.darkSubHead
-                                : AppColors.subheadColor,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.darkSubHead
+                                    : AppColors.subheadColor,
                             fontSize: 14,
                             fontFamily: FontFamily.satoshi,
                             fontWeight: FontWeight.w400,
@@ -640,20 +690,23 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                         ),
                       ),
                       const Padding(
-                        padding: EdgeInsets.only(left: 24, right: 24, top: 19.2),
+                        padding:
+                            EdgeInsets.only(left: 24, right: 24, top: 19.2),
                         child: Divider(
                           color: AppColors.appbarBoarder,
                           thickness: 1,
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(left: 24, right: 24, top: 13.5),
+                        padding:
+                            EdgeInsets.only(left: 24, right: 24, top: 13.5),
                         child: Text(
                           "Available facilities",
                           style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? AppColors.darkSubHead
-                                : AppColors.subheadColor,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.darkSubHead
+                                    : AppColors.subheadColor,
                             fontSize: 16,
                             fontFamily: FontFamily.satoshi,
                             fontWeight: FontWeight.w500,
@@ -707,7 +760,24 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
               ),
             );
           } else {
-            return Text('No court data available.');
+            return AnimatedTextKit(
+              animatedTexts: [
+                WavyAnimatedText(
+                  'Loading...',
+                  textStyle: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.headingTextColor
+                        : AppColors.subheadColor,
+                    fontSize: 20,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w500,
+                    height: 34 / 20,
+                  ),
+                ),
+              ],
+              repeatForever: true,
+              isRepeatingAnimation: true,
+            );
           }
         },
       ),
@@ -812,7 +882,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Image.network(
                   imageUrl,
                   fit: BoxFit.cover,
-                   width: double.infinity,
+                  width: double.infinity,
                 ),
               );
             }).toList(),

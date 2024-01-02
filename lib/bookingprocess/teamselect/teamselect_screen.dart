@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:motion_toast/motion_toast.dart';
@@ -703,7 +704,25 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                       ),
                     );
                   } else {
-                    return Text('No court data available.');
+                    return AnimatedTextKit(
+                      animatedTexts: [
+                        WavyAnimatedText(
+                          'Loading...',
+                          textStyle: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.subheadColor,
+                            fontSize: 20,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w500,
+                            height: 34 / 20,
+                          ),
+                        ),
+                      ],
+                      repeatForever: true,
+                      isRepeatingAnimation: true,
+                    );
                   }
                 },
               ),
@@ -937,7 +956,25 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                       ),
                     );
                   } else {
-                    return Text('No court data available.');
+                    return AnimatedTextKit(
+                      animatedTexts: [
+                        WavyAnimatedText(
+                          'Loading...',
+                          textStyle: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.subheadColor,
+                            fontSize: 20,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w500,
+                            height: 34 / 20,
+                          ),
+                        ),
+                      ],
+                      repeatForever: true,
+                      isRepeatingAnimation: true,
+                    );
                   }
                 },
               ),
@@ -949,7 +986,8 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
   }
 
   Widget _buildSignInButton() {
-      final completeBookingProvider = Provider.of<CompleteBookingProvider>(context);
+    final completeBookingProvider =
+        Provider.of<CompleteBookingProvider>(context);
     int remainingImages = 3 - selectedImageUrls.length;
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
@@ -958,48 +996,45 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
           child: FocusScope(
               // Manage keyboard focus
               child: CustomElevatedButton(
-                      height: 60,
-                      width: MediaQuery.of(context).orientation ==
-                              Orientation.landscape
-                          ? 70
-                          : double.infinity,
-                      isLoading: isProcessing,
-                      text: "Confirm Booking",
-                      onPressed:    () async {
-                          setState(() {
-            isProcessing = true;
-         });
-                        print("Updated friendId: $friendId");
-                         print("Updated coachId: $coachid");
-                         
-                        await completeBookingProvider.completeBookingApi(
-             tokens!,
-              widget.result, // Replace with your bookingDate
-              coachid??0, // Replace with your coachId
-              widget.courtName,
-              widget.time,
-              friendId, // Replace with your friendIds
-            );
-         if (completeBookingProvider.finalBookModel != null) {
-      print("API Result: ${completeBookingProvider.finalBookModel!.result}");
-       Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => FinalBookingScreen(id: completeBookingProvider.finalBookModel!.result),
-    ),
-  );
-  setState(() {
-            isProcessing = false;
-         });
-    }
-              
-                      },             
-                      
-                      
-                   
-                      buttonColor: AppColors.elevatedColor,
-                      textColor: Colors.white,
-                    ))),
+            height: 60,
+            width: MediaQuery.of(context).orientation == Orientation.landscape
+                ? 70
+                : double.infinity,
+            isLoading: isProcessing,
+            text: "Confirm Booking",
+            onPressed: () async {
+              setState(() {
+                isProcessing = true;
+              });
+              print("Updated friendId: $friendId");
+              print("Updated coachId: $coachid");
+
+              await completeBookingProvider.completeBookingApi(
+                tokens!,
+                widget.result, // Replace with your bookingDate
+                coachid ?? 0, // Replace with your coachId
+                widget.courtName,
+                widget.time,
+                friendId, // Replace with your friendIds
+              );
+              if (completeBookingProvider.finalBookModel != null) {
+                print(
+                    "API Result: ${completeBookingProvider.finalBookModel!.result}");
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FinalBookingScreen(
+                        id: completeBookingProvider.finalBookModel!.result),
+                  ),
+                );
+                setState(() {
+                  isProcessing = false;
+                });
+              }
+            },
+            buttonColor: AppColors.elevatedColor,
+            textColor: Colors.white,
+          ))),
     );
   }
 
@@ -1011,24 +1046,23 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
           padding: EdgeInsets.symmetric(vertical: 24, horizontal: 24),
           child: FocusScope(
               // Manage keyboard focus
-              child:  CustomElevatedButton(
-                      height: 60,
-                      width: MediaQuery.of(context).orientation ==
-                              Orientation.landscape
-                          ? 70
-                          : double.infinity,
-                      isLoading: false,
-                      text: "Confirm Team",
-                      onPressed: () async {
-                        setState(() {
-                          isImageVisible = true;
-                          isImage = true;
-                          //_buildSignInButton();
-                        });
-                      },
-                      buttonColor: AppColors.elevatedColor,
-                      textColor: Colors.white,
-                    ))),
+              child: CustomElevatedButton(
+            height: 60,
+            width: MediaQuery.of(context).orientation == Orientation.landscape
+                ? 70
+                : double.infinity,
+            isLoading: false,
+            text: "Confirm Team",
+            onPressed: () async {
+              setState(() {
+                isImageVisible = true;
+                isImage = true;
+                //_buildSignInButton();
+              });
+            },
+            buttonColor: AppColors.elevatedColor,
+            textColor: Colors.white,
+          ))),
     );
   }
   // General Methods:-----------------------------------------------------------

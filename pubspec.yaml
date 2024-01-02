@@ -65,6 +65,7 @@ dependencies:
   cached_network_image: ^3.3.0
   image_sequence_animator: ^2.0.0
   country_picker: ^2.0.23
+  animated_text_kit: ^4.2.2
   
 
 dev_dependencies:

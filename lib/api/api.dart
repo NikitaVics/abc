@@ -7,6 +7,7 @@ import 'package:tennis_court_booking_app/model/coachshow/Coach_show_model.dart';
 import 'package:tennis_court_booking_app/model/courtInfo/court_info.dart';
 import 'package:tennis_court_booking_app/model/finalBookModel/final_book_model.dart';
 import 'package:tennis_court_booking_app/model/friendShow/friend_show_model.dart';
+import 'package:tennis_court_booking_app/model/upComingBooking/upcoming_booking_model.dart';
 import 'package:tennis_court_booking_app/presentation/home/model/checkstatus.dart';
 import 'package:tennis_court_booking_app/profile/model/my_profile.dart';
 import 'package:tennis_court_booking_app/profile/model/profile_model.dart';
@@ -512,5 +513,35 @@ class Api {
       return null;
     }
   }
+//Upcoming booking model
+static Future<UpcomingBookingModel> upComingResponse(String bearerToken) async {
+    var url = "$baseUrl/api/Booking/Upcoming Bookings";
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+    };
 
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    print(response.body);
+
+    return UpcomingBookingModel.fromJson(jsonDecode(response.body));
+  }
+  static Future<UpcomingBookingModel> previousBookingResponse(String bearerToken) async {
+    var url = "$baseUrl/api/Booking/Previous Bookings";
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+    };
+
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    print(response.body);
+
+    return UpcomingBookingModel.fromJson(jsonDecode(response.body));
+  }
 }

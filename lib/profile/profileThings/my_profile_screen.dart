@@ -840,7 +840,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                   ? 70
                   : double.infinity,
               isLoading: isLoading,
-              text: "Login",
+              text: "Update",
               onPressed:
                   passwordError & emailError ? () {} : loginButtonPressed,
               buttonColor: AppColors.elevatedColor,

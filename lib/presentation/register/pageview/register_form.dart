@@ -69,7 +69,8 @@ class _RegisterFormState extends State<RegisterForm> {
       validateDOB();
     });
   }
-
+bool showDocumentErrorMessage = false;
+bool showDErrorMessage = false;
   DateTime? dateTime;
   bool isChecked = false;
   File? imageFile;
@@ -170,8 +171,8 @@ class _RegisterFormState extends State<RegisterForm> {
             _buildUserphone(),
             _buildPasswordField(),
             _buildUploadDocumentField(context),
+            _buildUploadDocument(context),
             _buildNotMemberText(),
-            _buildUploadDocument(context)
           ],
         ),
       ),
@@ -262,19 +263,19 @@ class _RegisterFormState extends State<RegisterForm> {
         FocusScope.of(context).requestFocus(_genderNode);
         String? selectedGender = await showGenderMenu(context);
 
-      if (selectedGender != null) {
-        setState(() {
-          genderController.text = selectedGender;
-          genderError = false; // Reset the error flag
-        });
-      }
+        if (selectedGender != null) {
+          setState(() {
+            genderController.text = selectedGender;
+            genderError = false; // Reset the error flag
+          });
+        }
 
         onChanged:
         (value) {
           setState(() {
             genderError = false; // Reset the error flag
           });
-          validateDOB(); // Trigger validation on text change
+          validateGender(); // Trigger validation on text change
         };
       },
       errorText: genderError ? "Please enter gender" : " ",
@@ -305,7 +306,7 @@ class _RegisterFormState extends State<RegisterForm> {
     );
 
     if (selectedGender != null) {
-       genderController.text = selectedGender;
+      genderController.text = selectedGender;
       // Handle the selected gender as needed
       print('Selected Gender: $selectedGender');
     }
@@ -562,24 +563,30 @@ class _RegisterFormState extends State<RegisterForm> {
                   showImagePicker(context);
                 } else {}
               },
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: AppColors.textInputField,
-                ),
-                height: 164,
-                child: Center(
-                  child: Text(
-                    "Upload Document",
-                    style: TextStyle(
-                      color: AppColors.hintColor,
-                      fontSize: 14,
-                      fontFamily: FontFamily.satoshi,
-                      fontWeight: FontWeight.w400,
-                      height: 24 / 14,
+              child: Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: AppColors.textInputField,
+                    ),
+                    height: 164,
+                    child: Center(
+                      child: Text(
+                        "Upload Profile Pic",
+                        style: TextStyle(
+                          color: AppColors.hintColor,
+                          fontSize: 14,
+                          fontFamily: FontFamily.satoshi,
+                          fontWeight: FontWeight.w400,
+                          height: 24 / 14,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                   if (showDocumentErrorMessage)
+                  Text("Please Enter your picture", style: TextStyle(color: Colors.red)),
+                ],
               ),
             ),
     );
@@ -630,24 +637,30 @@ class _RegisterFormState extends State<RegisterForm> {
                   showImage(context);
                 } else {}
               },
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: AppColors.textInputField,
-                ),
-                height: 164,
-                child: Center(
-                  child: Text(
-                    "Upload Document",
-                    style: TextStyle(
-                      color: AppColors.hintColor,
-                      fontSize: 14,
-                      fontFamily: FontFamily.satoshi,
-                      fontWeight: FontWeight.w400,
-                      height: 24 / 14,
+              child: Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: AppColors.textInputField,
+                    ),
+                    height: 164,
+                    child: Center(
+                      child: Text(
+                        "Upload Document",
+                        style: TextStyle(
+                          color: AppColors.hintColor,
+                          fontSize: 14,
+                          fontFamily: FontFamily.satoshi,
+                          fontWeight: FontWeight.w400,
+                          height: 24 / 14,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  if (showDocumentErrorMessage)
+                  Text("Please Enter the document", style: TextStyle(color: Colors.red)),
+                ],
               ),
             ),
     );
@@ -765,12 +778,17 @@ class _RegisterFormState extends State<RegisterForm> {
                         bool phoneValid = await validatePhone();
                         bool addressValid = await validateAddress();
                         bool dobValid = await validateDOB();
+                        bool isGender = await validateGender();
+                        bool showDocument=showDocumentErrorMessage = imageFiles == null;
+                        bool showProfile=showDErrorMessage = imageFile == null;
 
                         if (nameValid &&
                             phoneValid &&
                             addressValid &&
                             dobValid &&
-                            isChecked) {
+                            isGender&&
+                            isChecked
+                            && showDocument &&showProfile) {
                           setState(() {
                             isLoading = true;
                           });
@@ -884,6 +902,20 @@ class _RegisterFormState extends State<RegisterForm> {
         nameError = true;
       } else {
         nameError = false;
+      }
+    });
+
+    return !nameError;
+  }
+
+  Future<bool> validateGender() async {
+    // var provider = Provider.of<SignInProvider>(context, listen: false);
+
+    setState(() {
+      if (genderController.text.isEmpty) {
+        genderError = true;
+      } else {
+        genderError = false;
       }
     });
 

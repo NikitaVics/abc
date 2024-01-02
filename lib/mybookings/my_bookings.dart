@@ -1,11 +1,16 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tennis_court_booking_app/api/api.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/constants/shimmer.dart';
+import 'package:tennis_court_booking_app/model/upComingBooking/upcoming_booking_model.dart';
+import 'package:tennis_court_booking_app/mybookings/provider/previous_booking_provider.dart';
+import 'package:tennis_court_booking_app/mybookings/provider/upComing_provider.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/courtshowprovider.dart';
 import 'package:tennis_court_booking_app/presentation/home/model/checkstatus.dart';
@@ -59,14 +64,18 @@ class MyBookingScreenState extends State<MyBookingScreen> {
   String name = "";
   String? tokens;
   Future<void> profile() async {
-    final profileProvider =
-        Provider.of<ProfileProvider>(context, listen: false);
+    final upComingProvider =
+        Provider.of<UpcomingBookProvider>(context, listen: false);
+    final previousBookingProvider =
+        Provider.of<PreviousBookProvider>(context, listen: false);
     String token = await SharePref.fetchAuthToken();
     tokens = await SharePref.fetchAuthToken();
-    profileProvider.fetchProfile(token);
+    upComingProvider.fetchupComingData(token);
+    previousBookingProvider.fetchupComingData(token);
     print(name);
   }
 
+  final List<String> team = [];
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
@@ -76,8 +85,6 @@ class MyBookingScreenState extends State<MyBookingScreen> {
             : AppColors.lightThemeback,
         primary: true,
         appBar: AppBar(
-          
-         
           toolbarHeight: 72,
           automaticallyImplyLeading: false,
           title: Padding(
@@ -105,9 +112,9 @@ class MyBookingScreenState extends State<MyBookingScreen> {
               ],
             ),
           ),
-          backgroundColor:  Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.darkTextInput
-                            : Colors.white,
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkTextInput
+              : Colors.white,
           elevation: 0,
         ),
         body: _buildBody(),
@@ -130,41 +137,103 @@ class MyBookingScreenState extends State<MyBookingScreen> {
 
   Widget _buildRightSide() {
     return Container(
-      color:  Theme.of(context).brightness == Brightness.dark
+      color: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkThemeback
           : AppColors.homeBack,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            _buildBookingButton(),
-            isFirstButtonSelected
-                ? Expanded(
-                    child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      itemCount: 5,
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: isFirstButtonSelected
+              ? Consumer<UpcomingBookProvider>(
+                  builder: (context, provider, child) {
+                  final bookingResponse = provider.upComingBookModel;
 
-                      itemBuilder: (context, index) {
-                        return _buildupComingbooking(index,5);
+                  if (bookingResponse != null &&
+                      bookingResponse.result.isNotEmpty) {
+                    List result = bookingResponse.result
+                        .map((teamMembers) => teamMembers.bookingDate)
+                        .toList();
 
-                      },
-                    ),
-                  )
-                : Expanded(
-                    child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      itemCount: 10,
-                      itemBuilder: (context, index) {
-                        return _buildupComingbooking(index,10);
-                      },
-                    ),
-                  ),
-          ],
-        ),
-      ),
+                    List<Booking> bookings = bookingResponse.result;
+
+                    print(bookings.length);
+                    return Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        _buildBookingButton(),
+                        Expanded(
+                          child: ListView.builder(
+                            scrollDirection: Axis.vertical,
+                            itemCount: bookings.length,
+                            itemBuilder: (context, index) {
+                              return _buildupComingbooking(
+                                  index, bookings.length, bookings[index]);
+                            },
+                          ),
+                        )
+                      ],
+                    );
+                  } else {
+                    return const ShimmerEffect();
+                  }
+                })
+              : Consumer<PreviousBookProvider>(
+                  builder: (context, provider, child) {
+                  final bookingResponse = provider.upComingBookModel;
+
+                  if (bookingResponse != null &&
+                      bookingResponse.result.isNotEmpty) {
+                    List result = bookingResponse.result
+                        .map((teamMembers) => teamMembers.bookingDate)
+                        .toList();
+
+                    List<Booking> bookings = bookingResponse.result;
+
+                    print(bookings.length);
+                    return Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        _buildBookingButton(),
+                        Expanded(
+                          child: ListView.builder(
+                            scrollDirection: Axis.vertical,
+                            itemCount: bookings.length,
+                            itemBuilder: (context, index) {
+                              return _buildupComingbooking(
+                                  index, bookings.length, bookings[index]);
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  } else {
+                    return AnimatedTextKit(
+                      animatedTexts: [
+                        WavyAnimatedText(
+                          'Loading...',
+                          textStyle: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.subheadColor,
+                            fontSize: 20,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w500,
+                            height: 34 / 20,
+                          ),
+                        ),
+                      ],
+                      repeatForever: true,
+                      isRepeatingAnimation: true,
+                    );
+                  }
+                })
+
+          /* */
+          ),
     );
   }
 
@@ -224,7 +293,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
             Flexible(
               child: SizedBox(
                 height: 40,
-                 width: MediaQuery.of(context).size.width * 0.4,
+                width: MediaQuery.of(context).size.width * 0.4,
                 child: ElevatedButton(
                   onPressed: () {
                     setState(() {
@@ -235,7 +304,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isFirstButtonSelected
                         ? AppColors.elevatedColor
-                        : Colors.transparent,
+                        : AppColors.homeBack,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
@@ -246,7 +315,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                   ),
                   child: Text(
                     'Up comming Booking',
-                     overflow: TextOverflow.ellipsis,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: isFirstButtonSelected
                           ? Colors.white
@@ -264,7 +333,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
             Flexible(
               child: SizedBox(
                 height: 40,
-               width: MediaQuery.of(context).size.width * 0.4,
+                width: MediaQuery.of(context).size.width * 0.4,
                 child: ElevatedButton(
                   onPressed: () {
                     setState(() {
@@ -275,7 +344,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isSecondButtonSelected
                         ? AppColors.elevatedColor
-                        : Colors.transparent,
+                        : AppColors.homeBack,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
@@ -285,7 +354,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                                 : AppColors.bookingInvalid)),
                   ),
                   child: Text('Previous Booking',
-                   overflow: TextOverflow.ellipsis,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: isSecondButtonSelected
                             ? Colors.white
@@ -302,20 +371,65 @@ class MyBookingScreenState extends State<MyBookingScreen> {
         ));
   }
 
-  Widget _buildupComingbooking(int index, int itemCount) {
+  String convertTo24HourFormat(String time, String amPm) {
+    List<String> parts = time.split(':');
+    int hour = int.parse(parts[0]);
+    int minute = int.parse(parts[1]);
+
+    // If the time is PM and not 12, add 12 to convert to 24-hour format
+    if (amPm.toLowerCase() == 'pm' && hour != 12) {
+      hour += 12;
+    }
+
+    // If the time is 12 AM, convert to 00
+    if (amPm.toLowerCase() == 'am' && hour == 12) {
+      hour = 0;
+    }
+
+    // Format the result
+    return '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+  }
+
+  Widget _buildupComingbooking(int index, int itemCount, Booking? booking) {
+    DateTime date = DateTime.parse(booking?.bookingDate.toString() ?? "");
+
+    String formattedDate = DateFormat('MMM d').format(date);
+    String dayOfWeek = DateFormat('E').format(date);
+    String timeString = booking?.slot ?? "";
+    String formattedDates =
+        "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+    List<String> splitString = timeString.split(' ');
+    String timePart = splitString[0];
+    String formattedTime = convertTo24HourFormat(timePart, splitString[1]);
+    print(formattedTime);
+    DateTime dateTime = DateTime.parse('$formattedDates $formattedTime:00');
+
+    // Add 1 hour
+    dateTime = dateTime.add(const Duration(hours: 1));
+
+    // Format the result
+    int formattedHour = dateTime.hour % 12 == 0 ? 12 : dateTime.hour % 12;
+    String results =
+        "$formattedHour:${dateTime.minute.toString().padLeft(2, '0')} ${dateTime.hour < 12 ? 'am' : 'pm'}";
+
+    DateTime dateTiming = DateFormat("MMM d").parse(formattedDate);
+    String month = DateFormat("MMM").format(dateTiming);
+
+    // Format day (23)
+    String day = DateFormat("d").format(dateTiming);
+
     return Column(
       children: [
         Container(
           height: 120,
           margin: const EdgeInsets.only(bottom: 20, top: 20),
           child: Stack(
-            fit: StackFit.expand,
+            //fit: StackFit.expand,
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12.0),
                 child: Image.asset(
                   "assets/images/Shape.png",
-                  fit: BoxFit.cover,
                 ),
               ),
               Positioned(
@@ -331,22 +445,22 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                       Row(
                         children: [
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(150.0),
-                            child: ClipRect(
-                              child: Image.asset(
-                                "assets/images/ProfileImage.png",
-                                height: 24,
-                                //fit: BoxFit.cover,
-                              ),
+                            borderRadius: BorderRadius.circular(110.0),
+                            child: SilentErrorImage(
+                              width: 25.44,
+                              height: 25.44,
+                              imageUrl: booking?.userImage ??
+                                  'assets/images/ProfileImage.png',
                             ),
                           ),
                           const SizedBox(
                             width: 12,
                           ),
                           Text(
-                            "Robert Fox",
+                            booking?.userName ?? "",
                             style: TextStyle(
-                              color: Theme.of(context).brightness == Brightness.dark
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
                                   ? Colors.white
                                   : Colors.white,
                               fontSize: 16,
@@ -362,7 +476,8 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                           Text(
                             "Booking ID -",
                             style: TextStyle(
-                              color: Theme.of(context).brightness == Brightness.dark
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
                                   ? Colors.white
                                   : Colors.white,
                               fontSize: 14,
@@ -372,9 +487,10 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                             ),
                           ),
                           Text(
-                            " 6726GT",
+                            " ${booking?.bookingId ?? ""}",
                             style: TextStyle(
-                              color: Theme.of(context).brightness == Brightness.dark
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
                                   ? Colors.white
                                   : Colors.white,
                               fontSize: 14,
@@ -410,48 +526,41 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                     SizedBox(width: 8), // Adjust the spacing
                     SizedBox(
                       width: 200,
-                      height: 200,
+                      height: 250,
                       child: Stack(
                         children: [
                           Positioned(
-                            left: 0,
-                            top: 0,
-                            child: Image.asset(
-                              'assets/images/ProfileImage.png',
-                              width: 25.44,
-                              height: 25.44,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Positioned(
-                            left: 18.90,
-                            top: 0,
-                            child: Image.asset(
-                              'assets/images/ProfileImage.png',
-                              width: 25.44,
-                              height: 25.44,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Positioned(
-                            left: 37.79,
-                            top: 0,
-                            child: Image.asset(
-                              'assets/images/ProfileImage.png',
-                              width: 25.44,
-                              height: 25.44,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Positioned(
-                            left: 56.69,
-                            top: 0,
-                            child: Image.asset(
-                              'assets/images/ProfileImage.png',
-                              width: 25.44,
-                              height: 25.44,
-                              fit: BoxFit.cover,
-                            ),
+                              left: 0,
+                              top: 0,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(110.0),
+                                child: SilentErrorImage(
+                                  width: 25.44,
+                                  height: 25.44,
+                                  imageUrl: booking?.userImage ??
+                                      'assets/images/ProfileImage.png',
+                                ),
+                              )),
+                          ...List.generate(
+                            booking?.teamMembers.length ??
+                                0, // Ensure the list has three items
+                            (index) {
+                              TeamMember teamMember =
+                                  booking!.teamMembers[index];
+                              double leftPad = (20 * (index + 1)).toDouble();
+                              return Positioned(
+                                left: leftPad,
+                                top: 0,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(150.0),
+                                  child: SilentErrorImage(
+                                    width: 25.44,
+                                    height: 25.44,
+                                    imageUrl: teamMember.imageUrl,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -468,11 +577,12 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                     Row(
                       children: [
                         Text(
-                          "AUG",
+                          "${month}".toUpperCase(),
                           style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white
-                                : AppColors.allHeadColor,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : AppColors.allHeadColor,
                             fontSize: 24,
                             fontFamily: FontFamily.satoshi,
                             fontWeight: FontWeight.w700,
@@ -480,11 +590,12 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                           ),
                         ),
                         Text(
-                          " 25",
+                          " ${day}",
                           style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white
-                                : AppColors.elevatedColor,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : AppColors.elevatedColor,
                             fontSize: 24,
                             fontFamily: FontFamily.satoshi,
                             fontWeight: FontWeight.w700,
@@ -493,303 +604,17 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                         ),
                       ],
                     ),
-                    Row(
-                      children: [
-                        Text(
-                          "04:00",
-                          style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white
-                                : AppColors.subheadColor,
-                            fontSize: 12,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w400,
-                            height: 16 / 12,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          "-",
-                          style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white
-                                : AppColors.subheadColor,
-                            fontSize: 12,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w400,
-                            height: 16 / 12,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          "05:00",
-                          style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white
-                                : AppColors.subheadColor,
-                            fontSize: 12,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w400,
-                            height: 16 / 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-        if(index<itemCount-1)
-        const Divider(
-          color: AppColors.appbarBoarder,
-         thickness: 1,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildProfilePerformance(int index,int itemCount) {
-    return Column(
-      children: [
-        Container(
-          height: 120,
-          margin: const EdgeInsets.only(bottom: 20, top: 20),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12.0),
-                child: Image.asset(
-                  "assets/images/Shape.png",
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Positioned(
-                top: 8,
-                left: 8,
-                right: 0,
-                child: Container(
-                  padding: EdgeInsets.all(8),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(150.0),
-                            child: ClipRect(
-                              child: Image.asset(
-                                "assets/images/ProfileImage.png",
-                                height: 24,
-                                //fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 12,
-                          ),
-                          Text(
-                            "Robert Fox",
-                            style: TextStyle(
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.white
-                                  : Colors.white,
-                              fontSize: 16,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w500,
-                              height: 24 / 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            "Booking ID -",
-                            style: TextStyle(
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.white
-                                  : Colors.white,
-                              fontSize: 14,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w400,
-                              height: 24 / 14,
-                            ),
-                          ),
-                          Text(
-                            " 6726GT",
-                            style: TextStyle(
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.white
-                                  : Colors.white,
-                              fontSize: 14,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w400,
-                              height: 24 / 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 80,
-                bottom: 15,
-                left: 14,
-                child: Row(
-                  children: [
                     Text(
-                      "Team -",
+                      "$timePart - $results",
                       style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
                             ? Colors.white
-                            : Colors.white,
-                        fontSize: 14,
+                            : AppColors.subheadColor,
+                        fontSize: 12,
                         fontFamily: FontFamily.satoshi,
                         fontWeight: FontWeight.w400,
-                        height: 24 / 14,
+                        height: 16 / 12,
                       ),
-                    ),
-                    SizedBox(width: 8), // Adjust the spacing
-                    SizedBox(
-                      width: 200,
-                      height: 200,
-                      child: Stack(
-                        children: [
-                          Positioned(
-                            left: 0,
-                            top: 0,
-                            child: Image.asset(
-                              'assets/images/ProfileImage.png',
-                              width: 25.44,
-                              height: 25.44,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Positioned(
-                            left: 18.90,
-                            top: 0,
-                            child: Image.asset(
-                              'assets/images/ProfileImage.png',
-                              width: 25.44,
-                              height: 25.44,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Positioned(
-                            left: 37.79,
-                            top: 0,
-                            child: Image.asset(
-                              'assets/images/ProfileImage.png',
-                              width: 25.44,
-                              height: 25.44,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Positioned(
-                            left: 56.69,
-                            top: 0,
-                            child: Image.asset(
-                              'assets/images/ProfileImage.png',
-                              width: 25.44,
-                              height: 25.44,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Positioned(
-                top: 37.5,
-                left: 230,
-                right: 15,
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          "AUG",
-                          style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white
-                                : AppColors.allHeadColor,
-                            fontSize: 24,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w700,
-                            height: 32 / 24,
-                          ),
-                        ),
-                        Text(
-                          " 25",
-                          style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white
-                                : AppColors.elevatedColor,
-                            fontSize: 24,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w700,
-                            height: 32 / 24,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          "04:00",
-                          style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white
-                                : AppColors.subheadColor,
-                            fontSize: 12,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w400,
-                            height: 16 / 12,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          "-",
-                          style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white
-                                : AppColors.subheadColor,
-                            fontSize: 12,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w400,
-                            height: 16 / 12,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          "05:00",
-                          style: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white
-                                : AppColors.subheadColor,
-                            fontSize: 12,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w400,
-                            height: 16 / 12,
-                          ),
-                        ),
-                      ],
                     ),
                   ],
                 ),
@@ -797,11 +622,11 @@ class MyBookingScreenState extends State<MyBookingScreen> {
             ],
           ),
         ),
-         if(index<itemCount-1)
-        const Divider(
-          color: AppColors.appbarBoarder,
-         thickness: 1,
-        ),
+        if (index < itemCount - 1)
+          const Divider(
+            color: AppColors.appbarBoarder,
+            thickness: 1,
+          ),
       ],
     );
   }
