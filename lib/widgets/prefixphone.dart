@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+
 typedef GenderCallback = void Function();
-class GenderTextFieldWidget extends StatefulWidget {
+
+class PrefixPhoneTextFieldWidget extends StatefulWidget {
   final String? hint;
   final String? errorText;
   final bool isObscure;
@@ -21,9 +23,10 @@ class GenderTextFieldWidget extends StatefulWidget {
   final Color? focusBorderColor;
   final Color? defaultBoarder;
   final bool read;
+  final double width;
   final GenderCallback onSuffixIconPressed;
 
-  const GenderTextFieldWidget({
+  const PrefixPhoneTextFieldWidget({
     Key? key,
     required this.errorText,
     required this.textController,
@@ -43,14 +46,16 @@ class GenderTextFieldWidget extends StatefulWidget {
     this.focusBorderColor,
     this.defaultBoarder,
     required this.read,
-    required this.onSuffixIconPressed,
+    required this.onSuffixIconPressed, required this.width,
   }) : super(key: key);
 
   @override
-  State<GenderTextFieldWidget> createState() => _GenderTextFieldWidgetState();
+  State<PrefixPhoneTextFieldWidget> createState() =>
+      _PrefixPhoneTextFieldWidgetState();
 }
 
-class _GenderTextFieldWidgetState extends State<GenderTextFieldWidget> {
+class _PrefixPhoneTextFieldWidgetState
+    extends State<PrefixPhoneTextFieldWidget> {
   bool _isPasswordVisible = false; // Maintain the state of password visibility
 
   @override
@@ -86,8 +91,9 @@ class _GenderTextFieldWidgetState extends State<GenderTextFieldWidget> {
         width: 1.0, // Customize error border color
       ),
     );
-    return Padding(
-      padding: widget.padding,
+    return Container(
+    //  height: 60,
+      width:widget.width,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -124,21 +130,20 @@ class _GenderTextFieldWidgetState extends State<GenderTextFieldWidget> {
               focusedBorder: focusedOutlineInputBorder,
               errorBorder: errorOutlineInputBorder,
               focusedErrorBorder: focusederrorOutlineInputBorder,
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 19.0, horizontal: 14.0),
+              contentPadding: const EdgeInsets.symmetric(
+                  vertical: 19.0, horizontal: 14.0),
               // Add suffixIcon to toggle password visibility
               suffixIcon: GestureDetector(
-                onTap: () {
-                  widget.onSuffixIconPressed();
-                },
-                child:Padding(
-                  padding: const EdgeInsets.only(top: 12,bottom: 12),
-                  child: Image.asset(
-                    "assets/images/Right2.png",
-                    height: 2,
-                  ),
-                )
-              ),
+                  onTap: () {
+                    widget.onSuffixIconPressed();
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 12, bottom: 12),
+                    child: Image.asset(
+                      "assets/images/Right2.png",
+                      height: 2,
+                    ),
+                  )),
             ),
           ),
           Visibility(

@@ -6,39 +6,23 @@ class ShimmerEffect extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(10),
-      child: Shimmer.fromColors(
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!,
-        child: Column(
-          children: [
-            Container(
-                  width: 120,
-                  height: 16,
-                  color: Colors.white,
-                ),
-                Container(
-                  width: 80,
-                  height: 16,
-                  color: Colors.white,
-                ),
-                 Container(
-                  width: 120,
-                  height: 16,
-                  color: Colors.white,
-                ),
-                Container(
-                  width: 80,
-                  height: 16,
-                  color: Colors.white,
-                ),
-            SizedBox(
-              height: MediaQuery.of(context).size.width / 4,
-            )
-          ],
-        ),
-      ),
+    return ListView.builder(
+      itemCount: 10, // Adjust the item count as needed
+      itemBuilder: (context, index) {
+        return Shimmer.fromColors(
+          baseColor: Colors.grey[300]!,
+          highlightColor: Colors.grey[100]!,
+          child: ListTile(
+           
+            title: Container(
+              height: 120,
+              width: 100,
+              color: Colors.white,
+            ),
+            
+          ),
+        );
+      },
     );
   }
 }

@@ -14,6 +14,7 @@ import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/dateTextField.dart';
 import 'package:tennis_court_booking_app/widgets/genderField.dart';
+import 'package:tennis_court_booking_app/widgets/prefixphone.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_noneditable.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
 import 'package:intl/intl.dart';
@@ -59,18 +60,27 @@ class _RegisterFormState extends State<RegisterForm> {
 
   late FocusNode _dobFocusNode;
   late FocusNode _genderNode;
+  late FocusNode _phonePrefixNode;
   @override
   void initState() {
     super.initState();
     _userEmailController.text = widget.email;
     _dobFocusNode = FocusNode();
     _genderNode = FocusNode();
+    _genderNode.addListener(() {
+      validateGender();
+    });
+    _phonePrefixNode = FocusNode();
+    _phonePrefixNode.addListener(() {
+      validatePhonePrefix();
+    });
     _dobFocusNode.addListener(() {
       validateDOB();
     });
   }
-bool showDocumentErrorMessage = false;
-bool showDErrorMessage = false;
+
+  bool showDocumentErrorMessage = false;
+  bool showDErrorMessage = false;
   DateTime? dateTime;
   bool isChecked = false;
   File? imageFile;
@@ -171,7 +181,6 @@ bool showDErrorMessage = false;
             _buildUserphone(),
             _buildPasswordField(),
             _buildUploadDocumentField(context),
-            _buildUploadDocument(context),
             _buildNotMemberText(),
           ],
         ),
@@ -269,15 +278,14 @@ bool showDErrorMessage = false;
             genderError = false; // Reset the error flag
           });
         }
-
-        onChanged:
-        (value) {
-          setState(() {
-            genderError = false; // Reset the error flag
-          });
-          validateGender(); // Trigger validation on text change
-        };
       },
+      onChanged: (value) {
+        setState(() {
+          genderError = false; // Reset the error flag
+        });
+        validateGender(); // Trigger validation on text change
+      },
+
       errorText: genderError ? "Please enter gender" : " ",
       isIcon: true,
     );
@@ -286,10 +294,18 @@ bool showDErrorMessage = false;
   Future<String?> showGenderMenu(BuildContext context) async {
     final RenderBox overlay =
         Overlay.of(context)!.context.findRenderObject() as RenderBox;
+    final RenderBox iconBox =
+        _genderNode.context?.findRenderObject() as RenderBox;
+    final Offset iconPosition = iconBox.localToGlobal(Offset.zero);
+
+    // Increase these values for more bottom distance
+    final double translateY = 20.0; // Adjust as needed
+    final double translateX = 0.0;
+
     final RelativeRect position = RelativeRect.fromRect(
       Rect.fromPoints(
-        Offset.zero,
-        overlay.localToGlobal(overlay.size.bottomLeft(Offset.zero)),
+        iconPosition.translate(translateX, iconBox.size.height),
+        iconPosition.translate(translateX, iconBox.size.height + translateY),
       ),
       Offset.zero & overlay.size,
     );
@@ -297,7 +313,7 @@ bool showDErrorMessage = false;
     final String? selectedGender = await showMenu<String>(
       context: context,
       position: position,
-      items: ['Male', 'Female'].map((String gender) {
+      items: ['Male', 'Female', 'Not Disclosed'].map((String gender) {
         return PopupMenuItem<String>(
           value: gender,
           child: Text(gender),
@@ -394,7 +410,7 @@ bool showDErrorMessage = false;
   Widget _buildUserphone() {
     return Row(
       children: [
-        InkWell(
+        /* InkWell(
           onTap: () {
             showCountryPicker(
               context: context,
@@ -436,6 +452,44 @@ bool showDErrorMessage = false;
               errorText: phoneprefixError ? phoneprefixErrorText : " ",
             ),
           ),
+        ),*/
+        PrefixPhoneTextFieldWidget(
+          width: MediaQuery.of(context).size.width / 4,
+          read: false,
+          hint: '+91 ',
+          inputType: TextInputType.none,
+          focusNode: _phonePrefixNode,
+          hintColor: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkhint
+              : AppColors.hintColor,
+          // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
+          textController: phonePrefixController,
+          inputAction: TextInputAction.next,
+          errorBorderColor: phoneprefixError
+              ? AppColors.errorColor // Border color for validation error
+              : AppColors.textInputField,
+          focusBorderColor: phoneprefixError
+              ? AppColors.errorColor
+              : AppColors.focusTextBoarder,
+          autoFocus: false,
+          onSuffixIconPressed: () async {
+            FocusScope.of(context).requestFocus(_phonePrefixNode);
+            showCountryPicker(
+              context: context,
+              showPhoneCode: true,
+              onSelect: (Country country) {
+                phonePrefixController.text = "+ ${country.phoneCode}";
+              },
+            );
+          },
+          onChanged: (value) {
+            setState(() {
+              phoneprefixError = false; // Reset the error flag
+            });
+            validatePhonePrefix(); // Trigger validation on text change
+          },
+          errorText: phoneprefixError ? phoneprefixErrorText : " ",
+          isIcon: true,
         ),
         SizedBox(
           width: 8,
@@ -525,7 +579,7 @@ bool showDErrorMessage = false;
           ? Stack(
               children: [
                 SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
+                  scrollDirection: Axis.vertical,
                   child: SizedBox(
                     height: 164,
                     child: SingleChildScrollView(
@@ -573,80 +627,6 @@ bool showDErrorMessage = false;
                     height: 164,
                     child: Center(
                       child: Text(
-                        "Upload Profile Pic",
-                        style: TextStyle(
-                          color: AppColors.hintColor,
-                          fontSize: 14,
-                          fontFamily: FontFamily.satoshi,
-                          fontWeight: FontWeight.w400,
-                          height: 24 / 14,
-                        ),
-                      ),
-                    ),
-                  ),
-                   if (showDocumentErrorMessage)
-                  Text("Please Enter your picture", style: TextStyle(color: Colors.red)),
-                ],
-              ),
-            ),
-    );
-  }
-
-  Widget _buildUploadDocument(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
-      child: imageFiles != null
-          ? Stack(
-              children: [
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: SizedBox(
-                    height: 164,
-                    child: SingleChildScrollView(
-                      child: Image.file(
-                        imageFiles!,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 10, // Adjust the top position as needed
-                  right: 10, // Adjust the right position as needed
-                  child: IconButton(
-                    icon: Icon(Icons.close), // You can choose a different icon
-                    onPressed: () {
-                      // Handle the delete action here
-                      // For example, you can set imageFile to null to remove the image
-                      setState(() {
-                        imageFiles = null;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            )
-          : GestureDetector(
-              onTap: () async {
-                Map<Permission, PermissionStatus> statuses = await [
-                  Permission.storage,
-                  Permission.camera,
-                ].request();
-                if (statuses[Permission.storage]!.isGranted &&
-                    statuses[Permission.camera]!.isGranted) {
-                  showImage(context);
-                } else {}
-              },
-              child: Column(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: AppColors.textInputField,
-                    ),
-                    height: 164,
-                    child: Center(
-                      child: Text(
                         "Upload Document",
                         style: TextStyle(
                           color: AppColors.hintColor,
@@ -658,8 +638,9 @@ bool showDErrorMessage = false;
                       ),
                     ),
                   ),
-                  if (showDocumentErrorMessage)
-                  Text("Please Enter the document", style: TextStyle(color: Colors.red)),
+                  if (showDErrorMessage==false)
+                    Text("Please Enter your picture",
+                        style: TextStyle(color: Colors.red)),
                 ],
               ),
             ),
@@ -742,7 +723,6 @@ bool showDErrorMessage = false;
       ),
     );
   }
-
   Widget _buildSignInButton() {
     return Align(
       alignment: Alignment.bottomCenter,
@@ -770,7 +750,7 @@ bool showDErrorMessage = false;
                   backgroundColor: AppColors
                       .elevatedColor, // Change background color on hover
                 ),
-                onPressed: isChecked
+                onPressed:isLoading?null: isChecked
                     ? () async {
                         FocusManager.instance.primaryFocus?.unfocus();
                         bool nameValid = await validateName();
@@ -779,16 +759,17 @@ bool showDErrorMessage = false;
                         bool addressValid = await validateAddress();
                         bool dobValid = await validateDOB();
                         bool isGender = await validateGender();
-                        bool showDocument=showDocumentErrorMessage = imageFiles == null;
-                        bool showProfile=showDErrorMessage = imageFile == null;
+                       
+                        bool showProfile=showDErrorMessage = imageFile !=null;
 
                         if (nameValid &&
                             phoneValid &&
                             addressValid &&
                             dobValid &&
                             isGender&&
-                            isChecked
-                            && showDocument &&showProfile) {
+                            isChecked&&
+                            showProfile
+                            ) {
                           setState(() {
                             isLoading = true;
                           });
@@ -800,10 +781,10 @@ bool showDErrorMessage = false;
                                   _userPhoneController.text,
                                   result!.toUtc().toIso8601String(),
                                   _userAddressController.text,
-                                  imageFile?.path,
+                                  imageFile!.path,
                                   genderController.text,
                                   phonePrefixController.text,
-                                  imageFiles?.path)
+                                 )
                               .then((val) {
                             if (val['statusCode'] == 200) {
                               Navigator.of(context).push(
@@ -878,6 +859,8 @@ bool showDErrorMessage = false;
       ),
     );
   }
+
+  
 
   // dispose:-------------------------------------------------------------------
   @override
@@ -1032,59 +1015,6 @@ bool showDErrorMessage = false;
     );
   }
 
-  void showImage(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (builder) {
-        return Card(
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height / 5.2,
-            margin: const EdgeInsets.only(top: 8.0),
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: InkWell(
-                    child: Container(
-                        height: 135,
-                        color: const Color(0xffF3F3F3),
-                        padding: const EdgeInsets.all(16.0),
-                        child:
-                            Center(child: Icon(Icons.browse_gallery_outlined))),
-                    onTap: () {
-                      _imgFromGallerys();
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
-                Container(
-                  height: 135, // Adjust the height as needed
-                  width: 1, // Adjust the width as needed
-                  color: Colors.black,
-                ),
-                Expanded(
-                  child: InkWell(
-                    child: Container(
-                        height: 135,
-                        color: const Color(0xffF3F3F3),
-                        padding: const EdgeInsets.all(16.0),
-                        child: Center(child: Icon(Icons.camera))),
-                    onTap: () {
-                      _imgFromCameras();
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   _imgFromGallery() async {
     final pickedFile =
         await picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
@@ -1101,26 +1031,6 @@ bool showDErrorMessage = false;
     if (pickedFile != null) {
       setState(() {
         imageFile = File(pickedFile.path);
-      });
-    }
-  }
-
-  _imgFromGallerys() async {
-    final pickedFile =
-        await picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
-    if (pickedFile != null) {
-      setState(() {
-        imageFiles = File(pickedFile.path);
-      });
-    }
-  }
-
-  _imgFromCameras() async {
-    final pickedFile =
-        await picker.pickImage(source: ImageSource.camera, imageQuality: 50);
-    if (pickedFile != null) {
-      setState(() {
-        imageFiles = File(pickedFile.path);
       });
     }
   }

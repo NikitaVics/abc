@@ -113,6 +113,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
 
   FocusNode myFocusNode = FocusNode();
   bool isFormDone = false;
+  String prefPhone = "";
   String name = "";
   String userName = "";
   String phoneNum = "";
@@ -120,7 +121,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   String bookCount = "";
   String cancelBook = "";
   String? tokens;
-   File? imageFile;
+  File? imageFile;
   Future<void> profile() async {
     final profileProvider =
         Provider.of<ProfileProvider>(context, listen: false);
@@ -264,6 +265,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
               userName = myprofileData?.result.userName ?? "";
               phoneNum = myprofileData?.result.phoneNumber ?? "";
               gen = myprofileData?.result.gender ?? "";
+             // prefPhone=myprofileData?.result.
               bookCount = myprofileData?.result.totalBookings.toString() ?? "0";
               cancelBook =
                   myprofileData?.result.totalCancelledBookings.toString() ??
@@ -354,6 +356,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                           nameController.text = userName;
                           phoneController.text = phoneNum;
                           genderController.text = gen;
+                          phonePrefixController.text = prefPhone;
                         }
                       });
                     },
@@ -463,7 +466,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                             hintColor: isEdited
                                 ? AppColors.hintColor
                                 : AppColors.subheadColor,
-                            hint: isEdited ? "+973 " : name,
+                            hint: isEdited ? "+973 " : prefPhone,
                             obscure: false,
                             textInputType: TextInputType.name,
                             textInputAction: TextInputAction.next,
@@ -810,8 +813,13 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                 isLoading = true;
               });
               value
-                  .updateProfile(tokens!, nameController.text, phoneController.text,
-                      phonePrefixController.text, false, imageFile?.path??null)
+                  .updateProfile(
+                      tokens!,
+                      nameController.text,
+                      phoneController.text,
+                      phonePrefixController.text,
+                      false,
+                      imageFile?.path ?? null)
                   .then((val) {
                 if (val != null && val["statusCode"] == 200) {
                   setState(() {
@@ -862,7 +870,8 @@ class MyProfileScreenState extends State<MyProfileScreen> {
     _passwordFocusNode.dispose();
     super.dispose();
   }
-    final picker = ImagePicker();
+
+  final picker = ImagePicker();
 
   void showImagePicker(BuildContext context) {
     showModalBottomSheet(

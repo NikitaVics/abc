@@ -1,12 +1,26 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:io';
+
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
+import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:super_tooltip/super_tooltip.dart';
 import 'package:tennis_court_booking_app/api/api.dart';
 import 'package:tennis_court_booking_app/bookingprocess/booking_court.dart';
+import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/court_info_provider.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/model/courtInfo/court_info.dart';
+import 'package:tennis_court_booking_app/presentation/home/courtinfo/court_info.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/courtshowprovider.dart';
 import 'package:tennis_court_booking_app/presentation/home/model/checkstatus.dart';
@@ -23,6 +37,7 @@ import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/funky_overlay.dart';
 import 'package:tennis_court_booking_app/widgets/home_appbar.dart';
 import 'package:intl/intl.dart';
+import 'dart:ui' as ui;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -47,14 +62,21 @@ class HomeScreenState extends State<HomeScreen> {
   DateTime? results;
   String? imageUrl;
   //SignInProvider? provider;
-
+  int? id;
   @override
   void initState() {
     super.initState();
     _passwordFocusNode = FocusNode();
     profile();
+    _fetchCourtInfoResponse();
   }
 
+  final picker = ImagePicker();
+  Future<void> _fetchCourtInfoResponse() async {
+    await context.read<CourtInfoProvider>().fetchCourtInfo(id ?? 0);
+  }
+
+  File? imageFile;
   bool isFormDone = false;
   String name = "";
   String? tokens;
@@ -79,13 +101,22 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   bool? hasErrorMessage;
+  final _controller = SuperTooltipController();
+  Future<bool> _willPopCallback() async {
+    // If the tooltip is open we don't pop the page on a backbutton press
+    // but close the ToolTip
+    if (_controller.isVisible) {
+      await _controller.hideTooltip();
+      return false;
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer2<CheckStatusProvider, ProfileProvider>(
       builder: (context, checkStatusProvider, profileProvider, child) {
-        if (checkStatusProvider.checkStatus == null 
-            ) {
+        if (checkStatusProvider.checkStatus == null) {
           profileProvider.fetchProfile(tokens ?? "");
           checkStatusProvider.checkRegistrationStatus(tokens ?? "");
 
@@ -94,7 +125,7 @@ class HomeScreenState extends State<HomeScreen> {
           );
         } else {
           imageUrl = profileProvider.profileModel?.result.imageUrl;
-          name = profileProvider.profileModel?.result.name??"";
+          name = profileProvider.profileModel?.result.name ?? "";
           hasErrorMessage = checkStatusProvider.checkStatus!.result;
           List<String> nameParts = name.split(' ');
 
@@ -125,28 +156,129 @@ class HomeScreenState extends State<HomeScreen> {
                           width: MediaQuery.of(context).size.width,
                           child: Center(
                             child: MediaQuery(
-                               data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                              data: MediaQuery.of(context)
+                                  .copyWith(textScaleFactor: 1.0),
                               child: Row(
                                 children: [
-                                  Container(
-                                    height: 48,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 24),
-                                      child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(150.0),
-                                          child: imageUrl != null &&
-                                                  imageUrl!.isNotEmpty
-                                              ? SilentErrorImage(
-                                                  width: 48.0,
-                                                  height: 48.0,
-                                                  imageUrl: imageUrl!,
-                                                )
-                                              : Image.asset(
-                                                  "assets/images/userImage.png",
-                                                  width: 48.0,
-                                                  height: 48.0,
-                                                )),
+                                  WillPopScope(
+                                    onWillPop: _willPopCallback,
+                                    child: GestureDetector(
+                                      onTap: () async {
+                                        await _controller.showTooltip();
+                                      },
+                                      child: SuperTooltip(
+                                        showBarrier: true,
+                                        controller: _controller,
+                                        borderColor: AppColors.dotColor,
+                                        popupDirection: TooltipDirection.down,
+                                        backgroundColor: Colors.white,
+                                        left: 30,
+                                        right: 30,
+                                        top: 20,
+                                        arrowTipDistance: 10.0,
+                                        arrowBaseWidth: 20.0,
+                                        arrowLength: 30.0,
+                                        borderWidth: 2.0,
+                                        constraints: const BoxConstraints(
+                                          minHeight: 0.0,
+                                          maxHeight: 100,
+                                          minWidth: 0.0,
+                                          maxWidth: 100,
+                                        ),
+                                        showCloseButton: ShowCloseButton.none,
+                                        touchThroughAreaShape:
+                                            ClipAreaShape.rectangle,
+                                        touchThroughAreaCornerRadius: 30,
+                                        barrierColor:
+                                            Color.fromARGB(26, 47, 45, 47),
+                                        content: Container(
+                                          height: 100,
+                                          child: Column(
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    "Profile Photo",
+                                                    style: TextStyle(
+                                                      color: Theme.of(context)
+                                                                  .brightness ==
+                                                              Brightness.dark
+                                                          ? AppColors.booklight
+                                                          : AppColors
+                                                              .allHeadColor,
+                                                      fontSize: 25,
+                                                      fontFamily:
+                                                          FontFamily.satoshi,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                    ),
+                                                  ),
+                                                  GestureDetector(
+                                                      onTap: () async {
+                                                        await Api.removePhoto(
+                                                            tokens!);
+                                                        await profile();
+                                                      },
+                                                      child: Icon(Icons.delete))
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  GestureDetector(
+                                                    onTap: () async {
+                                                      _imgFromCamera();
+                                                      await Api.updateImage(
+                                                          tokens!,
+                                                          imageFile!.path);
+                                                           await profile();
+                                                    },
+                                                    child: Icon(Icons
+                                                        .camera_alt_outlined),
+                                                  ),
+                                                  GestureDetector(
+                                                      onTap: () async {
+                                                       await _imgFromGallery();
+
+    // Step 2: Check if imageFile is not null after picking from gallery
+    if (imageFile != null) {
+      // Step 3: Call API to update image
+      await Api.updateImage(tokens!, imageFile!.path);
+
+      // Step 4: Update the profile
+      await profile();
+    }
+                                                        
+                                                      },
+                                                      child: Icon(Icons.image))
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                        child: SizedBox(
+                                          height: 48,
+                                          child: Padding(
+                                            padding:
+                                                const EdgeInsets.only(left: 24),
+                                            child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        150.0),
+                                                child: imageUrl != null &&
+                                                        imageUrl!.isNotEmpty
+                                                    ? SilentErrorImage(
+                                                        width: 48.0,
+                                                        height: 48.0,
+                                                        imageUrl: imageUrl!,
+                                                      )
+                                                    : Image.asset(
+                                                        "assets/images/userImage.png",
+                                                        width: 48.0,
+                                                        height: 48.0,
+                                                      )),
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                   hasErrorMessage!
@@ -163,10 +295,11 @@ class HomeScreenState extends State<HomeScreen> {
                                         Text(
                                           "Hello",
                                           style: TextStyle(
-                                            color: Theme.of(context).brightness ==
-                                                    Brightness.dark
-                                                ? AppColors.headingTextColor
-                                                : AppColors.allHeadColor,
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? AppColors.headingTextColor
+                                                    : AppColors.allHeadColor,
                                             fontFamily: FontFamily.satoshi,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w400,
@@ -179,10 +312,11 @@ class HomeScreenState extends State<HomeScreen> {
                                         Text(
                                           firstName ?? " ",
                                           style: TextStyle(
-                                            color: Theme.of(context).brightness ==
-                                                    Brightness.dark
-                                                ? AppColors.headingTextColor
-                                                : AppColors.allHeadColor,
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? AppColors.headingTextColor
+                                                    : AppColors.allHeadColor,
                                             fontFamily: FontFamily.satoshi,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w400,
@@ -204,12 +338,13 @@ class HomeScreenState extends State<HomeScreen> {
                                                 SharedPreferences pref =
                                                     await SharedPreferences
                                                         .getInstance();
-                                                String? email =
-                                                    await SharePref.fetchEmail();
+                                                String? email = await SharePref
+                                                    .fetchEmail();
                                                 Navigator.of(context).push(
                                                   MaterialPageRoute(
                                                     builder: (context) =>
-                                                        RegisterForm(email: email!),
+                                                        RegisterForm(
+                                                            email: email!),
                                                   ),
                                                 );
                                               },
@@ -219,7 +354,8 @@ class HomeScreenState extends State<HomeScreen> {
                                                 foregroundColor:
                                                     AppColors.errorColor,
                                                 side: BorderSide(
-                                                    color: AppColors.errorColor),
+                                                    color:
+                                                        AppColors.errorColor),
                                                 shape: RoundedRectangleBorder(
                                                   borderRadius:
                                                       BorderRadius.circular(20),
@@ -228,7 +364,8 @@ class HomeScreenState extends State<HomeScreen> {
                                               child: const Text(
                                                 'Complete profile',
                                                 style: TextStyle(
-                                                  fontFamily: FontFamily.satoshi,
+                                                  fontFamily:
+                                                      FontFamily.satoshi,
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.w400,
                                                   height: 24 / 14,
@@ -237,7 +374,6 @@ class HomeScreenState extends State<HomeScreen> {
                                             ),
                                           ),
                                   ),
-                                
                                   Padding(
                                     padding: const EdgeInsets.only(right: 24),
                                     child: Align(
@@ -272,15 +408,18 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void makeTooltip() {
+    _controller.showTooltip();
+  }
+
   // body methods:--------------------------------------------------------------
   Widget _buildBody() {
     return WillPopScope(
       onWillPop: () async {
-        print("WillPopScope triggered");
         setState(() {
           result = null;
         });
-        return true;
+        return false;
       },
       child: Material(
         color: Theme.of(context).brightness == Brightness.dark
@@ -372,7 +511,7 @@ class HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.only(top: 80),
       child: Stack(children: [
         MediaQuery(
-           data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -403,136 +542,140 @@ class HomeScreenState extends State<HomeScreen> {
               const SizedBox(
                 height: 20,
               ),
-              hasErrorMessage!?
-              GestureDetector(
-                 onTap: () async {
-                              result = await showDatePicker(
-                                context: context,
-                                initialDate: dateTime ?? DateTime.now(),
-                                firstDate:DateTime.now(),
-                                lastDate: DateTime(2101),
-                                helpText: "Select Date",
-                                builder: (BuildContext context, Widget? child) {
-                                  return Theme(
-                                    data: ThemeData.light().copyWith(
-                                      primaryColor: AppColors.darkSubHead,
-                                      hintColor: Colors.teal,
-                                      colorScheme: const ColorScheme.light(
-                                              primary: AppColors.dotColor)
-                                          .copyWith(background: Colors.blueGrey),
-                                    ),
-                                    child: child!,
-                                  );
-                                },
-                              );
-                              if (result != null) {
-                                setState(() {
-                                  dateTime = result;
-                                  results = result;
-                                  // _userDobController.text = DateFormat('dd/MM/yyyy').format(result!);
-                      
-                                  print("yp${result!.toLocal().toString()}");
-                                });
-                              }
-                            },
-                child: Container(
-                  height: 72,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.0),
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.darkTextInput
-                        : Colors.white,
-                  ),
-                  child: Row(children: [
-                    SizedBox(
-                      width: 21,
-                    ),
-                    results != null
-                        ? Text(
-                            DateFormat('dd/MM/yyyy').format(results!),
-                            style: TextStyle(
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? AppColors.darkSubHead
-                                  : AppColors.subheadColor,
-                              fontSize: 14,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w700,
-                              height: 24 / 14,
-                            ),
-                          )
-                        : Text(
-                            "Select Date",
-                            style: TextStyle(
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? AppColors.darkSubHead
-                                  : AppColors.subheadColor,
-                              fontSize: 14,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w700,
-                              height: 24 / 14,
-                            ),
+              hasErrorMessage!
+                  ? GestureDetector(
+                      onTap: () async {
+                        result = await showDatePicker(
+                          context: context,
+                          initialDate: dateTime ?? DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime(2101),
+                          helpText: "Select Date",
+                          builder: (BuildContext context, Widget? child) {
+                            return Theme(
+                              data: ThemeData.light().copyWith(
+                                primaryColor: AppColors.darkSubHead,
+                                hintColor: Colors.teal,
+                                colorScheme: const ColorScheme.light(
+                                        primary: AppColors.dotColor)
+                                    .copyWith(background: Colors.blueGrey),
+                              ),
+                              child: child!,
+                            );
+                          },
+                        );
+                        if (result != null) {
+                          setState(() {
+                            dateTime = result;
+                            results = result;
+                            // _userDobController.text = DateFormat('dd/MM/yyyy').format(result!);
+
+                            print("yp${result!.toLocal().toString()}");
+                          });
+                        }
+                      },
+                      child: Container(
+                        height: 72,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.0),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.darkTextInput
+                              : Colors.white,
+                        ),
+                        child: Row(children: [
+                          SizedBox(
+                            width: 21,
                           ),
-                    const SizedBox(width: 8),
-                    Image.asset(
-                      "assets/images/calender.png",
-                      height: 18,
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.darkSubHead
-                          : AppColors.subheadColor,
+                          results != null
+                              ? Text(
+                                  DateFormat('dd/MM/yyyy').format(results!),
+                                  style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.darkSubHead
+                                        : AppColors.subheadColor,
+                                    fontSize: 14,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w700,
+                                    height: 24 / 14,
+                                  ),
+                                )
+                              : Text(
+                                  "Select Date",
+                                  style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.darkSubHead
+                                        : AppColors.subheadColor,
+                                    fontSize: 14,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w700,
+                                    height: 24 / 14,
+                                  ),
+                                ),
+                          const SizedBox(width: 8),
+                          Image.asset(
+                            "assets/images/calender.png",
+                            height: 18,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.darkSubHead
+                                    : AppColors.subheadColor,
+                          )
+                        ]),
+                      ),
                     )
-                   
-                  ]),
-                ),
-              ): GestureDetector(
-                onTap: () async {
-                              showAlertDialog(context);
-                            },
-                child: Container(
-                  height: 72,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.0),
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.darkTextInput
-                        : Colors.white,
-                  ),
-                  child: Row(children: [
-                    SizedBox(
-                      width: 21,
-                    ),
-                    results != null
-                        ? Text(
-                            DateFormat('dd/MM/yyyy').format(results!),
-                            style: TextStyle(
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? AppColors.darkSubHead
-                                  : AppColors.subheadColor,
-                              fontSize: 14,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w700,
-                              height: 24 / 14,
-                            ),
-                          )
-                        : Text(
-                            "Select Date",
-                            style: TextStyle(
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? AppColors.darkSubHead
-                                  : AppColors.subheadColor,
-                              fontSize: 14,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w700,
-                              height: 24 / 14,
-                            ),
+                  : GestureDetector(
+                      onTap: () async {
+                        showAlertDialog(context);
+                      },
+                      child: Container(
+                        height: 72,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.0),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.darkTextInput
+                              : Colors.white,
+                        ),
+                        child: Row(children: [
+                          SizedBox(
+                            width: 21,
                           ),
-                    const SizedBox(width: 8),
-                    
-                   Image.asset(
-                     "assets/images/calender.png",
-                     height: 18,
-                   )
-                  ]),
-                ),
-              )
+                          results != null
+                              ? Text(
+                                  DateFormat('dd/MM/yyyy').format(results!),
+                                  style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.darkSubHead
+                                        : AppColors.subheadColor,
+                                    fontSize: 14,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w700,
+                                    height: 24 / 14,
+                                  ),
+                                )
+                              : Text(
+                                  "Select Date",
+                                  style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.darkSubHead
+                                        : AppColors.subheadColor,
+                                    fontSize: 14,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w700,
+                                    height: 24 / 14,
+                                  ),
+                                ),
+                          const SizedBox(width: 8),
+                          Image.asset(
+                            "assets/images/calender.png",
+                            height: 18,
+                          )
+                        ]),
+                      ),
+                    )
             ],
           ),
         ),
@@ -548,7 +691,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   Widget _buildSignInButton() {
     return MediaQuery(
-       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+      data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
       child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20),
           child: FocusScope(
@@ -571,12 +714,12 @@ class HomeScreenState extends State<HomeScreen> {
                                         result: result!,
                                       )),
                             );
-    
+
                             // Update result with the value returned from the second screen
                             setState(() {
                               results = null;
                             });
-    
+
                             /*await context
                               .read<BookingResponseProvider>()
                               .fetchBookingResponse(
@@ -794,7 +937,7 @@ class HomeScreenState extends State<HomeScreen> {
 
   Widget _buildSlotshowText() {
     return MediaQuery(
-       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+      data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
       child: Padding(
           padding: const EdgeInsets.only(top: 20, bottom: 20),
           child: Row(
@@ -910,98 +1053,148 @@ class HomeScreenState extends State<HomeScreen> {
           return Padding(
             padding: const EdgeInsets.only(right: 20),
             child: MediaQuery(
-               data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-              child: Container(
-                width: 145,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.darkTextInput
-                      : Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Container(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          left: 12,
-                          right: 12,
-                          top: 12,
-                          bottom: 8,
+              data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+              child: GestureDetector(
+                onTap: () async {
+                  setState(() {
+                    id = court.courtId;
+                  });
+                  await showAnimatedDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Container(
+                        height: MediaQuery.of(context).size.height,
+                        width: MediaQuery.of(context).size.width,
+                        color: Colors.transparent,
+                        child: FutureBuilder<void>(
+                          future: _fetchCourtInfoResponse(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              return buidSheet();
+                            } else {
+                              // You can return a loading indicator or null while waiting for the future
+                              return Center(
+                                child: AnimatedTextKit(
+                                  animatedTexts: [
+                                    WavyAnimatedText(
+                                      'Loading...',
+                                      textStyle: TextStyle(
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? AppColors.headingTextColor
+                                              : AppColors.allHeadColor,
+                                          fontSize: 20,
+                                          fontFamily: FontFamily.satoshi,
+                                          fontWeight: FontWeight.w500,
+                                          height: 34 / 20,
+                                          decoration: TextDecoration.none),
+                                    ),
+                                  ],
+                                  repeatForever: true,
+                                  isRepeatingAnimation: true,
+                                ),
+                              );
+                            }
+                          },
                         ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(6)),
-                          height: 85,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(6),
-                            child: Image.network(
-                              court.courtImageURLs[0] , // Use the image URL from the Court model
-                              // You can also use AssetImage if the image is in the assets folder
-                              // e.g., Image.asset("assets/images/court.png"),
-                              fit: BoxFit.cover,
+                      );
+                    },
+                  );
+                },
+                child: Container(
+                  width: 145,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.darkTextInput
+                        : Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 12,
+                            right: 12,
+                            top: 12,
+                            bottom: 8,
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6)),
+                            height: 85,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: Image.network(
+                                court.courtImageURLs[
+                                    0], // Use the image URL from the Court model
+                                // You can also use AssetImage if the image is in the assets folder
+                                // e.g., Image.asset("assets/images/court.png"),
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 12, right: 22),
-                        child: Stack(
-                          children: [
-                            Column(
-                              children: [
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    court.courtName,
-                                    style: TextStyle(
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? AppColors.booklight
-                                          : AppColors.allHeadColor,
-                                      fontSize: 16,
-                                      fontFamily: FontFamily.satoshi,
-                                      fontWeight: FontWeight.w500,
-                                      height: 24 / 16,
+                        Padding(
+                          padding: EdgeInsets.only(left: 12, right: 22),
+                          child: Stack(
+                            children: [
+                              Column(
+                                children: [
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      court.courtName,
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.booklight
+                                            : AppColors.allHeadColor,
+                                        fontSize: 16,
+                                        fontFamily: FontFamily.satoshi,
+                                        fontWeight: FontWeight.w500,
+                                        height: 24 / 16,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    "${startTime} - ${endTime}",
-                                    style: TextStyle(
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? AppColors.darkSubHead
-                                          : AppColors.hintColor,
-                                      fontSize: 12,
-                                      fontFamily: FontFamily.satoshi,
-                                      fontWeight: FontWeight.w400,
-                                      height: 16 / 12,
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      "${startTime} - ${endTime}",
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.darkSubHead
+                                            : AppColors.hintColor,
+                                        fontSize: 12,
+                                        fontFamily: FontFamily.satoshi,
+                                        fontWeight: FontWeight.w400,
+                                        height: 16 / 12,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(top: 4),
-                              child: Align(
-                                alignment: Alignment.centerRight,
-                                child: Image.asset(
-                                  "assets/images/Right.png",
-                                  height: 24,
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? AppColors.headingTextColor
-                                      : Colors.black,
+                                ],
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(top: 4),
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Image.asset(
+                                    "assets/images/Right.png",
+                                    height: 24,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.headingTextColor
+                                        : Colors.black,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -1016,7 +1209,7 @@ class HomeScreenState extends State<HomeScreen> {
     return Padding(
         padding: const EdgeInsets.only(top: 40, bottom: 20),
         child: MediaQuery(
-           data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1037,9 +1230,10 @@ class HomeScreenState extends State<HomeScreen> {
                 "See all",
                 style: TextStyle(
                   decoration: TextDecoration.underline,
-                  decorationThickness: 2.0, // Set the thickness of the underline
+                  decorationThickness:
+                      2.0, // Set the thickness of the underline
                   decorationStyle: TextDecorationStyle.solid,
-        
+
                   color: AppColors.dotColor,
                   fontSize: 14,
                   fontFamily: FontFamily.satoshi,
@@ -1071,7 +1265,7 @@ class HomeScreenState extends State<HomeScreen> {
               ),
             ),
             MediaQuery(
-               data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+              data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -1084,10 +1278,10 @@ class HomeScreenState extends State<HomeScreen> {
                           TextSpan(
                             text: "No Recent Bookings  ",
                             style: TextStyle(
-                              color:
-                                  Theme.of(context).brightness == Brightness.dark
-                                      ? AppColors.booklight
-                                      : AppColors.subheadColor,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.booklight
+                                  : AppColors.subheadColor,
                               fontSize: 12,
                               fontFamily: FontFamily.satoshi,
                               fontWeight: FontWeight.w400,
@@ -1109,10 +1303,10 @@ class HomeScreenState extends State<HomeScreen> {
                             text:
                                 'to start booking', // The second half of the sentence
                             style: TextStyle(
-                              color:
-                                  Theme.of(context).brightness == Brightness.dark
-                                      ? AppColors.darkSubHead
-                                      : AppColors.hintColor,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.darkSubHead
+                                  : AppColors.hintColor,
                               fontSize: 12,
                               fontFamily: FontFamily.satoshi,
                               fontWeight: FontWeight.w400,
@@ -1132,6 +1326,186 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget buidSheet() {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double containerWidth = screenWidth - 48; // 24 padding on each side
+    double containerHeight = MediaQuery.of(context).size.height / 1.5;
+
+    return Container(
+      color: Colors.white,
+      child: Consumer<CourtInfoProvider>(
+        builder: (context, provider, child) {
+          final courtInfo = provider.courtinfo;
+          print('Booking Response: $courtInfo');
+          int _currentPage = 0;
+
+          if (courtInfo != null && courtInfo.result != null) {
+            final courtData = courtInfo.result;
+            print(courtData!.courtId);
+            String startTime = DateFormat('h a').format(
+              DateFormat('HH:mm:ss').parse(courtData.startTime),
+            );
+            String endTime = DateFormat('h a').format(
+              DateFormat('HH:mm:ss').parse(courtData.endTime),
+            );
+
+            // Use courtinfo.result.imageurl for CarouselSlider items
+            List<String> imageUrls = courtData.courtImageURLs;
+
+            // Instantiate CarouselController
+
+            return Container(
+              width: containerWidth,
+              height: containerHeight,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                        height: 330,
+                        child: MyHomePage(imageUrls: imageUrls, height: 330)),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 24, right: 24),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            courtData.courtName,
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.booklight
+                                  : AppColors.allHeadColor,
+                              fontSize: 20,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w700,
+                              height: 32 / 16,
+                            ),
+                          ),
+                          Text(
+                            "${startTime} - ${endTime}",
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.darkSubHead
+                                  : AppColors.confirmValid,
+                              fontSize: 12,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w400,
+                              height: 16 / 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 24, right: 24, top: 4),
+                      child: Text(
+                        "Lorem ipsum dolor sit amet consectetur. Sed mauris arcu arcu placerat varius facilisis nibh volutpat. Leo egestas massa cras diam venenatis tincidunt. Diam fringilla lorem.",
+                        style: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.darkSubHead
+                              : AppColors.subheadColor,
+                          fontSize: 14,
+                          fontFamily: FontFamily.satoshi,
+                          fontWeight: FontWeight.w400,
+                          height: 24 / 14,
+                        ),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 24, right: 24, top: 19.2),
+                      child: Divider(
+                        color: AppColors.appbarBoarder,
+                        thickness: 1,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 24, right: 24, top: 13.5),
+                      child: Text(
+                        "Available facilities",
+                        style: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.darkSubHead
+                              : AppColors.subheadColor,
+                          fontSize: 16,
+                          fontFamily: FontFamily.satoshi,
+                          fontWeight: FontWeight.w500,
+                          height: 24 / 16,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 24, right: 24, top: 20),
+                      child: SizedBox(
+                        height: 54,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: courtData.facilities.length,
+                          itemBuilder: (context, index) {
+                            Facility facility = courtData.facilities[index];
+                            return Padding(
+                                padding: const EdgeInsets.only(right: 20),
+                                child: Column(
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/parking.png",
+                                      height: 24,
+                                      width: 24,
+                                    ),
+                                    SizedBox(
+                                      height: 14,
+                                    ),
+                                    Text(
+                                      facility.facilityName,
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.darkSubHead
+                                            : AppColors.allHeadColor,
+                                        fontSize: 12,
+                                        fontFamily: FontFamily.satoshi,
+                                        fontWeight: FontWeight.w400,
+                                        height: 16 / 12,
+                                      ),
+                                    ),
+                                  ],
+                                ));
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          } else {
+            return AnimatedTextKit(
+              animatedTexts: [
+                WavyAnimatedText(
+                  'Loading...',
+                  textStyle: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.headingTextColor
+                        : AppColors.subheadColor,
+                    fontSize: 20,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w500,
+                    height: 34 / 20,
+                  ),
+                ),
+              ],
+              repeatForever: true,
+              isRepeatingAnimation: true,
+            );
+          }
+        },
+      ),
+    );
+  }
+
   // General Methods:-----------------------------------------------------------
 
   // dispose:-------------------------------------------------------------------
@@ -1142,6 +1516,26 @@ class HomeScreenState extends State<HomeScreen> {
     _passwordFocusNode.dispose();
     result = null;
     super.dispose();
+  }
+
+  _imgFromGallery() async {
+    final pickedFile =
+        await picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
+    if (pickedFile != null) {
+      setState(() {
+        imageFile = File(pickedFile.path);
+      });
+    }
+  }
+
+  _imgFromCamera() async {
+    final pickedFile =
+        await picker.pickImage(source: ImageSource.camera, imageQuality: 50);
+    if (pickedFile != null) {
+      setState(() {
+        imageFile = File(pickedFile.path);
+      });
+    }
   }
 }
 
@@ -1173,6 +1567,46 @@ class SilentErrorImage extends StatelessWidget {
           height: height,
         );
       },
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  final List<String> imageUrls;
+  final double height;
+
+  MyHomePage({required this.imageUrls, required this.height});
+
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _currentPage = 0;
+  bool _isCarouselPaused = false;
+
+  @override
+  Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    return Container(
+      width: screenWidth,
+      child: ImageSlideshow(
+        height: widget.height,
+        indicatorColor: Colors.blue,
+        onPageChanged: (value) {
+          debugPrint('Page changed: $value');
+        },
+        autoPlayInterval: 3000,
+        isLoop: true,
+        children: widget.imageUrls.map((imageUrl) {
+          return CachedNetworkImage(
+            imageUrl: imageUrl,
+            fit: BoxFit.cover,
+          );
+        }).toList(),
+      ),
     );
   }
 }

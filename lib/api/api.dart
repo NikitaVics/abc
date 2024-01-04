@@ -174,7 +174,7 @@ class Api {
   }
 
   static Future registerForm(String email, String name, String phoneNumber,
-      String dob, String address, String? image,String gender,String coutryCode,String? document) async {
+      String dob, String address, String? document,String gender,String coutryCode) async {
     var url = "$baseUrl/api/UsersAuth/Form Regisration";
 
     // Convert the model to a JSON string
@@ -197,13 +197,7 @@ class Api {
     });
 
     // Add image file to the request
-    if (image != null && image.isNotEmpty) {
-      request.files.add(await http.MultipartFile.fromPath(
-        'image',
-        image,
-      ));
-      print("image $image");
-    }
+    
     if (document != null && document.isNotEmpty) {
       request.files.add(await http.MultipartFile.fromPath(
         'Document',
@@ -543,5 +537,61 @@ static Future<UpcomingBookingModel> upComingResponse(String bearerToken) async {
     print(response.body);
 
     return UpcomingBookingModel.fromJson(jsonDecode(response.body));
+  }
+  static Future removePhoto( String bearerToken) async {
+    var url = "$baseUrl/api/Profile/Remove profile image";
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+      "content-Type": "application/json;  charset=UTF-8",
+    };
+    http.Response response = await http.delete(
+      Uri.parse(url),
+      headers: headers,
+     
+    );
+
+    print(response.body);
+
+    // final jsonData = json.decode(response.body);
+    return jsonDecode(response.body);
+  }
+//Change image
+ static Future updateImage(String bearerToken,  String? image) async {
+    var url = "$baseUrl/api/Profile/UpLoad Profile Image";
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+      "content-Type": "application/json;  charset=UTF-8",
+    };
+    // Convert the model to a JSON string
+
+    var request = http.MultipartRequest(
+      'POST',
+     
+      Uri.parse(url),
+    );
+ request.headers.addAll(headers);
+    
+    // Add image file to the request
+    if (image != null && image.isNotEmpty) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'Image',
+        image,
+      ));
+      print("image $image");
+    }
+
+    // Add headers to the request
+    //request.headers.addAll(headers);
+    try {
+      http.StreamedResponse response = await request.send();
+      var responseData = await response.stream.bytesToString();
+      var jsonData = json.decode(responseData);
+      print(jsonData);
+      return jsonData;
+    } catch (error) {
+      print("Error: $error");
+      // Handle the error or return an appropriate response.
+      return null;
+    }
   }
 }

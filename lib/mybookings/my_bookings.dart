@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tennis_court_booking_app/api/api.dart';
+import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/confirm_booking_provider.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/constants/shimmer.dart';
 import 'package:tennis_court_booking_app/model/upComingBooking/upcoming_booking_model.dart';
+import 'package:tennis_court_booking_app/mybookings/bookingDetails/booking_details.dart';
 import 'package:tennis_court_booking_app/mybookings/provider/previous_booking_provider.dart';
 import 'package:tennis_court_booking_app/mybookings/provider/upComing_provider.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
@@ -61,6 +63,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
   bool isFirstButtonSelected = false;
   bool isSecondButtonSelected = false;
   bool isFormDone = false;
+   bool isLoad = false;
   String name = "";
   String? tokens;
   Future<void> profile() async {
@@ -68,56 +71,68 @@ class MyBookingScreenState extends State<MyBookingScreen> {
         Provider.of<UpcomingBookProvider>(context, listen: false);
     final previousBookingProvider =
         Provider.of<PreviousBookProvider>(context, listen: false);
+        setState(() {
+      isLoad = true;
+    });
     String token = await SharePref.fetchAuthToken();
     tokens = await SharePref.fetchAuthToken();
     upComingProvider.fetchupComingData(token);
     previousBookingProvider.fetchupComingData(token);
     print(name);
+    setState(() {
+      isLoad = false;
+    });
   }
 
   final List<String> team = [];
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
-      return Scaffold(
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkThemeback
-            : AppColors.lightThemeback,
-        primary: true,
-        appBar: AppBar(
-          toolbarHeight: 72,
-          automaticallyImplyLeading: false,
-          title: Padding(
-            padding: const EdgeInsets.only(left: 24),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  "My Bookings",
-                  style: TextStyle(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.headingTextColor
-                        : AppColors.profileHead,
-                    fontSize: 20,
-                    fontFamily: FontFamily.satoshi,
-                    fontWeight: FontWeight.w700,
-                    height: 32 / 20,
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-              ],
-            ),
-          ),
+      return WillPopScope(
+         onWillPop: () async {
+    
+    return false; 
+  },
+        child: Scaffold(
           backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkTextInput
-              : Colors.white,
-          elevation: 0,
+              ? AppColors.darkThemeback
+              : AppColors.lightThemeback,
+          primary: true,
+          appBar: AppBar(
+            toolbarHeight: 72,
+            automaticallyImplyLeading: false,
+            title: Padding(
+              padding: const EdgeInsets.only(left: 24),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    "My Bookings",
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.headingTextColor
+                          : AppColors.profileHead,
+                      fontSize: 20,
+                      fontFamily: FontFamily.satoshi,
+                      fontWeight: FontWeight.w700,
+                      height: 32 / 20,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                ],
+              ),
+            ),
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkTextInput
+                : Colors.white,
+            elevation: 0,
+          ),
+          body: _buildBody(),
         ),
-        body: _buildBody(),
       );
     });
   }
@@ -130,7 +145,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
             : AppColors.homeBack,
         child: Column(
           children: [
-            Expanded(child: _buildRightSide()),
+            Expanded(child:isLoad?ShimmerEffect(): _buildRightSide()),
           ],
         ));
   }
@@ -167,8 +182,17 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                             scrollDirection: Axis.vertical,
                             itemCount: bookings.length,
                             itemBuilder: (context, index) {
-                              return _buildupComingbooking(
-                                  index, bookings.length, bookings[index]);
+                              return GestureDetector(
+                                onTap: () {
+                                   context.read<BookResultShowProvider>().clearStateList();
+                                   Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BookingDetailsScreen(id: bookings[index].bookingId)));
+                                },
+                                child: _buildupComingbooking(
+                                    index, bookings.length, bookings[index]),
+                              );
                             },
                           ),
                         )
@@ -202,8 +226,17 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                             scrollDirection: Axis.vertical,
                             itemCount: bookings.length,
                             itemBuilder: (context, index) {
-                              return _buildupComingbooking(
-                                  index, bookings.length, bookings[index]);
+                              return GestureDetector(
+                                onTap: () {
+                                    context.read<BookResultShowProvider>().clearStateList();
+                                Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BookingDetailsScreen(id: bookings[index].bookingId)));
+                                },
+                                child: _buildupComingbooking(
+                                    index, bookings.length, bookings[index]),
+                              );
                             },
                           ),
                         ),
