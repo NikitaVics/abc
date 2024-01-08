@@ -11,6 +11,7 @@ import 'package:tennis_court_booking_app/mybookings/provider/upComing_provider.d
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/courtshowprovider.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
+import 'package:tennis_court_booking_app/profile/profileprovider/allfriend_provider.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/myprofile_provider.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/profile_provider.dart';
 import 'package:tennis_court_booking_app/provider/booking_response_provider.dart';
@@ -87,6 +88,9 @@ class _MyAppState extends State<MyApp> {
         ),
          ChangeNotifierProvider<PreviousBookProvider>(
           create: (context) =>PreviousBookProvider(),
+        ),
+         ChangeNotifierProvider<MyFriendProvider>(
+          create: (context) =>MyFriendProvider(),
         ),
        ],
        child:Builder(

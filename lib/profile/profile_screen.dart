@@ -11,6 +11,7 @@ import 'package:tennis_court_booking_app/presentation/home/home_provider/check_s
 
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/profile/profileThings/my_profile_screen.dart';
+import 'package:tennis_court_booking_app/profile/profileThings/my_teams.dart';
 
 import 'package:tennis_court_booking_app/profile/profileprovider/profile_provider.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
@@ -384,7 +385,14 @@ class ProfileScreenState extends State<ProfileScreen> {
                         height: 17,
                         width: 17,
                         child: GestureDetector(
-                            onTap: () async {},
+                            onTap: () async {
+                               Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MyTeamsScreen(
+                                    pageName: "My Team",
+                                  )));
+                            },
                             child: Image.asset(
                               "assets/images/Group3.png",
                               height: 15,
@@ -396,7 +404,14 @@ class ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(width: 25),
                       GestureDetector(
-                        onTap: () async {},
+                        onTap: () async {
+                            Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MyTeamsScreen(
+                                    pageName: "My Team",
+                                  )));
+                        },
                         child: Text(
                           "My Team",
                           style: TextStyle(

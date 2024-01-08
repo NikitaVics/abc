@@ -1,8 +1,8 @@
 class MyProfile {
-  late int statusCode;
-  late bool isSuccess;
-  late List<String> errorMessage;
-  late ProfileResult result;
+  int statusCode;
+ bool isSuccess;
+ List<String> errorMessage;
+   ProfileResult result;
 
   MyProfile({
     required this.statusCode,
@@ -26,6 +26,7 @@ class ProfileResult {
   late String userName;
   late String phoneNumber;
   late String gender;
+  late String countryCode;
   late int totalBookings;
   late int totalCancelledBookings;
 
@@ -35,6 +36,7 @@ class ProfileResult {
     required this.phoneNumber,
     required this.gender,
     required this.totalBookings,
+    required this.countryCode,
     required this.totalCancelledBookings,
   });
 
@@ -44,6 +46,7 @@ class ProfileResult {
       userName: json['userName'],
       phoneNumber: json['phoneNumber'],
       gender: json['gender'],
+      countryCode: json['countryCode'],
       totalBookings: json['totalBookings'],
       totalCancelledBookings: json['totalCancelledBookings'],
     );

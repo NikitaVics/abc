@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animated_dialog/flutter_animated_dialog.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:super_tooltip/super_tooltip.dart';
@@ -101,16 +102,8 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   bool? hasErrorMessage;
-  final _controller = SuperTooltipController();
-  Future<bool> _willPopCallback() async {
-    // If the tooltip is open we don't pop the page on a backbutton press
-    // but close the ToolTip
-    if (_controller.isVisible) {
-      await _controller.hideTooltip();
-      return false;
-    }
-    return true;
-  }
+  bool isDeleting = false;
+  String? tempImageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -160,124 +153,55 @@ class HomeScreenState extends State<HomeScreen> {
                                   .copyWith(textScaleFactor: 1.0),
                               child: Row(
                                 children: [
-                                  WillPopScope(
-                                    onWillPop: _willPopCallback,
-                                    child: GestureDetector(
-                                      onTap: () async {
-                                        await _controller.showTooltip();
-                                      },
-                                      child: SuperTooltip(
-                                        showBarrier: true,
-                                        controller: _controller,
-                                        borderColor: AppColors.dotColor,
-                                        popupDirection: TooltipDirection.down,
-                                        backgroundColor: Colors.white,
-                                        left: 30,
-                                        right: 30,
-                                        top: 20,
-                                        arrowTipDistance: 10.0,
-                                        arrowBaseWidth: 20.0,
-                                        arrowLength: 30.0,
-                                        borderWidth: 2.0,
-                                        constraints: const BoxConstraints(
-                                          minHeight: 0.0,
-                                          maxHeight: 100,
-                                          minWidth: 0.0,
-                                          maxWidth: 100,
-                                        ),
-                                        showCloseButton: ShowCloseButton.none,
-                                        touchThroughAreaShape:
-                                            ClipAreaShape.rectangle,
-                                        touchThroughAreaCornerRadius: 30,
-                                        barrierColor:
-                                            Color.fromARGB(26, 47, 45, 47),
-                                        content: Container(
-                                          height: 100,
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    "Profile Photo",
-                                                    style: TextStyle(
-                                                      color: Theme.of(context)
-                                                                  .brightness ==
-                                                              Brightness.dark
-                                                          ? AppColors.booklight
-                                                          : AppColors
-                                                              .allHeadColor,
-                                                      fontSize: 25,
-                                                      fontFamily:
-                                                          FontFamily.satoshi,
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                    ),
-                                                  ),
-                                                  GestureDetector(
-                                                      onTap: () async {
-                                                        await Api.removePhoto(
-                                                            tokens!);
-                                                        await profile();
-                                                      },
-                                                      child: Icon(Icons.delete))
-                                                ],
-                                              ),
-                                              Row(
-                                                children: [
-                                                  GestureDetector(
-                                                    onTap: () async {
-                                                      _imgFromCamera();
-                                                      await Api.updateImage(
-                                                          tokens!,
-                                                          imageFile!.path);
-                                                           await profile();
-                                                    },
-                                                    child: Icon(Icons
-                                                        .camera_alt_outlined),
-                                                  ),
-                                                  GestureDetector(
-                                                      onTap: () async {
-                                                       await _imgFromGallery();
-
-    // Step 2: Check if imageFile is not null after picking from gallery
-    if (imageFile != null) {
-      // Step 3: Call API to update image
-      await Api.updateImage(tokens!, imageFile!.path);
-
-      // Step 4: Update the profile
-      await profile();
-    }
+                                  GestureDetector(
+                                    onTap: () async {
+                                       Map<Permission, PermissionStatus> statuses = await [
+                  Permission.storage,
+                  Permission.camera,
+                ].request();
+                if (statuses[Permission.storage]!.isGranted &&
+                    statuses[Permission.camera]!.isGranted) {
+                  showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.transparent,
+                                        builder: (context) => changeImage(),
+                                      );
+                } else {}
+                                     
+                                    },
+                                    child: SizedBox(
+                                      height: 48,
+                                      child: Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 24),
+                                        child: isDeleting?SilentErrorImage(
+                                                    width: 48.0,
+                                                    height: 48.0,
+                                                    imageUrl: tempImageUrl!
                                                         
-                                                      },
-                                                      child: Icon(Icons.image))
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                        child: SizedBox(
-                                          height: 48,
-                                          child: Padding(
-                                            padding:
-                                                const EdgeInsets.only(left: 24),
-                                            child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                        150.0),
-                                                child: imageUrl != null &&
-                                                        imageUrl!.isNotEmpty
-                                                    ? SilentErrorImage(
-                                                        width: 48.0,
-                                                        height: 48.0,
-                                                        imageUrl: imageUrl!,
-                                                      )
-                                                    : Image.asset(
-                                                        "assets/images/userImage.png",
-                                                        width: 48.0,
-                                                        height: 48.0,
-                                                      )),
-                                          ),
-                                        ),
+                                                  ):
+                                        ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(150.0),
+                                            child:
+                                            imageFile == null
+                                                ? SilentErrorImage(
+                                                    width: 48.0,
+                                                    height: 48.0,
+                                                    imageUrl:
+                                                        imageUrl!,
+                                                  )
+                                                : ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            150.0),
+                                                    child: Image.file(
+                                                      imageFile!,
+                                                      height: 48.0,
+                                                      width: 48.0,
+                                                      fit: BoxFit.fill,
+                                                    ))),
                                       ),
                                     ),
                                   ),
@@ -408,8 +332,146 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void makeTooltip() {
-    _controller.showTooltip();
+  Widget changeImage() {
+    return Container(
+      height: 220,
+      decoration: const BoxDecoration(
+        color: Color(0xFFf8f8f8),
+        boxShadow: [
+          BoxShadow(
+            color: Color.fromRGBO(0, 0, 0, 0.02),
+            offset: Offset(0, 4),
+            blurRadius: 10,
+          ),
+        ],
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(32.0),
+          topRight: Radius.circular(32.0),
+        ),
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 24, right: 24, top: 15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Profile Photo",
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.booklight
+                        : AppColors.allHeadColor,
+                    fontSize: 25,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () async {
+                    setState(() {
+                     
+                      isDeleting = true;
+                      tempImageUrl = "assets/images/userImage.png";
+                    });
+
+                    await Api.removePhoto(tokens!);
+                    await profile();
+                    setState(() {
+                      isDeleting = false;
+                      tempImageUrl = imageUrl;
+                    });
+                  },
+                  child: Image.asset(
+                    "assets/images/Delete.png",
+                    height: 26,
+                  ),
+                )
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 24, right: 24, top: 12),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    height: 133,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFEFEFE),
+                      boxShadow: [
+                        const BoxShadow(
+                          color: Color.fromRGBO(0, 0, 0, 0.02),
+                          offset: Offset(0, 4),
+                          blurRadius: 10,
+                        ),
+                      ],
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                    child: Padding(
+                        padding: const EdgeInsets.only(
+                            top: 41, bottom: 41, left: 54, right: 54),
+                        child: GestureDetector(
+                          onTap: () async {
+                            await _imgFromGallery();
+
+                            // Step 2: Check if imageFile is not null after picking from gallery
+                            if (imageFile != null) {
+                              // Step 3: Call API to update image
+                              await Api.updateImage(tokens!, imageFile!.path);
+
+                              // Step 4: Update the profile
+                            }
+                            await profile();
+                          },
+                          child: Center(
+                            child: Image.asset(
+                              "assets/images/gallery.png",
+                            ),
+                          ),
+                        )),
+                  ),
+                ),
+                SizedBox(
+                  width: 7,
+                ),
+                Expanded(
+                  child: Container(
+                      height: 133,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFEFEFE),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color.fromRGBO(0, 0, 0, 0.02),
+                            offset: Offset(0, 4),
+                            blurRadius: 10,
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            top: 41, bottom: 41, left: 54, right: 54),
+                        child: GestureDetector(
+                          onTap: () async {
+                             _imgFromCamera();
+                                                      await Api.updateImage(
+                                                          tokens!,
+                                                          imageFile!.path);
+                                                           await profile();
+                          },
+                          child: Image.asset(
+                            "assets/images/selfie.png",
+                          ),
+                        ),
+                      )),
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   // body methods:--------------------------------------------------------------

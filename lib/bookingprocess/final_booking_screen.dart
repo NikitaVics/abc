@@ -385,6 +385,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                         padding:
                             const EdgeInsets.only(top: 10, left: 19, right: 19),
                         child: Container(
+                          height: 145,
                           width: double.infinity,
                           padding: const EdgeInsets.all(17.63),
                           decoration: BoxDecoration(
@@ -529,46 +530,50 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                   ),
                 ),
                 Positioned.fill(
-                  child: Image.network(
-                    "https://s3-alpha-sig.figma.com/img/a3d5/8750/a8fe094bf670d495abfaf2655289ed39?Expires=1704672000&Signature=DyKfYtyv4EEI4JdU71WlqfiTtdfnvKxMxz0Q1hAirhq1dkVHAVqPd2~Hmy3NRPHrnaJsDNnGKm6wmwua19qNblujOfS3JA-OrvONRS9-l5H3YgDSutpuDcOBh2yJmb~yjc73GVUP0kKYU3UQe7xZ4uIN3zJjV4QbKG2c8mOt3omogIb9aLfVuDBRxW-uDS1nxq0GrHGPv7OPGinRBCo3V8oQGkWOU-fhFbE7jQA~z3g3qR9MPSwncX4iFe3wiQuP8kLDjLJMV7k05Esx-Pn55Lwq0KmfMlWtWC2IFk06f~cx6YBvuSG9CksLWOAvq0uxM3FL-zmifNDPdFfxg8zzQg__&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4",
-                  ),
+                  child: Image.asset(
+                        "assets/images/success.gif",
+                       // fit: BoxFit.cover,
+                      ),
                 ),
               ],
             );
           } else {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 215,
-                    child: Image.asset(
-                      "assets/images/loadinggif.gif",
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  AnimatedTextKit(
-                    animatedTexts: [
-                      WavyAnimatedText(
-                        'Loading...',
-                        textStyle: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.headingTextColor
-                              : AppColors.subheadColor,
-                          fontSize: 20,
-                          fontFamily: FontFamily.satoshi,
-                          fontWeight: FontWeight.w500,
-                          height: 34 / 20,
-                        ),
+            return Padding(
+              padding: const EdgeInsets.only(top: 100),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 215,
+                      child: Image.asset(
+                        "assets/images/loadinggif.gif",
+                        fit: BoxFit.cover,
                       ),
-                    ],
-                    repeatForever: true,
-                    isRepeatingAnimation: true,
-                  ),
-                ],
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    AnimatedTextKit(
+                      animatedTexts: [
+                        WavyAnimatedText(
+                          'Loading...',
+                          textStyle: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.headingTextColor
+                                : AppColors.subheadColor,
+                            fontSize: 20,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w500,
+                            height: 34 / 20,
+                          ),
+                        ),
+                      ],
+                      repeatForever: true,
+                      isRepeatingAnimation: true,
+                    ),
+                  ],
+                ),
               ),
             );
           }
@@ -669,7 +674,6 @@ class MySeparator extends StatelessWidget {
     );
   }
 }
-
 class HalfCutContainer extends StatelessWidget {
   final Widget innerContainer;
 
@@ -677,54 +681,53 @@ class HalfCutContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
-        height: 560,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(12)),
-          boxShadow: [
-            BoxShadow(
-              offset: Offset(2, 4),
-              blurRadius: 107,
-              spreadRadius: -14,
-              color: Color.fromRGBO(0, 0, 0, 0.08),
-            ),
-          ],
-        ),
-        child: Stack(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 10),
-                innerContainer,
-              ],
-            ),
-            // Positioned circle on the left side
-            Positioned(
-              left: -12, // Adjust the left position as needed
-              top: 560 / 2,
-              child: Container(
-                height: 27,
-                width: 27,
-                decoration: const BoxDecoration(
-                    shape: BoxShape.circle, color: AppColors.roundColorBooking),
+      child: Stack(
+        children:[ Container(
+          height: 560,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(12)),
+            boxShadow: [
+              BoxShadow(
+                offset: Offset(2, 4),
+                blurRadius: 107,
+                spreadRadius: -14,
+                color: Color.fromRGBO(0, 0, 0, 0.08),
               ),
-            ),
-            // Positioned circle on the right side
-            Positioned(
-              right: -12, // Adjust the right position as needed
-              top: 560 / 2,
-              child: Container(
-                height: 27,
-                width: 27,
-                decoration: const BoxDecoration(
-                    shape: BoxShape.circle, color: AppColors.roundColorBooking),
-              ),
-            ),
-          ],
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 10),
+              innerContainer,
+            ],
+          ),
         ),
-      ),
+         Positioned(
+                left: -25, // Adjust the left position as needed
+                top: 560 / 2,
+                child: Container(
+                  height:43,
+                  width: 43,
+                  decoration:  BoxDecoration(
+                      shape: BoxShape.circle, color: AppColors.roundColorBooking),
+                ),
+              ),
+              // Positioned circle on the right side
+              Positioned(
+                right: -25, // Adjust the right position as needed
+                top: 560 / 2,
+                child: Container(
+                  height: 43,
+                  width: 43,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,  color: AppColors.roundColorBooking),
+                ),
+              ),
+      ]),
     );
   }
 }
+
+

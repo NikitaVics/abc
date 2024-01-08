@@ -12,11 +12,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/constants/shimmer.dart';
+import 'package:tennis_court_booking_app/model/friendShow/friend_show_model.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
 
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
+import 'package:tennis_court_booking_app/profile/model/allfriend_model.dart';
 import 'package:tennis_court_booking_app/profile/passwardChange/password_change.dart';
+import 'package:tennis_court_booking_app/profile/profileprovider/allfriend_provider.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/myprofile_provider.dart';
 
 import 'package:tennis_court_booking_app/profile/profileprovider/profile_provider.dart';
@@ -28,15 +32,15 @@ import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_noneditable.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
 
-class MyProfileScreen extends StatefulWidget {
+class MyTeamsScreen extends StatefulWidget {
   final String pageName;
-  const MyProfileScreen({super.key, required this.pageName});
+  const MyTeamsScreen({super.key, required this.pageName});
 
   @override
-  MyProfileScreenState createState() => MyProfileScreenState();
+  MyTeamsScreenState createState() => MyTeamsScreenState();
 }
 
-class MyProfileScreenState extends State<MyProfileScreen> {
+class MyTeamsScreenState extends State<MyTeamsScreen> {
   //text controllers:-----------------------------------------------------------
   final TextEditingController nameController = TextEditingController();
   final TextEditingController phonePrefixController = TextEditingController();
@@ -85,7 +89,8 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   //stores:---------------------------------------------------------------------
 
   //focus node:-----------------------------------------------------------------
-
+  bool isFirstButtonSelected = false;
+  bool isSecondButtonSelected = false;
   bool juniorColor = false, seniorColor = false;
   bool isSelected = false;
   DateTime? dateTime;
@@ -108,7 +113,9 @@ class MyProfileScreenState extends State<MyProfileScreen> {
     _confirmpasswordFocusNode.addListener(() {
       //validateConfirmPassword();
     });
+    isFirstButtonSelected = true;
     profile();
+    frined();
   }
 
   FocusNode myFocusNode = FocusNode();
@@ -122,6 +129,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   String cancelBook = "";
   String? tokens;
   File? imageFile;
+  bool isLoad = false;
   Future<void> profile() async {
     final profileProvider =
         Provider.of<ProfileProvider>(context, listen: false);
@@ -132,6 +140,23 @@ class MyProfileScreenState extends State<MyProfileScreen> {
         Provider.of<MyProfileProvider>(context, listen: false);
     myProfileProv.fetchProfile(token);
     print(name);
+  }
+
+  Future<void> frined() async {
+    final myFriendProvider =
+        Provider.of<MyFriendProvider>(context, listen: false);
+
+    setState(() {
+      isLoad = true;
+    });
+    String token = await SharePref.fetchAuthToken();
+    tokens = await SharePref.fetchAuthToken();
+    myFriendProvider.fetchFrined(token);
+
+    print(name);
+    setState(() {
+      isLoad = false;
+    });
   }
 
   bool isEdited = false;
@@ -175,9 +200,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                             height: 26,
                           ),
                         ),
-                        SizedBox(
-                          width: 106,
-                        ),
+                        const Spacer(),
                         Text(
                           widget.pageName,
                           style: TextStyle(
@@ -191,6 +214,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                             height: 32 / 20,
                           ),
                         ),
+                        const Spacer(flex: 2)
                       ],
                     ),
                   ),
@@ -234,63 +258,94 @@ class MyProfileScreenState extends State<MyProfileScreen> {
     );
   }
 
-  Widget _buildLeftSide() {
-    return SizedBox(
-      width: 300,
-      child: SizedBox.expand(
-        child: Image.asset(
-          "assets/images/onboard_back_one.png",
-          //Assets.carBackground,
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-  }
-
   Widget _buildRightSide() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Consumer2<ProfileProvider, MyProfileProvider>(
-          builder: (context, provider, providers, child) {
-            if (provider.profileModel == null) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            } else {
-              final profileData = provider.profileModel!;
-              final myprofileData = providers.myProfile;
-              imageUrl = profileData.result.imageUrl;
-              name = profileData.result.name ?? "";
-              userName = myprofileData?.result.userName ?? "";
-              phoneNum = myprofileData?.result.phoneNumber ?? "";
-              gen = myprofileData?.result.gender ?? "";
-              prefPhone = myprofileData?.result.countryCode??"";
-              bookCount = myprofileData?.result.totalBookings.toString() ?? "0";
-              cancelBook =
-                  myprofileData?.result.totalCancelledBookings.toString() ??
-                      "0";
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child:isFirstButtonSelected? Consumer2<ProfileProvider, MyFriendProvider>(
+        builder: (context, provider, providers, child) {
+          if (provider.profileModel == null) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            final profileData = provider.profileModel!;
+            final myFriendData = providers.myFriend;
+            imageUrl = profileData.result.imageUrl;
+            name = profileData.result.name ?? "";
+            if (myFriendData != null && myFriendData.result.isNotEmpty) {
+              List<MyFriend> allfriend = myFriendData.result;
+
               return Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   _buildLoginText(),
-                  isEdited
-                      ? const SizedBox()
-                      : const SizedBox(
-                          height: 20,
-                        ),
-                  _buildProfilePerfomence(),
-                  _buildPerfomenceEveryBooking(),
+                  _buildBookingButton(),
+                  Expanded(
+                    child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      itemCount: allfriend.length,
+                      itemBuilder: (context, index) {
+                        return _friendsWidget(
+                          index, allfriend.length, allfriend[index]
+                        );
+                      },
+                    ),
+                  ),
                   const SizedBox(
                     height: 20,
                   ),
                 ],
               );
+            }else{
+              return const ShimmerEffect();
             }
-          },
-        ),
+          }
+        },
+      ):
+       Consumer2<ProfileProvider, MyFriendProvider>(
+        builder: (context, provider, providers, child) {
+          if (provider.profileModel == null) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            final profileData = provider.profileModel!;
+            final myFriendData = providers.myFriend;
+            imageUrl = profileData.result.imageUrl;
+            name = profileData.result.name ?? "";
+            if (myFriendData != null && myFriendData.result.isNotEmpty) {
+              List<MyFriend> allfriend = myFriendData.result;
+
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  _buildLoginText(),
+                  _buildBookingButton(),
+                  Expanded(
+                    child: ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      itemCount: allfriend.length,
+                      itemBuilder: (context, index) {
+                        return _friendsWidget(
+                          index, allfriend.length, allfriend[index]
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                ],
+              );
+            }else{
+              return const ShimmerEffect();
+            }
+          }
+        },
       ),
     );
   }
@@ -346,31 +401,14 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                       height: 32 / 20,
                     ),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if (isEdited) {
-                          isEdited = false;
-                        } else {
-                          isEdited = true;
-                          nameController.text = userName;
-                          phoneController.text = phoneNum;
-                          genderController.text = gen;
-                          phonePrefixController.text = prefPhone;
-                        }
-                      });
-                    },
-                    child: Text(
-                      isEdited ? "Discard" : "Edit Profile",
-                      style: TextStyle(
-                        color: isEdited
-                            ? AppColors.errorColor
-                            : AppColors.dotColor,
-                        fontSize: 14,
-                        fontFamily: FontFamily.satoshi,
-                        fontWeight: FontWeight.w400,
-                        height: 24 / 14,
-                      ),
+                  Text(
+                    "Member from",
+                    style: TextStyle(
+                      color: AppColors.dotColor,
+                      fontSize: 14,
+                      fontFamily: FontFamily.satoshi,
+                      fontWeight: FontWeight.w400,
+                      height: 24 / 14,
                     ),
                   ),
                 ],
@@ -383,214 +421,146 @@ class MyProfileScreenState extends State<MyProfileScreen> {
         ));
   }
 
-  Widget _buildProfilePerfomence() {
+  Widget _buildBookingButton() {
+    return Padding(
+        padding: const EdgeInsets.only(top: 30, bottom: 22),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: SizedBox(
+                height: 40,
+                // width: MediaQuery.of(context).size.width * 0.4,
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      isFirstButtonSelected = true;
+                      isSecondButtonSelected = false;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isFirstButtonSelected
+                        ? AppColors.elevatedColor
+                        : Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                        side: BorderSide(
+                            color: isFirstButtonSelected
+                                ? Colors.transparent
+                                : AppColors.bookingInvalid)),
+                  ),
+                  child: Text(
+                    'My Friends',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: isFirstButtonSelected
+                          ? Colors.white
+                          : AppColors.bookingInvalid,
+                      fontSize: 12,
+                      fontFamily: FontFamily.satoshi,
+                      fontWeight: FontWeight.w700,
+                      height: 24 / 12,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: SizedBox(
+                height: 40,
+                // width: MediaQuery.of(context).size.width * 0.4,
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      isFirstButtonSelected = false;
+                      isSecondButtonSelected = true;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isSecondButtonSelected
+                        ? AppColors.elevatedColor
+                        : Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                        side: BorderSide(
+                            color: isSecondButtonSelected
+                                ? Colors.transparent
+                                : AppColors.bookingInvalid)),
+                  ),
+                  child: Text('Requests',
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: isSecondButtonSelected
+                            ? Colors.white
+                            : AppColors.bookingInvalid,
+                        fontSize: 12,
+                        fontFamily: FontFamily.satoshi,
+                        fontWeight: FontWeight.w700,
+                        height: 24 / 12,
+                      )),
+                ),
+              ),
+            ),
+          ],
+        ));
+  }
+
+  Widget _friendsWidget(int index, int itemCount, MyFriend? myfriend) {
     Color borderColor = AppColors.appbarBoarder;
     final themeNotifier = context.watch<ThemeModeNotifier>();
     final textScaleFactor = MediaQuery.of(context).textScaleFactor;
-    return Padding(
-        padding: const EdgeInsets.only(top: 20),
-        child: Consumer<MyProfileProvider>(builder: (context, provider, child) {
-          if (provider.myProfile == null) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            return Center(
-              child: MediaQuery(
-                data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    TextFieldNonEditable(
-                      width: MediaQuery.of(context).size.width,
-                      controller: nameController,
-                      focusBorderColor: AppColors.focusTextBoarder,
-                      fillColor: isEdited
-                          ? AppColors.textInputField
-                          : Colors.transparent,
-                      boarderColor: isEdited
-                          ? AppColors.transparent
-                          : AppColors.appbarBoarder,
-                      color: isEdited
-                          ? AppColors.textInputField
-                          : Colors.transparent,
-                      hintColor: isEdited
-                          ? AppColors.hintColor
-                          : AppColors.subheadColor,
-                      hint: isEdited ? "User Name " : userName,
-                      obscure: false,
-                      textInputType: TextInputType.name,
-                      textInputAction: TextInputAction.next,
-                      editable: isEdited,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      children: [
-                        InkWell(
-                          onTap: isEdited == true
-                              ? () {
-                                  if (isEdited == true) {
-                                    FocusScope.of(context)
-                                        .requestFocus(_focusNode);
-                                    showCountryPicker(
-                                      context: context,
-                                      showPhoneCode: true,
-                                      onSelect: (Country country) {
-                                        phonePrefixController.text =
-                                            "+ ${country.phoneCode}";
-                                      },
-                                    );
-                                  }
-                                }
-                              : null,
-                          child: TextFieldNonEditable(
-                            width: MediaQuery.of(context).size.width / 5.5,
-                            focusNode: _focusNode,
-                            controller: phonePrefixController,
-                            focusBorderColor: isEdited
-                                ? AppColors.focusTextBoarder
-                                : AppColors.appbarBoarder,
-                            fillColor: isEdited
-                                ? AppColors.textInputField
-                                : Colors.transparent,
-                            boarderColor: isEdited
-                                ? AppColors.transparent
-                                : AppColors.appbarBoarder,
-                            color: isEdited
-                                ? AppColors.textInputField
-                                : Colors.transparent,
-                            hintColor: isEdited
-                                ? AppColors.hintColor
-                                : AppColors.subheadColor,
-                            hint: isEdited ? "+973 " : prefPhone,
-                            obscure: false,
-                            textInputType: TextInputType.name,
-                            textInputAction: TextInputAction.next,
-                            editable: false,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Expanded(
-                          child: TextFieldNonEditable(
-                            width: MediaQuery.of(context).size.width / 1.5,
-                            controller: phoneController,
-                            focusBorderColor: AppColors.focusTextBoarder,
-                            fillColor: isEdited
-                                ? AppColors.textInputField
-                                : Colors.transparent,
-                            boarderColor: isEdited
-                                ? AppColors.transparent
-                                : AppColors.appbarBoarder,
-                            color: isEdited
-                                ? AppColors.textInputField
-                                : Colors.transparent,
-                            hintColor: isEdited
-                                ? AppColors.hintColor
-                                : AppColors.subheadColor,
-                            hint: isEdited ? "Phone Number " : phoneNum,
-                            obscure: false,
-                            textInputType: TextInputType.name,
-                            textInputAction: TextInputAction.next,
-                            editable: isEdited,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    isEdited
-                        ? const SizedBox()
-                        : TextFieldNonEditable(
-                            width: MediaQuery.of(context).size.width,
-                            controller: genderController,
-                            focusBorderColor: AppColors.focusTextBoarder,
-                            fillColor: Colors.transparent,
-                            boarderColor: AppColors.appbarBoarder,
-                            color: Colors.transparent,
-                            hintColor: AppColors.subheadColor,
-                            hint: gen,
-                            obscure: false,
-                            textInputType: TextInputType.text,
-                            editable: false,
-                          ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    isEdited
-                        ? const SizedBox()
-                        : GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                isSelected = true;
-                              });
-                              setState(() {
-                                isSelected = true;
-                              });
-                              if (isSelected == true) {
-                                showModalBottomSheet(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  backgroundColor: Colors.transparent,
-                                  builder: (context) => changePaasword(),
-                                ).whenComplete(() {
-                                  setState(() {
-                                    isSelected = false;
-                                  });
-                                });
-                              }
-                            },
-                            child: Container(
-                              height: 56,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 12),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: AppColors.textInputField,
-                                  border: Border.all(
-                                      color: isSelected == true
-                                          ? AppColors.focusTextBoarder
-                                          : borderColor,
-                                      width: 1)),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    "Change Password",
-                                    style: TextStyle(
-                                      color: AppColors.subheadColor,
-                                      fontSize: 16,
-                                      fontFamily: FontFamily.satoshi,
-                                      fontWeight: FontWeight.w400,
-                                      height: 24 / 16,
-                                    ),
-                                  ),
-                                  IconButton(
-                                    padding: EdgeInsets.zero,
-                                    onPressed: () {},
-                                    icon: Image.asset(
-                                      "assets/images/Right.png",
-                                      //width: 18,
-                                      height: 24,
-                                    ),
-                                  ),
-                                ],
-                              ),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: SizedBox(
+            height: 48,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ClipRRect(
+                            borderRadius: BorderRadius.circular(110.0),
+                            child: SilentErrorImage(
+                              width: 48.0,
+                              height: 48.0,
+                              imageUrl: myfriend?.friendImageUrl ??
+                                  'assets/images/ProfileImage.png',
                             ),
-                          )
-                  ],
-                ),
+                          ),
+                 
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: Text(
+                      myfriend?.friendName??" ",
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.headingTextColor
+                            : AppColors.allHeadColor,
+                        fontSize: 16,
+                        fontFamily: FontFamily.satoshi,
+                        fontWeight: FontWeight.w400,
+                        height: 24 / 16,
+                      ),
+                    ),
+                  ),
+                  Image.asset(
+                    "assets/images/Delete.png",
+                    width: 20.0,
+                    height: 20.0,
+                  ),
+                ],
               ),
-            );
-          }
-        }));
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   Widget changePaasword() {

@@ -9,6 +9,7 @@ import 'package:tennis_court_booking_app/model/finalBookModel/final_book_model.d
 import 'package:tennis_court_booking_app/model/friendShow/friend_show_model.dart';
 import 'package:tennis_court_booking_app/model/upComingBooking/upcoming_booking_model.dart';
 import 'package:tennis_court_booking_app/presentation/home/model/checkstatus.dart';
+import 'package:tennis_court_booking_app/profile/model/allfriend_model.dart';
 import 'package:tennis_court_booking_app/profile/model/my_profile.dart';
 import 'package:tennis_court_booking_app/profile/model/profile_model.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
@@ -302,7 +303,7 @@ class Api {
   //Friend show
   static Future<FriendShowModel> friendShow(
       String bearerToken, DateTime date, String time) async {
-    var url = "$baseUrl/api/Friend/Available Friends";
+    var url = "$baseUrl/api/Friend/Available Friends For Booking";
     Uri uri = Uri.parse('$url?selectedDate=$date&selectedSlot=$time');
     url = uri.toString();
     // Convert the model to a JSON string
@@ -593,5 +594,21 @@ static Future<UpcomingBookingModel> upComingResponse(String bearerToken) async {
       // Handle the error or return an appropriate response.
       return null;
     }
+  }
+  //All friend
+  static Future< AllFrinedModel> allFrinedResponse(String bearerToken) async {
+    var url = "$baseUrl/api/Friend/All Friends";
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+    };
+
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    print(response.body);
+
+    return  AllFrinedModel.fromJson(jsonDecode(response.body));
   }
 }
