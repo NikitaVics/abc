@@ -6,9 +6,11 @@ import 'package:country_picker/country_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:motion_toast/motion_toast.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tennis_court_booking_app/api/api.dart';
 
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
@@ -19,8 +21,11 @@ import 'package:tennis_court_booking_app/presentation/home/home_provider/check_s
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/profile/model/allfriend_model.dart';
+import 'package:tennis_court_booking_app/profile/model/allfriend_request_model.dart';
 import 'package:tennis_court_booking_app/profile/passwardChange/password_change.dart';
+import 'package:tennis_court_booking_app/profile/profileThings/addfriend_screen.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/allfriend_provider.dart';
+import 'package:tennis_court_booking_app/profile/profileprovider/allfriendrequest_provider.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/myprofile_provider.dart';
 
 import 'package:tennis_court_booking_app/profile/profileprovider/profile_provider.dart';
@@ -42,50 +47,10 @@ class MyTeamsScreen extends StatefulWidget {
 
 class MyTeamsScreenState extends State<MyTeamsScreen> {
   //text controllers:-----------------------------------------------------------
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController phonePrefixController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-  final TextEditingController genderController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController _password = TextEditingController();
-  final TextEditingController _confirmpassword = TextEditingController();
-  FocusNode _focusNode = FocusNode();
 
-  //predefine bool value for error:---------------------------------------------
-  bool emailError = false,
-      passwordError = false,
-      confirmPasswordError = false,
-      loginError = false;
-  String emailErrorText = '',
-      passwordErrorText = '',
-      loginErrorMessage = '',
-      confirmPasswordErrorText = '';
-  late FocusNode _passwordFocusNode;
-  late FocusNode _confirmpasswordFocusNode;
   bool isLoading = false;
   //predefine bool value for error:---------------------------------------------
-  List<bool> isPasswordValid(String password) {
-    // Define regular expressions for each condition
-    final lowercaseRegex = RegExp(r'[a-z]');
-    final uppercaseRegex = RegExp(r'[A-Z]');
-    final digitRegex = RegExp(r'[0-9]');
-    final specialCharRegex = RegExp(r'[!@#\$%^&*()_+{}\[\]:;<>,.?~\\-]');
-
-    final isLengthValid = password.length >= 8;
-    final hasLowercase = lowercaseRegex.hasMatch(password);
-    final hasUppercase = uppercaseRegex.hasMatch(password);
-    final hasDigit = digitRegex.hasMatch(password);
-    final hasSpecialChar = specialCharRegex.hasMatch(password);
-
-    return [
-      isLengthValid,
-      hasLowercase,
-      hasUppercase,
-      hasDigit,
-      hasSpecialChar
-    ];
-  }
-
+  
   //stores:---------------------------------------------------------------------
 
   //focus node:-----------------------------------------------------------------
@@ -99,20 +64,11 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
   bool state = false;
   bool lightState = true;
   //SignInProvider? provider;
-  bool _isMenuVisible = false;
+
   @override
   void initState() {
     super.initState();
-    _passwordFocusNode = FocusNode();
-    _passwordFocusNode.addListener(() {
-      setState(() {
-        _isMenuVisible = _passwordFocusNode.hasFocus;
-      });
-    });
-    _confirmpasswordFocusNode = FocusNode();
-    _confirmpasswordFocusNode.addListener(() {
-      //validateConfirmPassword();
-    });
+
     isFirstButtonSelected = true;
     profile();
     frined();
@@ -145,6 +101,8 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
   Future<void> frined() async {
     final myFriendProvider =
         Provider.of<MyFriendProvider>(context, listen: false);
+    final myFriendRequestProvider =
+        Provider.of<MyFriendRequestProvider>(context, listen: false);
 
     setState(() {
       isLoad = true;
@@ -152,6 +110,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
     String token = await SharePref.fetchAuthToken();
     tokens = await SharePref.fetchAuthToken();
     myFriendProvider.fetchFrined(token);
+    myFriendRequestProvider.fetchFrined(token);
 
     print(name);
     setState(() {
@@ -244,13 +203,14 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
               ? Column(
                   children: [
                     Expanded(child: _buildRightSide()),
-                    isEdited ? _buildSignInButton() : SizedBox()
+                    //isEdited ? _buildSignInButton() : SizedBox()
                   ],
                 )
               : Column(
                   children: [
                     Expanded(child: _buildRightSide()),
-                    isEdited ? _buildSignInButton() : SizedBox()
+                    _buildSignInButton()
+                    //isEdited ? _buildSignInButton() : SizedBox()
                   ],
                 ),
         ],
@@ -260,20 +220,18 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
 
   Widget _buildRightSide() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child:isFirstButtonSelected? Consumer2<ProfileProvider, MyFriendProvider>(
-        builder: (context, provider, providers, child) {
-          if (provider.profileModel == null) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            final profileData = provider.profileModel!;
-            final myFriendData = providers.myFriend;
-            imageUrl = profileData.result.imageUrl;
-            name = profileData.result.name ?? "";
-            if (myFriendData != null && myFriendData.result.isNotEmpty) {
-              List<MyFriend> allfriend = myFriendData.result;
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Consumer<ProfileProvider>(
+          builder: (context, provider, child) {
+            if (provider.profileModel == null) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else {
+              final profileData = provider.profileModel!;
+
+              imageUrl = profileData.result.imageUrl;
+              name = profileData.result.name ?? "";
 
               return Column(
                 mainAxisSize: MainAxisSize.max,
@@ -282,72 +240,62 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                 children: <Widget>[
                   _buildLoginText(),
                   _buildBookingButton(),
-                  Expanded(
-                    child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      itemCount: allfriend.length,
-                      itemBuilder: (context, index) {
-                        return _friendsWidget(
-                          index, allfriend.length, allfriend[index]
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                ],
-              );
-            }else{
-              return const ShimmerEffect();
-            }
-          }
-        },
-      ):
-       Consumer2<ProfileProvider, MyFriendProvider>(
-        builder: (context, provider, providers, child) {
-          if (provider.profileModel == null) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            final profileData = provider.profileModel!;
-            final myFriendData = providers.myFriend;
-            imageUrl = profileData.result.imageUrl;
-            name = profileData.result.name ?? "";
-            if (myFriendData != null && myFriendData.result.isNotEmpty) {
-              List<MyFriend> allfriend = myFriendData.result;
+                  isFirstButtonSelected
+                      ? Consumer<MyFriendProvider>(
+                          builder: (context, provider, child) {
+                            final myFriendData = provider.myFriend;
+                            if (provider.myFriend == null) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else {
+                              List<MyFriend> allfriend = myFriendData!.result;
 
-              return Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  _buildLoginText(),
-                  _buildBookingButton(),
-                  Expanded(
-                    child: ListView.builder(
-                      scrollDirection: Axis.vertical,
-                      itemCount: allfriend.length,
-                      itemBuilder: (context, index) {
-                        return _friendsWidget(
-                          index, allfriend.length, allfriend[index]
-                        );
-                      },
-                    ),
-                  ),
+                              return Expanded(
+                                child: ListView.builder(
+                                  scrollDirection: Axis.vertical,
+                                  itemCount: allfriend.length,
+                                  itemBuilder: (context, index) {
+                                    return _friendsWidget(index,
+                                        allfriend.length, allfriend[index]);
+                                  },
+                                ),
+                              );
+                            }
+                          },
+                        )
+                      : Consumer<MyFriendRequestProvider>(
+                          builder: (context, provider, child) {
+                            final myFriendData = provider.myFriend;
+                            if (provider.myFriend == null) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else {
+                              List<MyFriendRequest> allfriend =
+                                  myFriendData!.result;
+
+                              return Expanded(
+                                child: ListView.builder(
+                                  scrollDirection: Axis.vertical,
+                                  itemCount: allfriend.length,
+                                  itemBuilder: (context, index) {
+                                    return _friendRequestWidget(index,
+                                        allfriend.length, allfriend[index]);
+                                  },
+                                ),
+                              );
+                            }
+                          },
+                        ),
                   const SizedBox(
                     height: 20,
                   ),
                 ],
               );
-            }else{
-              return const ShimmerEffect();
             }
-          }
-        },
-      ),
-    );
+          },
+        ));
   }
 
   Widget _buildLoginText() {
@@ -523,21 +471,20 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   ClipRRect(
-                            borderRadius: BorderRadius.circular(110.0),
-                            child: SilentErrorImage(
-                              width: 48.0,
-                              height: 48.0,
-                              imageUrl: myfriend?.friendImageUrl ??
-                                  'assets/images/ProfileImage.png',
-                            ),
-                          ),
-                 
+                    borderRadius: BorderRadius.circular(110.0),
+                    child: SilentErrorImage(
+                      width: 48.0,
+                      height: 48.0,
+                      imageUrl: myfriend?.friendImageUrl ??
+                          'assets/images/ProfileImage.png',
+                    ),
+                  ),
                   SizedBox(
                     width: 20,
                   ),
                   Expanded(
                     child: Text(
-                      myfriend?.friendName??" ",
+                      myfriend?.friendName ?? " ",
                       style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
                             ? AppColors.headingTextColor
@@ -549,11 +496,212 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                       ),
                     ),
                   ),
-                  Image.asset(
-                    "assets/images/Delete.png",
-                    width: 20.0,
-                    height: 20.0,
+                  GestureDetector(
+                    onTap: () async {
+                      int response =
+                          await Api.deleteFriend(tokens!, myfriend!.friendId);
+                          await frined();
+                        response==200?  
+                      MotionToast(
+                        primaryColor: AppColors.dotColor,
+                        description: Text(
+                         "Account Removed Successfully!",
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.allHeadColor,
+                            fontSize: 16,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w400,
+                            height: 24 / 16,
+                          ),
+                        ),
+                        icon: Icons.warning,
+                        animationCurve: Curves.bounceInOut,
+                      ).show(context): MotionToast(
+                        primaryColor: AppColors.errorColor,
+                        description: Text(
+                         "Something went wrong!",
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.allHeadColor,
+                            fontSize: 16,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w400,
+                            height: 24 / 16,
+                          ),
+                        ),
+                        icon: Icons.warning,
+                        animationCurve: Curves.bounceInOut,
+                      ).show(context);
+                    },
+                    child: Image.asset(
+                      "assets/images/Delete.png",
+                      width: 20.0,
+                      height: 20.0,
+                    ),
                   ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _friendRequestWidget(
+      int index, int itemCount, MyFriendRequest? myfriend) {
+    Color borderColor = AppColors.appbarBoarder;
+    final themeNotifier = context.watch<ThemeModeNotifier>();
+    final textScaleFactor = MediaQuery.of(context).textScaleFactor;
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: SizedBox(
+            height: 48,
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(110.0),
+                    child: SilentErrorImage(
+                      width: 48.0,
+                      height: 48.0,
+                      imageUrl: myfriend?.friendImageUrl ??
+                          'assets/images/ProfileImage.png',
+                    ),
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: Text(
+                      myfriend?.friendName ?? " ",
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.headingTextColor
+                            : AppColors.allHeadColor,
+                        fontSize: 16,
+                        fontFamily: FontFamily.satoshi,
+                        fontWeight: FontWeight.w400,
+                        height: 24 / 16,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      print(myfriend!.friendId);
+                      String response = await Api.rejectFriendRequest(
+                          tokens!, myfriend!.friendId);
+                          await frined();
+                      MotionToast(
+                        primaryColor: AppColors.dotColor,
+                        description: Text(
+                          response,
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.allHeadColor,
+                            fontSize: 16,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w400,
+                            height: 24 / 16,
+                          ),
+                        ),
+                        icon: Icons.warning,
+                        animationCurve: Curves.bounceInOut,
+                      ).show(context);
+                    },
+                    child: Container(
+                      height: 36,
+                      padding: EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        border:
+                            Border.all(color: AppColors.errorColor, width: 1),
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 12, right: 12),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Reject',
+                              style: TextStyle(
+                                color: AppColors.errorColor,
+                                fontSize: 12,
+                                fontFamily: FontFamily.satoshi,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 12,
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      String response = await Api.acceptFriendRequest(
+                          tokens!, myfriend!.friendId);
+                      await frined();
+                      MotionToast(
+                        primaryColor: AppColors.dotColor,
+                        description: Text(
+                          response,
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.allHeadColor,
+                            fontSize: 16,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w400,
+                            height: 24 / 16,
+                          ),
+                        ),
+                        icon: Icons.warning,
+                        animationCurve: Curves.bounceInOut,
+                      ).show(context);
+                    },
+                    child: Container(
+                      height: 36,
+                      padding: EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        border:
+                            Border.all(color: AppColors.confirmValid, width: 1),
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 12, right: 12),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Accept',
+                              style: TextStyle(
+                                color: AppColors.confirmValid,
+                                fontSize: 12,
+                                fontFamily: FontFamily.satoshi,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
@@ -588,248 +736,38 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
     );
   }
 
-  Widget _buildChangePassText() {
-    return Row(
-      children: [
-        IconButton(
-          padding: EdgeInsets.zero,
-          onPressed: () {
-            Navigator.pop(context, null);
-          },
-          icon: Image.asset(
-            "assets/images/leftIcon.png",
-            //width: 18,
-            height: 26,
-          ),
-        ),
-        const Spacer(),
-        Text(
-          "Change Password ",
-          style: TextStyle(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? AppColors.headingTextColor
-                : AppColors.allHeadColor,
-            fontSize: 20,
-            fontFamily: FontFamily.satoshi,
-            fontWeight: FontWeight.w700,
-            height: 28 / 20,
-          ),
-        ),
-        const Spacer(flex: 2)
-      ],
-    );
-  }
-
-  Widget _buildPerfomenceEveryBooking() {
-    final themeNotifier = context.watch<ThemeModeNotifier>();
-    final textScaleFactor = MediaQuery.of(context).textScaleFactor;
-    return Padding(
-        padding: const EdgeInsets.only(top: 20),
-        child: Center(
-          child: MediaQuery(
-            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 104,
-                    decoration: BoxDecoration(
-                        color: AppColors.bookingShowColor,
-                        border: Border.all(color: AppColors.confirmValid),
-                        borderRadius: BorderRadius.circular(8)),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          top: 10, bottom: 10, left: 10, right: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            bookCount,
-                            style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.confirmValid
-                                  : AppColors.confirmValid,
-                              fontSize: 32,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w700,
-                              height: 40 / 32,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Text(
-                              "Total Number of ",
-                              style: TextStyle(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.totalbookingColor
-                                    : AppColors.totalbookingColor,
-                                fontSize: 12,
-                                fontFamily: FontFamily.satoshi,
-                                fontWeight: FontWeight.w400,
-                                height: 20 / 12,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Text(
-                              "Bookings",
-                              style: TextStyle(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.totalbookingColor
-                                    : AppColors.totalbookingColor,
-                                fontSize: 12,
-                                fontFamily: FontFamily.satoshi,
-                                fontWeight: FontWeight.w400,
-                                height: 20 / 12,
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                Expanded(
-                  child: Container(
-                    height: 104,
-                    decoration: BoxDecoration(
-                        color: AppColors.cancelBack,
-                        border: Border.all(color: AppColors.errorColor),
-                        borderRadius: BorderRadius.circular(8)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            cancelBook,
-                            style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.errorColor
-                                  : AppColors.errorColor,
-                              fontSize: 32,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w700,
-                              height: 40 / 32,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Text(
-                              "Cancelled ",
-                              style: TextStyle(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.cancelBooking
-                                    : AppColors.cancelBooking,
-                                fontSize: 12,
-                                fontFamily: FontFamily.satoshi,
-                                fontWeight: FontWeight.w400,
-                                height: 20 / 12,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Text(
-                              "Bookings",
-                              style: TextStyle(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.cancelBooking
-                                    : AppColors.cancelBooking,
-                                fontSize: 12,
-                                fontFamily: FontFamily.satoshi,
-                                fontWeight: FontWeight.w400,
-                                height: 20 / 12,
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ));
-  }
-
-  Widget _buildSignInButton() {
+   Widget _buildSignInButton() {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 19),
         child: FocusScope(
           // Manage keyboard focus
-          child: Consumer<SignInProvider>(builder: (context, value, child) {
-            void loginButtonPressed() async {
-              FocusManager.instance.primaryFocus?.unfocus();
-              SharedPreferences pref = await SharedPreferences.getInstance();
-              setState(() {
-                loginError = false;
-              });
-
-              setState(() {
-                isLoading = true;
-              });
-              value
-                  .updateProfile(
-                      tokens!,
-                      nameController.text,
-                      phoneController.text,
-                      phonePrefixController.text,
-                      false,
-                      imageFile?.path ?? null)
-                  .then((val) {
-                if (val != null && val["statusCode"] == 200) {
-                  setState(() {
-                    isEdited = false;
-                    isLoading = false;
-                  });
-                } else {
-                  setState(() {
-                    if (val != null) {
-                      loginError = true;
-                      AnimatedToast.showToastMessage(
-                        context,
-                        val["errorMessage"][0],
-                        const Color.fromRGBO(87, 87, 87, 0.93),
-                      );
-                    }
-                    isLoading = false;
-                  });
-                }
-              });
-            }
-
-            return CustomElevatedButton(
+          child: CustomElevatedButton(
               height: 60,
               width: MediaQuery.of(context).orientation == Orientation.landscape
                   ? 70
                   : double.infinity,
               isLoading: isLoading,
-              text: "Update",
-              onPressed:
-                  passwordError & emailError ? () {} : loginButtonPressed,
+              text: "Add Friends",
+              onPressed: ()
+              {
+ Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AddFriendScreen(
+                                    pageName: "Add Friends",
+                                  )));
+              },
               buttonColor: AppColors.elevatedColor,
               textColor: Colors.white,
-            );
-          }),
+            )
         ),
       ),
     );
   }
 
+ 
   // General Methods:-----------------------------------------------------------
 
   // dispose:-------------------------------------------------------------------
@@ -837,7 +775,6 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
   void dispose() {
     // Clean up the controller when the Widget is removed from the Widget tree
 
-    _passwordFocusNode.dispose();
     super.dispose();
   }
 

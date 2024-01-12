@@ -47,9 +47,12 @@ class HomeScreen extends StatefulWidget {
   HomeScreenState createState() => HomeScreenState();
 }
 
-class HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
+      late AnimationController _animationController;
+late CurvedAnimation _animation;
   //text controllers:-----------------------------------------------------------
-
+ 
   //predefine bool value for error:---------------------------------------------
 
   //stores:---------------------------------------------------------------------
@@ -64,12 +67,32 @@ class HomeScreenState extends State<HomeScreen> {
   String? imageUrl;
   //SignInProvider? provider;
   int? id;
+  bool _isInitializationComplete = false;
   @override
   void initState() {
     super.initState();
+
     _passwordFocusNode = FocusNode();
-    profile();
-    _fetchCourtInfoResponse();
+     _animationController = AnimationController(
+    vsync: this,
+    duration: Duration(milliseconds: 500), // Set the duration as needed
+  );
+
+  _animation = CurvedAnimation(
+    parent: _animationController,
+    curve: Curves.easeIn,
+  );
+
+
+    _initializeData();
+     
+  }
+
+  Future<void> _initializeData() async {
+    await profile();
+    await _fetchCourtInfoResponse();
+     _animationController.forward();
+   
   }
 
   final picker = ImagePicker();
@@ -105,6 +128,7 @@ class HomeScreenState extends State<HomeScreen> {
   bool isDeleting = false;
   String? tempImageUrl;
 
+//Home
   @override
   Widget build(BuildContext context) {
     return Consumer2<CheckStatusProvider, ProfileProvider>(
@@ -127,7 +151,7 @@ class HomeScreenState extends State<HomeScreen> {
 
           print("Nope $hasErrorMessage");
 
-          return loading == true
+          return loading == true && _isInitializationComplete == true
               ? const Center(
                   child: CircularProgressIndicator(),
                 )
@@ -139,185 +163,195 @@ class HomeScreenState extends State<HomeScreen> {
                   primary: true,
                   body: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 12),
-                        child: Container(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.darkTextInput
-                              : Colors.white,
-                          height: 90,
-                          width: MediaQuery.of(context).size.width,
-                          child: Center(
-                            child: MediaQuery(
-                              data: MediaQuery.of(context)
-                                  .copyWith(textScaleFactor: 1.0),
-                              child: Row(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () async {
-                                       Map<Permission, PermissionStatus> statuses = await [
-                  Permission.storage,
-                  Permission.camera,
-                ].request();
-                if (statuses[Permission.storage]!.isGranted &&
-                    statuses[Permission.camera]!.isGranted) {
-                  showModalBottomSheet(
-                                        context: context,
-                                        isScrollControlled: true,
-                                        backgroundColor: Colors.transparent,
-                                        builder: (context) => changeImage(),
-                                      );
-                } else {}
-                                     
-                                    },
-                                    child: SizedBox(
-                                      height: 48,
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 24),
-                                        child: isDeleting?SilentErrorImage(
-                                                    width: 48.0,
-                                                    height: 48.0,
-                                                    imageUrl: tempImageUrl!
-                                                        
-                                                  ):
-                                        ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(150.0),
-                                            child:
-                                            imageFile == null
-                                                ? SilentErrorImage(
-                                                    width: 48.0,
-                                                    height: 48.0,
-                                                    imageUrl:
-                                                        imageUrl!,
-                                                  )
-                                                : ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            150.0),
-                                                    child: Image.file(
-                                                      imageFile!,
-                                                      height: 48.0,
-                                                      width: 48.0,
-                                                      fit: BoxFit.fill,
-                                                    ))),
+                      AnimatedBuilder(
+                         animation: _animationController,
+  builder: (context, child) {
+    return Transform.translate(
+      offset: Offset(0.0, -100 * (1 - _animation.value)),
+      child: child,
+    );
+  },
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 12),
+                          child: Container(
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.darkTextInput
+                                : Colors.white,
+                            height: 90,
+                            width: MediaQuery.of(context).size.width,
+                            child: Center(
+                              child: MediaQuery(
+                                data: MediaQuery.of(context)
+                                    .copyWith(textScaleFactor: 1.0),
+                                child: Row(
+                                  children: [
+                                    GestureDetector(
+                                      onTap: () async {
+                                        Map<Permission, PermissionStatus>
+                                            statuses = await [
+                                          Permission.storage,
+                                          Permission.camera,
+                                        ].request();
+                                        if (statuses[Permission.storage]!
+                                                .isGranted &&
+                                            statuses[Permission.camera]!
+                                                .isGranted) {
+                                          showModalBottomSheet(
+                                            context: context,
+                                            isScrollControlled: true,
+                                            backgroundColor: Colors.transparent,
+                                            builder: (context) => changeImage(),
+                                          );
+                                        } else {}
+                                      },
+                                      child: SizedBox(
+                                        height: 48,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 24),
+                                          child: isDeleting
+                                              ? SilentErrorImage(
+                                                  width: 48.0,
+                                                  height: 48.0,
+                                                  imageUrl: tempImageUrl!)
+                                              : ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          150.0),
+                                                  child: imageFile == null
+                                                      ? SilentErrorImage(
+                                                          width: 48.0,
+                                                          height: 48.0,
+                                                          imageUrl: imageUrl!,
+                                                        )
+                                                      : ClipRRect(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      150.0),
+                                                          child: Image.file(
+                                                            imageFile!,
+                                                            height: 48.0,
+                                                            width: 48.0,
+                                                            fit: BoxFit.fill,
+                                                          ))),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  hasErrorMessage!
-                                      ? const SizedBox(
-                                          width: 20,
-                                        )
-                                      : const SizedBox(
-                                          width: 10,
-                                        ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 10),
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          "Hello",
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).brightness ==
-                                                        Brightness.dark
-                                                    ? AppColors.headingTextColor
-                                                    : AppColors.allHeadColor,
-                                            fontFamily: FontFamily.satoshi,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w400,
-                                            height: 24 / 16,
+                                    hasErrorMessage!
+                                        ? const SizedBox(
+                                            width: 20,
+                                          )
+                                        : const SizedBox(
+                                            width: 10,
                                           ),
-                                        ),
-                                        SizedBox(
-                                          width: 3,
-                                        ),
-                                        Text(
-                                          firstName ?? " ",
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).brightness ==
-                                                        Brightness.dark
-                                                    ? AppColors.headingTextColor
-                                                    : AppColors.allHeadColor,
-                                            fontFamily: FontFamily.satoshi,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w400,
-                                            height: 24 / 16,
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 10),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            "Hello",
+                                            style: TextStyle(
+                                              color:
+                                                  Theme.of(context).brightness ==
+                                                          Brightness.dark
+                                                      ? AppColors.headingTextColor
+                                                      : AppColors.allHeadColor,
+                                              fontFamily: FontFamily.satoshi,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400,
+                                              height: 24 / 16,
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                          SizedBox(
+                                            width: 3,
+                                          ),
+                                          Text(
+                                            firstName ?? " ",
+                                            style: TextStyle(
+                                              color:
+                                                  Theme.of(context).brightness ==
+                                                          Brightness.dark
+                                                      ? AppColors.headingTextColor
+                                                      : AppColors.allHeadColor,
+                                              fontFamily: FontFamily.satoshi,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w400,
+                                              height: 24 / 16,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  Expanded(child: Container()),
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 20),
-                                    child: hasErrorMessage!
-                                        ? const SizedBox()
-                                        : SizedBox(
-                                            height: 34,
-                                            child: OutlinedButton(
-                                              onPressed: () async {
-                                                SharedPreferences pref =
-                                                    await SharedPreferences
-                                                        .getInstance();
-                                                String? email = await SharePref
-                                                    .fetchEmail();
-                                                Navigator.of(context).push(
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        RegisterForm(
-                                                            email: email!),
+                                    Expanded(child: Container()),
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 20),
+                                      child: hasErrorMessage!
+                                          ? const SizedBox()
+                                          : SizedBox(
+                                              height: 34,
+                                              child: OutlinedButton(
+                                                onPressed: () async {
+                                                  SharedPreferences pref =
+                                                      await SharedPreferences
+                                                          .getInstance();
+                                                  String? email = await SharePref
+                                                      .fetchEmail();
+                                                  Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          RegisterForm(
+                                                              email: email!),
+                                                    ),
+                                                  );
+                                                },
+                                                style: OutlinedButton.styleFrom(
+                                                  backgroundColor:
+                                                      AppColors.errorback,
+                                                  foregroundColor:
+                                                      AppColors.errorColor,
+                                                  side: BorderSide(
+                                                      color:
+                                                          AppColors.errorColor),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(20),
                                                   ),
-                                                );
-                                              },
-                                              style: OutlinedButton.styleFrom(
-                                                backgroundColor:
-                                                    AppColors.errorback,
-                                                foregroundColor:
-                                                    AppColors.errorColor,
-                                                side: BorderSide(
-                                                    color:
-                                                        AppColors.errorColor),
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
                                                 ),
-                                              ),
-                                              child: const Text(
-                                                'Complete profile',
-                                                style: TextStyle(
-                                                  fontFamily:
-                                                      FontFamily.satoshi,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w400,
-                                                  height: 24 / 14,
+                                                child: const Text(
+                                                  'Complete profile',
+                                                  style: TextStyle(
+                                                    fontFamily:
+                                                        FontFamily.satoshi,
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w400,
+                                                    height: 24 / 14,
+                                                  ),
                                                 ),
                                               ),
                                             ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 24),
+                                      child: Align(
+                                        alignment: Alignment.centerRight,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            showAlertDialog(context);
+                                          },
+                                          child: Image.asset(
+                                            "assets/images/notification1.png",
+                                            height: 25,
+                                            color: Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? AppColors.headingTextColor
+                                                : Colors.black,
                                           ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 24),
-                                    child: Align(
-                                      alignment: Alignment.centerRight,
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          showAlertDialog(context);
-                                        },
-                                        child: Image.asset(
-                                          "assets/images/notification1.png",
-                                          height: 25,
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? AppColors.headingTextColor
-                                              : Colors.black,
                                         ),
                                       ),
-                                    ),
-                                  )
-                                ],
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -370,7 +404,6 @@ class HomeScreenState extends State<HomeScreen> {
                 GestureDetector(
                   onTap: () async {
                     setState(() {
-                     
                       isDeleting = true;
                       tempImageUrl = "assets/images/userImage.png";
                     });
@@ -454,11 +487,9 @@ class HomeScreenState extends State<HomeScreen> {
                             top: 41, bottom: 41, left: 54, right: 54),
                         child: GestureDetector(
                           onTap: () async {
-                             _imgFromCamera();
-                                                      await Api.updateImage(
-                                                          tokens!,
-                                                          imageFile!.path);
-                                                           await profile();
+                            _imgFromCamera();
+                            await Api.updateImage(tokens!, imageFile!.path);
+                            await profile();
                           },
                           child: Image.asset(
                             "assets/images/selfie.png",
@@ -577,28 +608,46 @@ class HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Book your ",
-                style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.booklight
-                      : AppColors.allHeadColor,
-                  fontSize: 32,
-                  fontFamily: FontFamily.satoshi,
-                  fontWeight: FontWeight.w700,
-                  height: 40 / 32,
+              AnimatedBuilder(
+                 animation: _animationController,
+  builder: (context, child) {
+    return Transform.translate(
+      offset: Offset(0.0, 100 * (1 - _animation.value)),
+      child: child,
+    );
+  },
+                child: Text(
+                  "Book your ",
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.booklight
+                        : AppColors.allHeadColor,
+                    fontSize: 32,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w700,
+                    height: 40 / 32,
+                  ),
                 ),
               ),
-              Text(
-                "slot today ! ",
-                style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.booklight
-                      : AppColors.allHeadColor,
-                  fontSize: 32,
-                  fontFamily: FontFamily.satoshi,
-                  fontWeight: FontWeight.w700,
-                  height: 40 / 32,
+              AnimatedBuilder(
+                  animation: _animationController,
+  builder: (context, child) {
+    return Transform.translate(
+      offset: Offset( 100 * (1 - _animation.value),0.0),
+      child: child,
+    );
+  },
+                child: Text(
+                  "slot today ! ",
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.booklight
+                        : AppColors.allHeadColor,
+                    fontSize: 32,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w700,
+                    height: 40 / 32,
+                  ),
                 ),
               ),
               const SizedBox(
@@ -631,7 +680,7 @@ class HomeScreenState extends State<HomeScreen> {
                             dateTime = result;
                             results = result;
                             // _userDobController.text = DateFormat('dd/MM/yyyy').format(result!);
-
+    
                             print("yp${result!.toLocal().toString()}");
                           });
                         }
@@ -1574,7 +1623,8 @@ class HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     // Clean up the controller when the Widget is removed from the Widget tree
-
+    
+ _animationController.dispose();
     _passwordFocusNode.dispose();
     result = null;
     super.dispose();

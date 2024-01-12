@@ -10,13 +10,16 @@ import 'package:tennis_court_booking_app/model/friendShow/friend_show_model.dart
 import 'package:tennis_court_booking_app/model/upComingBooking/upcoming_booking_model.dart';
 import 'package:tennis_court_booking_app/presentation/home/model/checkstatus.dart';
 import 'package:tennis_court_booking_app/profile/model/allfriend_model.dart';
+import 'package:tennis_court_booking_app/profile/model/allfriend_request_model.dart';
 import 'package:tennis_court_booking_app/profile/model/my_profile.dart';
 import 'package:tennis_court_booking_app/profile/model/profile_model.dart';
+import 'package:tennis_court_booking_app/profile/model/search_model.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/tennismodel/teniscourt/court.dart';
 
 class Api {
-  static const baseUrl = 'https://court-api.azurewebsites.net';
+  static const baseUrl = 'https://c6a3-117-98-34-84.ngrok-free.app';
+  //'https://court-api.azurewebsites.net';
 
   static Map<String, String>? header;
   static SharedPreferences? preferences;
@@ -174,8 +177,15 @@ class Api {
     return jsonDecode(response.body);
   }
 
-  static Future registerForm(String email, String name, String phoneNumber,
-      String dob, String address, String? document,String gender,String coutryCode) async {
+  static Future registerForm(
+      String email,
+      String name,
+      String phoneNumber,
+      String dob,
+      String address,
+      String? document,
+      String gender,
+      String coutryCode) async {
     var url = "$baseUrl/api/UsersAuth/Form Regisration";
 
     // Convert the model to a JSON string
@@ -187,9 +197,8 @@ class Api {
 
     // Add fields to the request
     request.fields.addAll({
-      
-      "CountryCode":coutryCode,
-      "Gender":gender,
+      "CountryCode": coutryCode,
+      "Gender": gender,
       "email": email,
       "name": name,
       "phoneNumber": phoneNumber,
@@ -198,11 +207,11 @@ class Api {
     });
 
     // Add image file to the request
-    
+
     if (document != null && document.isNotEmpty) {
       request.files.add(await http.MultipartFile.fromPath(
         'Document',
-       document,
+        document,
       ));
       print("image $document");
     }
@@ -462,8 +471,13 @@ class Api {
   }
 
   //Update Profile
-   static Future updateProfile(String bearerToken, String username, String phoneNumber,
-      String countryCode, bool deleteImage, String? image) async {
+  static Future updateProfile(
+      String bearerToken,
+      String username,
+      String phoneNumber,
+      String countryCode,
+      bool deleteImage,
+      String? image) async {
     var url = "$baseUrl/api/Profile/Update Profile";
     Map<String, String> headers = {
       'Authorization': 'Bearer $bearerToken',
@@ -473,16 +487,15 @@ class Api {
 
     var request = http.MultipartRequest(
       'PUT',
-     
       Uri.parse(url),
     );
- request.headers.addAll(headers);
+    request.headers.addAll(headers);
     // Add fields to the request
     request.fields.addAll({
-       'UserName': username, // Add your values
-    'CountryCode': countryCode, // Add your values
-    'PhoneNumber': phoneNumber, // Add your values
-    'DeleteCurrentImage': deleteImage.toString(), // Add your values
+      'UserName': username, // Add your values
+      'CountryCode': countryCode, // Add your values
+      'PhoneNumber': phoneNumber, // Add your values
+      'DeleteCurrentImage': deleteImage.toString(), // Add your values
     });
 
     // Add image file to the request
@@ -508,8 +521,10 @@ class Api {
       return null;
     }
   }
+
 //Upcoming booking model
-static Future<UpcomingBookingModel> upComingResponse(String bearerToken) async {
+  static Future<UpcomingBookingModel> upComingResponse(
+      String bearerToken) async {
     var url = "$baseUrl/api/Booking/Upcoming Bookings";
     Map<String, String> headers = {
       'Authorization': 'Bearer $bearerToken',
@@ -524,7 +539,9 @@ static Future<UpcomingBookingModel> upComingResponse(String bearerToken) async {
 
     return UpcomingBookingModel.fromJson(jsonDecode(response.body));
   }
-  static Future<UpcomingBookingModel> previousBookingResponse(String bearerToken) async {
+
+  static Future<UpcomingBookingModel> previousBookingResponse(
+      String bearerToken) async {
     var url = "$baseUrl/api/Booking/Previous Bookings";
     Map<String, String> headers = {
       'Authorization': 'Bearer $bearerToken',
@@ -539,7 +556,8 @@ static Future<UpcomingBookingModel> upComingResponse(String bearerToken) async {
 
     return UpcomingBookingModel.fromJson(jsonDecode(response.body));
   }
-  static Future removePhoto( String bearerToken) async {
+
+  static Future removePhoto(String bearerToken) async {
     var url = "$baseUrl/api/Profile/Remove profile image";
     Map<String, String> headers = {
       'Authorization': 'Bearer $bearerToken',
@@ -548,7 +566,6 @@ static Future<UpcomingBookingModel> upComingResponse(String bearerToken) async {
     http.Response response = await http.delete(
       Uri.parse(url),
       headers: headers,
-     
     );
 
     print(response.body);
@@ -556,8 +573,9 @@ static Future<UpcomingBookingModel> upComingResponse(String bearerToken) async {
     // final jsonData = json.decode(response.body);
     return jsonDecode(response.body);
   }
+
 //Change image
- static Future updateImage(String bearerToken,  String? image) async {
+  static Future updateImage(String bearerToken, String? image) async {
     var url = "$baseUrl/api/Profile/UpLoad Profile Image";
     Map<String, String> headers = {
       'Authorization': 'Bearer $bearerToken',
@@ -567,11 +585,10 @@ static Future<UpcomingBookingModel> upComingResponse(String bearerToken) async {
 
     var request = http.MultipartRequest(
       'POST',
-     
       Uri.parse(url),
     );
- request.headers.addAll(headers);
-    
+    request.headers.addAll(headers);
+
     // Add image file to the request
     if (image != null && image.isNotEmpty) {
       request.files.add(await http.MultipartFile.fromPath(
@@ -595,8 +612,9 @@ static Future<UpcomingBookingModel> upComingResponse(String bearerToken) async {
       return null;
     }
   }
+
   //All friend
-  static Future< AllFrinedModel> allFrinedResponse(String bearerToken) async {
+  static Future<AllFrinedModel> allFrinedResponse(String bearerToken) async {
     var url = "$baseUrl/api/Friend/All Friends";
     Map<String, String> headers = {
       'Authorization': 'Bearer $bearerToken',
@@ -609,6 +627,131 @@ static Future<UpcomingBookingModel> upComingResponse(String bearerToken) async {
 
     print(response.body);
 
-    return  AllFrinedModel.fromJson(jsonDecode(response.body));
+    return AllFrinedModel.fromJson(jsonDecode(response.body));
+  }
+
+  //All friend Request
+  static Future<AllFrinedRequestModel> allFrinedRequestResponse(
+      String bearerToken) async {
+    var url = "$baseUrl/api/Friend/All Friend Requests";
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+    };
+
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    print(response.body);
+
+    return AllFrinedRequestModel.fromJson(jsonDecode(response.body));
+  }
+
+  //Accept frined request
+  static Future<String> acceptFriendRequest(String bearerToken, int id) async {
+    var url = "$baseUrl/api/Friend/Accept friend request?senderId=$id";
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+      "content-Type": "application/json; charset=UTF-8",
+    };
+
+    try {
+      http.Response response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        // Successful response
+        print(response.body);
+        return response.body;
+      } else {
+        // Error response
+        print('Error: ${response.statusCode}\n${response.body}');
+        return 'Error: ${response.statusCode}\n${response.body}';
+      }
+    } catch (e) {
+      // Exception occurred
+      print('Error: $e');
+      return 'Error: $e';
+    }
+  }
+
+//Reject request
+  static Future<String> rejectFriendRequest(String bearerToken, int id) async {
+    var url = "$baseUrl/api/Friend/Reject friend request?senderId=$id";
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+      "content-Type": "application/json; charset=UTF-8",
+    };
+
+    http.Response response = await http.delete(
+      Uri.parse(url),
+      headers: headers,
+    );
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      // Successful response
+      print(response.body);
+      return response.body;
+    } else {
+      // Error response
+      print('Error: ${response.statusCode}\n${response.body}');
+      return 'Error: ${response.statusCode}\n${response.body}';
+    }
+  }
+
+  //Delete friend
+  static Future<int> deleteFriend(String bearerToken, int id) async {
+    var url = "$baseUrl/api/Friend/Remove friend?friendId=$id";
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+      "content-Type": "application/json; charset=UTF-8",
+    };
+
+    http.Response response = await http.delete(
+      Uri.parse(url),
+      headers: headers,
+    );
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      // Successful response
+      print(response.body);
+      return response.statusCode;
+    } else {
+      // Error response
+      print('Error: ${response.statusCode}\n${response.body}');
+      return response.statusCode;
+    }
+  }
+
+  static Future<SearchModel> searchFriend(
+      String bearerToken, String search) async {
+    var url =
+        "$baseUrl/api/Friend/Seach users to add friends?searchTerm=$search";
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+      "content-Type": "application/json; charset=UTF-8",
+    };
+
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      // Successful response
+      print(response.body);
+      return SearchModel.fromJson(jsonDecode(response.body));
+    } else {
+      // Error response
+      print('Error: ${response.statusCode}\n${response.body}');
+      return SearchModel.fromJson(jsonDecode(response.body));
+    }
   }
 }
