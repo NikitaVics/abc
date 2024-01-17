@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -20,15 +21,25 @@ import 'package:tennis_court_booking_app/provider/booking_response_provider.dart
 import 'package:tennis_court_booking_app/splash/splash_screen.dart';
 
 import 'package:tennis_court_booking_app/theme/theme_manager.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 //Tenis App
-void main() {
+Future<void> main() async {
    WidgetsFlutterBinding.ensureInitialized();
    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
      statusBarColor: Colors.transparent,
     systemNavigationBarColor: Colors.black, // Set the desired color here
      systemNavigationBarIconBrightness:Brightness.dark, 
   ));
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,);
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const MyApp());
+}
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print(message.notification!.title.toString());
 }
 
 class MyApp extends StatefulWidget {

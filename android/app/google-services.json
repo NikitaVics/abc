@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "371309457718",
+    "project_id": "behrain-f2757",
+    "storage_bucket": "behrain-f2757.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:371309457718:android:aaacf038925e0581e44397",
+        "android_client_info": {
+          "package_name": "com.example.tennis_court_booking_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPTaVNNBbPgtqWvJjIR5oEpfHiXAu3Wuo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

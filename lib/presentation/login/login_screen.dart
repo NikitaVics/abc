@@ -8,6 +8,7 @@ import 'package:tennis_court_booking_app/bottomnavbar/bottom_navbar.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/model/login/login_response_model.dart';
+import 'package:tennis_court_booking_app/notifications/notification_service.dart';
 import 'package:tennis_court_booking_app/presentation/forgotPassword/forgot_pass_using_otp.dart';
 import 'package:tennis_court_booking_app/presentation/forgotPassword/otp_send_screen.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_screen.dart';
@@ -46,10 +47,17 @@ class LoginScreenState extends State<LoginScreen> {
   late FocusNode _passwordFocusNode;
   SignInProvider? provider;
   String? error;
- 
+ NotificationServices notificationServices = NotificationServices();
   @override
   void initState() {
     super.initState();
+    notificationServices.requestNotificationPermission();
+    notificationServices.firebaseInit();
+    //notificationServices.isTokenRefresh();
+    notificationServices.getDeviceToken().then((value) {
+      print('device token');
+      print(value);
+    });
     _passwordFocusNode = FocusNode();
 
     provider = Provider.of<SignInProvider>(context, listen: false);

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyCxhm8Zegk9lwEqe8DO7Bw5AzTX0E9FyFc</string>
+	<key>GCM_SENDER_ID</key>
+	<string>371309457718</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.tennisCourtBookingApp</string>
+	<key>PROJECT_ID</key>
+	<string>behrain-f2757</string>
+	<key>STORAGE_BUCKET</key>
+	<string>behrain-f2757.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:371309457718:ios:8c7e2bcd6ae32d71e44397</string>
+</dict>
+</plist>
