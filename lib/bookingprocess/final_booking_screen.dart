@@ -148,7 +148,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const BottomNavBar(),
+                        builder: (context) => const BottomNavBar(initial: 0),
                       ),
                     );
                    context.read<BookResultShowProvider>().clearStateList();

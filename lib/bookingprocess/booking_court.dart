@@ -147,7 +147,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const BottomNavBar()));
+                                            const BottomNavBar(initial: 0)));
                               },
                               icon: Image.asset(
                                 "assets/images/leftIcon.png",

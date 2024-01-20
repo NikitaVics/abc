@@ -376,7 +376,7 @@ class LoginScreenState extends State<LoginScreen> {
                     pref.setString('authToken', val['result']['token']);
                     pref.setString('email', val['result']['user']['email']);
                     Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const BottomNavBar()));
+                MaterialPageRoute(builder: (context) =>  BottomNavBar(initial: 0,)));
                     String? authToken = pref.getString('authToken');
                     if (authToken != null) {
                       print("Auth Token: $authToken");

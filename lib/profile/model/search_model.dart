@@ -4,7 +4,7 @@ class SearchModel {
   final List<String> errorMessage;
   List<Profile> result;
 
- SearchModel({
+  SearchModel({
     required this.statusCode,
     required this.isSuccess,
     required this.errorMessage,
@@ -26,21 +26,24 @@ class SearchModel {
 }
 
 class Profile {
-  final String? imageUrl;
-  final String? name;
-  final int? id;
+  final String imageUrl;
+  final String name;
+  final int id;
+  final bool friendRequest;
 
   Profile({
     required this.imageUrl,
     required this.name,
     required this.id,
+    required this.friendRequest,
   });
 
   factory Profile.fromJson(Map<String, dynamic> json) {
     return Profile(
-      imageUrl: json['image']?? '',
-      name: json['name']?? '',
-      id: json['id']?? '',
+      imageUrl: json['image'] ?? '',
+      name: json['name'] ?? '',
+      id: json['id'] ?? '',
+      friendRequest: json['isFriendRequestSentOrReceived'],
     );
   }
 }

@@ -754,4 +754,35 @@ class Api {
       return SearchModel.fromJson(jsonDecode(response.body));
     }
   }
+  //Send friend Request
+  static Future<int> sendFriendRequest(String bearerToken, int id) async {
+    var url = "$baseUrl/api/Friend/Send request?receiverId=$id";
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+      "content-Type": "application/json; charset=UTF-8",
+    };
+
+    try {
+      http.Response response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+      );
+
+      if (response.statusCode == 200) {
+        // Successful response
+        print(response.body);
+        return response.statusCode;
+      } else {
+        // Error response
+        print('Error: ${response.statusCode}\n${response.body}');
+        return response.statusCode;
+      }
+    } catch (e) {
+      // Exception occurred
+      print('Error: $e');
+      return 0;
+    }
+  }
+
 }

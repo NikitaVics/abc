@@ -30,7 +30,7 @@ class Booking {
   DateTime? bookingDate;
   int slotId;
   String? slot;
-  dynamic tennisCourt;
+  Tenis tennisCourt;
   int coachId;
   String? coachName;
   String? coachImage;
@@ -64,7 +64,7 @@ class Booking {
           : null,
       slotId: json['slotId'] ?? 0,
       slot: json['slot'],
-      tennisCourt: json['tennisCourt'],
+      tennisCourt: Tenis.fromJson(json["tennisCourt"]),
       coachId: json['coachId'] ?? 0,
       coachName: json['coachName'],
       coachImage: json['coachImage'],
@@ -96,6 +96,28 @@ class TeamMember {
     return TeamMember(
       id: json['id'] ?? 0,
       imageUrl: json['imageUrl']??'',
+      name: json['name'],
+    );
+  }
+}
+class Tenis {
+  int id;
+  
+  String name;
+   List<String> courtImageURLs;
+
+  Tenis({
+    required this.id,
+    required this.courtImageURLs,
+    required this.name,
+  });
+
+  factory Tenis.fromJson(Map<String, dynamic> json) {
+    return Tenis(
+      id: json['id'] ?? 0,
+courtImageURLs: (json['courtImages'] as List<dynamic>? ?? [])
+          .map((item) => item.toString())
+          .toList(),
       name: json['name'],
     );
   }

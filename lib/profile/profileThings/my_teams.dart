@@ -598,7 +598,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                     onTap: () async {
                       print(myfriend!.friendId);
                       String response = await Api.rejectFriendRequest(
-                          tokens!, myfriend!.friendId);
+                          tokens!, myfriend.friendId);
                           await frined();
                       MotionToast(
                         primaryColor: AppColors.dotColor,

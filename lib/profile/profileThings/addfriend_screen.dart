@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:motion_toast/motion_toast.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:tennis_court_booking_app/api/api.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/profile/model/search_model.dart';
@@ -167,7 +168,7 @@ class AddFriendScreenState extends State<AddFriendScreen> {
               : Column(
                   children: [
                     Expanded(child: _buildRightSide()),
-                    _buildSignInButton()
+                    
                     //isEdited ? _buildSignInButton() : SizedBox()
                   ],
                 ),
@@ -185,13 +186,16 @@ class AddFriendScreenState extends State<AddFriendScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             _buildLoginText(),
-           
+            SizedBox(height: 18,),
             Consumer<SearchProvider>(
               builder: (context, provider, child) {
                 final myFriendData = provider.search;
                 if (provider.search == null) {
                   return Center(
-                    child: CircularProgressIndicator(),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 100),
+                      child: Text("No recent searches"),
+                    ),
                   );
                 } else {
                   List<Profile> allfriend = myFriendData!.result;
@@ -226,51 +230,51 @@ class AddFriendScreenState extends State<AddFriendScreen> {
               color: AppColors.textInputField,
               borderRadius: BorderRadius.circular(8.0),
             ),
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child:
-                      Icon(Icons.search_outlined, color: AppColors.hintColor),
-                ),
-                SizedBox(
-                  width: 16,
-                ),
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (query) {
-                      // Call the search function whenever the text changes
-                      profile();
-                    },
-                    decoration: const InputDecoration(
-                      hintText: 'Search friends',
-                      hintStyle: TextStyle(
-                        color: AppColors.hintColor,
-                        fontSize: 14,
-                        fontFamily: FontFamily.satoshi,
-                        fontWeight: FontWeight.w400,
-                        height: 24 / 14,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 5,bottom:5),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20),
+                    child:
+                        Icon(Icons.search_outlined, color: AppColors.hintColor),
+                  ),
+                  SizedBox(
+                    width: 16,
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: (query) {
+                        // Call the search function whenever the text changes
+                        profile();
+                      },
+                      decoration: const InputDecoration(
+                        hintText: 'Search friends',
+                        hintStyle: TextStyle(
+                          color: AppColors.hintColor,
+                          fontSize: 14,
+                          fontFamily: FontFamily.satoshi,
+                          fontWeight: FontWeight.w400,
+                          height: 24 / 14,
+                        ),
+                        border: InputBorder.none,
                       ),
-                      border: InputBorder.none,
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ));
   }
 
- 
   Widget _friendsWidget(int index, int itemCount, Profile? myfriend) {
     Color borderColor = AppColors.appbarBoarder;
     final themeNotifier = context.watch<ThemeModeNotifier>();
     final textScaleFactor = MediaQuery.of(context).textScaleFactor;
     bool isSelected = selectedFriend.contains(myfriend?.id);
-    return 
-    
-    Column(
+    return Column(
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),
@@ -306,25 +310,72 @@ class AddFriendScreenState extends State<AddFriendScreen> {
                       ),
                     ),
                   ),
-                  Checkbox(
-                    side: BorderSide(
-                        color: AppColors.disableNavIconColor, width: 2.0),
-                    activeColor: AppColors.dotColor,
-                    value: isSelected,
-                    onChanged: (value) {
-                      // Handle court selection/deselection
-                      if (value != null) {
-                        setState(() {
-                          if (value) {
-                            selectedFriend.add(myfriend?.id ?? 0);
-                          } else {
-                            selectedFriend.remove(myfriend?.id ?? 0);
-                          }
-                          print('Selected Courts: $selectedFriend');
-                        });
-                      }
-                    },
-                  ),
+                  myfriend!.friendRequest == true
+                      ? GestureDetector(
+                          onTap: () async {},
+                          child: Container(
+                            height: 36,
+                            padding: EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(
+                                  color: AppColors.requestedfriend, width: 1),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.only(left: 12, right: 12),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Requested',
+                                    style: TextStyle(
+                                      color: AppColors.requestedfriend,
+                                      fontSize: 12,
+                                      fontFamily: FontFamily.satoshi,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      : GestureDetector(
+                          onTap: () async {
+                            int response = await Api.sendFriendRequest(
+                                tokens!, myfriend!.id);
+
+                           await profile();
+                          },
+                          child: Container(
+                            height: 36,
+                            padding: EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(
+                                  color: AppColors.confirmValid, width: 1),
+                            ),
+                            child: const Padding(
+                              padding: EdgeInsets.only(left: 12, right: 12),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'ADD FRIEND',
+                                    style: TextStyle(
+                                      color: AppColors.confirmValid,
+                                      fontSize: 12,
+                                      fontFamily: FontFamily.satoshi,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
                 ],
               ),
             ),
@@ -334,28 +385,7 @@ class AddFriendScreenState extends State<AddFriendScreen> {
     );
   }
 
-  Widget _buildSignInButton() {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 19),
-        child: FocusScope(
-            // Manage keyboard focus
-            child: CustomElevatedButton(
-          height: 60,
-          width: MediaQuery.of(context).orientation == Orientation.landscape
-              ? 70
-              : double.infinity,
-          isLoading: isLoading,
-          text: "Add Friends",
-          onPressed: () {},
-          buttonColor: AppColors.elevatedColor,
-          textColor: Colors.white,
-        )),
-      ),
-    );
-  }
-
+ 
   // General Methods:-----------------------------------------------------------
 
   // dispose:-------------------------------------------------------------------

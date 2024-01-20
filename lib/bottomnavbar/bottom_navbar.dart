@@ -6,7 +6,8 @@ import 'package:tennis_court_booking_app/presentation/home/home_screen.dart';
 import 'package:tennis_court_booking_app/profile/profile_screen.dart';
 
 class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({super.key});
+  final int initial;
+  const BottomNavBar({super.key, required this.initial});
 
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
@@ -14,15 +15,22 @@ class BottomNavBar extends StatefulWidget {
 
 class _BottomNavBarState extends State<BottomNavBar> {
   int _selectedIndex = 0;
-  PageController pageController = PageController(
-    initialPage: 0,
-    keepPage: true,
-  );
+  PageController? pageController;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _selectedIndex = widget.initial;
+    pageController = PageController(
+      initialPage: widget.initial,
+      keepPage: true,
+    );
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      pageController.animateToPage(index,
+      pageController!.animateToPage(index,
           duration: const Duration(milliseconds: 500), curve: Curves.ease);
     });
   }
@@ -38,7 +46,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
     return SafeArea(
       top: false,
       child: Scaffold(
-        
         body: PageView(
           controller: pageController,
           onPageChanged: (index) {
@@ -52,9 +59,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
           ],
         ),
         bottomNavigationBar: MediaQuery(
-           data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
           child: BottomNavigationBar(
-           
               items: <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
                   icon: NavBarItem(
@@ -67,9 +73,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
                           : AppColors.disableNavIconColor,
                     ),
                     NavBarLavel: "Home",
-                    NavIconColor:_selectedIndex == 0
-                          ? AppColors.navIconColor
-                          : AppColors.disableNavIconColor,
+                    NavIconColor: _selectedIndex == 0
+                        ? AppColors.navIconColor
+                        : AppColors.disableNavIconColor,
                   ),
                   label: 'Home',
                 ),
@@ -84,9 +90,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
                           : AppColors.disableNavIconColor,
                     ),
                     NavBarLavel: "Bookings",
-                      NavIconColor:_selectedIndex == 1
-                          ? AppColors.navIconColor
-                          : AppColors.disableNavIconColor,
+                    NavIconColor: _selectedIndex == 1
+                        ? AppColors.navIconColor
+                        : AppColors.disableNavIconColor,
                   ),
                   label: '',
                 ),
@@ -101,9 +107,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
                           : AppColors.disableNavIconColor,
                     ),
                     NavBarLavel: "Club Infos",
-                      NavIconColor:_selectedIndex == 2
-                          ? AppColors.navIconColor
-                          : AppColors.disableNavIconColor,
+                    NavIconColor: _selectedIndex == 2
+                        ? AppColors.navIconColor
+                        : AppColors.disableNavIconColor,
                   ),
                   label: '',
                 ),
@@ -118,21 +124,18 @@ class _BottomNavBarState extends State<BottomNavBar> {
                           : AppColors.disableNavIconColor,
                     ),
                     NavBarLavel: "Accounts",
-                      NavIconColor:_selectedIndex == 3
-                          ? AppColors.navIconColor
-                          : AppColors.disableNavIconColor,
+                    NavIconColor: _selectedIndex == 3
+                        ? AppColors.navIconColor
+                        : AppColors.disableNavIconColor,
                   ),
                   label: '',
                 ),
-               
               ],
-              backgroundColor: 
-              Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkTextInput
-              : Color(0xFFffffff),
-              
+              backgroundColor: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkTextInput
+                  : Color(0xFFffffff),
               type: BottomNavigationBarType.fixed,
-              currentIndex: _selectedIndex,
+              currentIndex: widget.initial,
               // selectedItemColor: Color(0xff41FFF4),
               showSelectedLabels: false,
               showUnselectedLabels: false,
@@ -156,7 +159,8 @@ class NavBarItem extends StatelessWidget {
       {super.key,
       // ignore: non_constant_identifier_names
       required this.NavBarIcon,
-      required this.NavBarLavel, required this.NavIconColor});
+      required this.NavBarLavel,
+      required this.NavIconColor});
 
   @override
   Widget build(BuildContext context) {
@@ -167,12 +171,12 @@ class NavBarItem extends StatelessWidget {
         NavBarIcon,
         Text(
           NavBarLavel,
-          style:  TextStyle(
+          style: TextStyle(
             color: NavIconColor,
             fontSize: 10,
             fontFamily: FontFamily.satoshi,
             fontWeight: FontWeight.w500,
-            height: 24/9,
+            height: 24 / 9,
           ),
         )
       ],

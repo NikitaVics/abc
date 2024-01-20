@@ -17,10 +17,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:super_tooltip/super_tooltip.dart';
 import 'package:tennis_court_booking_app/api/api.dart';
 import 'package:tennis_court_booking_app/bookingprocess/booking_court.dart';
+import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/confirm_booking_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/court_info_provider.dart';
+import 'package:tennis_court_booking_app/bottomnavbar/bottom_navbar.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/constants/shimmer.dart';
 import 'package:tennis_court_booking_app/model/courtInfo/court_info.dart';
+import 'package:tennis_court_booking_app/model/upComingBooking/upcoming_booking_model.dart';
+import 'package:tennis_court_booking_app/mybookings/bookingDetails/booking_details.dart';
+import 'package:tennis_court_booking_app/mybookings/provider/upComing_provider.dart';
 import 'package:tennis_court_booking_app/notifications/notification_service.dart';
 import 'package:tennis_court_booking_app/presentation/home/courtinfo/court_info.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
@@ -50,10 +56,10 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-      late AnimationController _animationController;
-late CurvedAnimation _animation;
+  late AnimationController _animationController;
+  late CurvedAnimation _animation;
   //text controllers:-----------------------------------------------------------
- 
+
   //predefine bool value for error:---------------------------------------------
 
   //stores:---------------------------------------------------------------------
@@ -69,32 +75,29 @@ late CurvedAnimation _animation;
   //SignInProvider? provider;
   int? id;
   bool _isInitializationComplete = false;
-  
+
   @override
   void initState() {
     super.initState();
 
     _passwordFocusNode = FocusNode();
-     _animationController = AnimationController(
-    vsync: this,
-    duration: Duration(milliseconds: 500), // Set the duration as needed
-  );
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 500), // Set the duration as needed
+    );
 
-  _animation = CurvedAnimation(
-    parent: _animationController,
-    curve: Curves.easeIn,
-  );
-
+    _animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeIn,
+    );
 
     _initializeData();
-     
   }
 
   Future<void> _initializeData() async {
     await profile();
     await _fetchCourtInfoResponse();
-     _animationController.forward();
-   
+    _animationController.forward();
   }
 
   final picker = ImagePicker();
@@ -110,6 +113,8 @@ late CurvedAnimation _animation;
   Future<void> profile() async {
     final profileProvider =
         Provider.of<ProfileProvider>(context, listen: false);
+         final upComingProvider =
+        Provider.of<UpcomingBookProvider>(context, listen: false);
     final checkstatusprovider =
         Provider.of<CheckStatusProvider>(context, listen: false);
 
@@ -121,6 +126,7 @@ late CurvedAnimation _animation;
     print("Tokio $tokens");
     profileProvider.fetchProfile(tokens!);
     checkstatusprovider.checkRegistrationStatus(tokens!);
+    upComingProvider.fetchupComingData(tokens!);
     setState(() {
       loading = false;
     });
@@ -166,19 +172,20 @@ late CurvedAnimation _animation;
                   body: Column(
                     children: [
                       AnimatedBuilder(
-                         animation: _animationController,
-  builder: (context, child) {
-    return Transform.translate(
-      offset: Offset(0.0, -100 * (1 - _animation.value)),
-      child: child,
-    );
-  },
+                        animation: _animationController,
+                        builder: (context, child) {
+                          return Transform.translate(
+                            offset: Offset(0.0, -100 * (1 - _animation.value)),
+                            child: child,
+                          );
+                        },
                         child: Padding(
                           padding: const EdgeInsets.only(top: 12),
                           child: Container(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? AppColors.darkTextInput
-                                : Colors.white,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.darkTextInput
+                                    : Colors.white,
                             height: 90,
                             width: MediaQuery.of(context).size.width,
                             child: Center(
@@ -254,11 +261,11 @@ late CurvedAnimation _animation;
                                           Text(
                                             "Hello",
                                             style: TextStyle(
-                                              color:
-                                                  Theme.of(context).brightness ==
-                                                          Brightness.dark
-                                                      ? AppColors.headingTextColor
-                                                      : AppColors.allHeadColor,
+                                              color: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.dark
+                                                  ? AppColors.headingTextColor
+                                                  : AppColors.allHeadColor,
                                               fontFamily: FontFamily.satoshi,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w400,
@@ -271,11 +278,11 @@ late CurvedAnimation _animation;
                                           Text(
                                             firstName ?? " ",
                                             style: TextStyle(
-                                              color:
-                                                  Theme.of(context).brightness ==
-                                                          Brightness.dark
-                                                      ? AppColors.headingTextColor
-                                                      : AppColors.allHeadColor,
+                                              color: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.dark
+                                                  ? AppColors.headingTextColor
+                                                  : AppColors.allHeadColor,
                                               fontFamily: FontFamily.satoshi,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w400,
@@ -297,8 +304,9 @@ late CurvedAnimation _animation;
                                                   SharedPreferences pref =
                                                       await SharedPreferences
                                                           .getInstance();
-                                                  String? email = await SharePref
-                                                      .fetchEmail();
+                                                  String? email =
+                                                      await SharePref
+                                                          .fetchEmail();
                                                   Navigator.of(context).push(
                                                     MaterialPageRoute(
                                                       builder: (context) =>
@@ -317,7 +325,8 @@ late CurvedAnimation _animation;
                                                           AppColors.errorColor),
                                                   shape: RoundedRectangleBorder(
                                                     borderRadius:
-                                                        BorderRadius.circular(20),
+                                                        BorderRadius.circular(
+                                                            20),
                                                   ),
                                                 ),
                                                 child: const Text(
@@ -344,10 +353,11 @@ late CurvedAnimation _animation;
                                           child: Image.asset(
                                             "assets/images/notification1.png",
                                             height: 25,
-                                            color: Theme.of(context).brightness ==
-                                                    Brightness.dark
-                                                ? AppColors.headingTextColor
-                                                : Colors.black,
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? AppColors.headingTextColor
+                                                    : Colors.black,
                                           ),
                                         ),
                                       ),
@@ -590,7 +600,49 @@ late CurvedAnimation _animation;
                   _buildSlotshowText(),
                   _buildShowCourt(courtShowProvider.courtList!),
                   _buildrecentBookText(),
-                  _buildNoBook(),
+                  Consumer<UpcomingBookProvider>(
+                      builder: (context, provider, child) {
+                    final bookingResponse = provider.upComingBookModel;
+
+                    if (bookingResponse != null &&
+                        bookingResponse.result.isNotEmpty) {
+                      List result = bookingResponse.result
+                          .map((teamMembers) => teamMembers.bookingDate)
+                          .toList();
+
+                      List<Booking> bookings = bookingResponse.result;
+
+                      print(bookings.length);
+                      return Container(
+                        height: 126,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: bookings.length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                context
+                                    .read<BookResultShowProvider>()
+                                    .clearStateList();
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            BookingDetailsScreen(
+                                                id: bookings[index]
+                                                    .bookingId)));
+                              },
+                              child: _buildupComingbooking(
+                                  index, bookings.length, bookings[index]),
+                            );
+                          },
+                        ),
+                      );
+                    } else {
+                      return const SizedBox();
+                    }
+                  }),
+                  SizedBox(height: 20,)
                   // _buildForgotPasswordButton(),
                 ],
               );
@@ -610,46 +662,28 @@ late CurvedAnimation _animation;
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AnimatedBuilder(
-                 animation: _animationController,
-  builder: (context, child) {
-    return Transform.translate(
-      offset: Offset(0.0, 100 * (1 - _animation.value)),
-      child: child,
-    );
-  },
-                child: Text(
-                  "Book your ",
-                  style: TextStyle(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.booklight
-                        : AppColors.allHeadColor,
-                    fontSize: 32,
-                    fontFamily: FontFamily.satoshi,
-                    fontWeight: FontWeight.w700,
-                    height: 40 / 32,
-                  ),
+              Text(
+                "Book your ",
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.booklight
+                      : AppColors.allHeadColor,
+                  fontSize: 32,
+                  fontFamily: FontFamily.satoshi,
+                  fontWeight: FontWeight.w700,
+                  height: 40 / 32,
                 ),
               ),
-              AnimatedBuilder(
-                  animation: _animationController,
-  builder: (context, child) {
-    return Transform.translate(
-      offset: Offset( 100 * (1 - _animation.value),0.0),
-      child: child,
-    );
-  },
-                child: Text(
-                  "slot today ! ",
-                  style: TextStyle(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.booklight
-                        : AppColors.allHeadColor,
-                    fontSize: 32,
-                    fontFamily: FontFamily.satoshi,
-                    fontWeight: FontWeight.w700,
-                    height: 40 / 32,
-                  ),
+              Text(
+                "slot today ! ",
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.booklight
+                      : AppColors.allHeadColor,
+                  fontSize: 32,
+                  fontFamily: FontFamily.satoshi,
+                  fontWeight: FontWeight.w700,
+                  height: 40 / 32,
                 ),
               ),
               const SizedBox(
@@ -682,7 +716,7 @@ late CurvedAnimation _animation;
                             dateTime = result;
                             results = result;
                             // _userDobController.text = DateFormat('dd/MM/yyyy').format(result!);
-    
+
                             print("yp${result!.toLocal().toString()}");
                           });
                         }
@@ -1339,19 +1373,29 @@ late CurvedAnimation _animation;
                   height: 32 / 20,
                 ),
               ),
-              const Text(
-                "See all",
-                style: TextStyle(
-                  decoration: TextDecoration.underline,
-                  decorationThickness:
-                      2.0, // Set the thickness of the underline
-                  decorationStyle: TextDecorationStyle.solid,
-
-                  color: AppColors.dotColor,
-                  fontSize: 14,
-                  fontFamily: FontFamily.satoshi,
-                  fontWeight: FontWeight.w700,
-                  height: 24 / 14,
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BottomNavBar(initial: 1),
+                      ),
+                    );
+                },
+                child: const Text(
+                  "See all",
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    decorationThickness:
+                        2.0, // Set the thickness of the underline
+                    decorationStyle: TextDecorationStyle.solid,
+              
+                    color: AppColors.dotColor,
+                    fontSize: 14,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w700,
+                    height: 24 / 14,
+                  ),
                 ),
               ),
             ],
@@ -1359,10 +1403,446 @@ late CurvedAnimation _animation;
         ));
   }
 
-  Widget _buildNoBook() {
+  String convertTo24HourFormat(String time, String amPm) {
+    List<String> parts = time.split(':');
+    int hour = int.parse(parts[0]);
+    int minute = int.parse(parts[1]);
+
+    // If the time is PM and not 12, add 12 to convert to 24-hour format
+    if (amPm.toLowerCase() == 'pm' && hour != 12) {
+      hour += 12;
+    }
+
+    // If the time is 12 AM, convert to 00
+    if (amPm.toLowerCase() == 'am' && hour == 12) {
+      hour = 0;
+    }
+
+    // Format the result
+    return '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+  }
+
+  Widget _buildupComingbooking(int index, int itemCount, Booking? booking) {
+    DateTime date = DateTime.parse(booking?.bookingDate.toString() ?? "");
+
+    String formattedDate = DateFormat('MMM d').format(date);
+    String dayOfWeek = DateFormat('E').format(date);
+    String timeString = booking?.slot ?? "";
+    String formattedDates =
+        "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+    List<String> splitString = timeString.split(' ');
+    String timePart = splitString[0];
+    String formattedTime = convertTo24HourFormat(timePart, splitString[1]);
+    print(formattedTime);
+    DateTime dateTime = DateTime.parse('$formattedDates $formattedTime:00');
+
+    // Add 1 hour
+    dateTime = dateTime.add(const Duration(hours: 1));
+
+    // Format the result
+    int formattedHour = dateTime.hour % 12 == 0 ? 12 : dateTime.hour % 12;
+    String results =
+        "$formattedHour:${dateTime.minute.toString().padLeft(2, '0')} ${dateTime.hour < 12 ? 'am' : 'pm'}";
+
+    DateTime dateTiming = DateFormat("MMM d").parse(formattedDate);
+    String month = DateFormat("MMM").format(dateTiming);
+
+    // Format day (23)
+    String day = DateFormat("d").format(dateTiming);
+ 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+       padding: const EdgeInsets.only(right: 20),
       child: Container(
+        height: MediaQuery.of(context).size.height,
+        width: 250,
+        decoration: BoxDecoration(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkTextInput
+              : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                
+                  right: 2,
+                 
+                ),
+                child: ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: SilentErrorImage(
+                             height: 102,
+                             width: 82,
+                              imageUrl: booking?.tennisCourt.courtImageURLs[0] ??
+                                  'assets/images/ProfileImage.png',
+                            ),
+                          ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 14),
+                child: Stack(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                             booking?.tennisCourt.name ?? "",
+                            style: TextStyle(
+                              color:
+                                  Theme.of(context).brightness == Brightness.dark
+                                      ? AppColors.booklight
+                                      : AppColors.allHeadColor,
+                              fontSize: 16,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w500,
+                              height: 24 / 16,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 2,),
+                        Container(
+                         /// color: Colors.pink,
+                          height: 16,
+                          child: Row(
+                           //crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                          Image.asset(
+                              "assets/images/calender.png",
+                              height: 12,
+                              color:
+                                  Theme.of(context).brightness == Brightness.dark
+                                      ? AppColors.darkSubHead
+                                      : AppColors.subheadColor,
+                            ),
+                            SizedBox(width: 7,),
+                          Text(
+                            "${month}".toUpperCase(),
+                            style: TextStyle(
+                          color: Colors.black.withOpacity(0.5),
+                          fontSize: 10,
+                          fontFamily: FontFamily.roboto,
+                          fontWeight: FontWeight.w400,
+                          //height: 0.16,
+                          ),
+                          
+                          ),
+                          Text(
+                            " ${day}",
+                           style: TextStyle(
+                                                color: Colors.black.withOpacity(0.5),
+                                                fontSize: 10,
+                                                fontFamily: FontFamily.roboto,
+                                                fontWeight: FontWeight.w400,
+                                               // height: 0.16,
+                                                ),
+                          ),
+                          Text(
+                            " ${timePart} ${dateTime.hour < 12 ? 'am' : 'pm'}",
+                           style: TextStyle(
+                                                color: Colors.black.withOpacity(0.5),
+                                                fontSize: 10,
+                                                fontFamily: FontFamily.roboto,
+                                                fontWeight: FontWeight.w400,
+                                               // height: 0.16,
+                                                ),
+                          ),
+                                              ],
+                                            ),
+                                          
+                        ),
+                         SizedBox(height: 3,),
+                        Container(
+                         /// color: Colors.pink,
+                          height: 16,
+                          child: Row(
+                           //crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                          Image.asset(
+                              "assets/images/Group3.png",
+                              height: 12,
+                              color:
+                                  Theme.of(context).brightness == Brightness.dark
+                                      ? AppColors.darkSubHead
+                                      : Colors.black.withOpacity(0.5),
+                            ),
+                            SizedBox(width: 7,),
+                         
+                          Text(
+                            " Team Members",
+                           style: TextStyle(
+                                                color: Colors.black.withOpacity(0.5),
+                                                fontSize: 10,
+                                                fontFamily: FontFamily.roboto,
+                                                fontWeight: FontWeight.w400,
+                                               // height: 0.16,
+                                                ),
+                          ),
+                         
+                                              ],
+                                            ),
+                                          
+                        ),
+                        SizedBox(height: 4,),
+                          Row(children: [
+                                      SizedBox(
+                     width:100,
+                      height: 36,
+                      child: Stack(
+                        children: [
+                          Positioned(
+                              left: 0,
+                              top: 0,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(110.0),
+                                child: SilentErrorImage(
+                                  width: 30,
+                                  height: 30,
+                                  imageUrl: booking?.userImage ??
+                                      'assets/images/ProfileImage.png',
+                                ),
+                              )),
+                          ...List.generate(
+                            booking?.teamMembers.length ??
+                                0, // Ensure the list has three items
+                            (index) {
+                              TeamMember teamMember =
+                                  booking!.teamMembers[index];
+                              double leftPad = (23 * (index + 1)).toDouble();
+                              return Positioned(
+                                left: leftPad,
+                                top: 0,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(150.0),
+                                  child: SilentErrorImage(
+                                    width:30,
+                                    height: 30,
+                                    imageUrl: teamMember.imageUrl,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),           
+                                              ],)
+                      ],
+                    ),
+                   
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+/*
+  Widget _buildNoBook(UpcomingBookingModel? booking) {
+    final List<Booking> booking=booking.res
+    DateTime date = DateTime.parse(booking?.bookingDate.toString() ?? "");
+
+    String formattedDate = DateFormat('MMM d').format(date);
+    String dayOfWeek = DateFormat('E').format(date);
+    String timeString = booking?.slot ?? "";
+    String formattedDates =
+        "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+    List<String> splitString = timeString.split(' ');
+    String timePart = splitString[0];
+    String formattedTime = convertTo24HourFormat(timePart, splitString[1]);
+    print(formattedTime);
+    DateTime dateTime = DateTime.parse('$formattedDates $formattedTime:00');
+
+    // Add 1 hour
+    dateTime = dateTime.add(const Duration(hours: 1));
+
+    // Format the result
+    int formattedHour = dateTime.hour % 12 == 0 ? 12 : dateTime.hour % 12;
+    String results =
+        "$formattedHour:${dateTime.minute.toString().padLeft(2, '0')} ${dateTime.hour < 12 ? 'am' : 'pm'}";
+
+    DateTime dateTiming = DateFormat("MMM d").parse(formattedDate);
+    String month = DateFormat("MMM").format(dateTiming);
+
+    // Format day (23)
+    String day = DateFormat("d").format(dateTiming);
+    return SizedBox(
+      height: 160,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: booking.length,
+        itemBuilder: (context, index) {
+          Court court = filteredCourts[index];
+          // Format start and end times
+          String startTime = DateFormat('h a').format(
+            DateFormat('HH:mm:ss').parse(court.startTime),
+          );
+          String endTime = DateFormat('h a').format(
+            DateFormat('HH:mm:ss').parse(court.endTime),
+          );
+          return Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+              child: GestureDetector(
+                onTap: () async {
+                  setState(() {
+                    id = court.courtId;
+                  });
+                  await showAnimatedDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Container(
+                        height: MediaQuery.of(context).size.height,
+                        width: MediaQuery.of(context).size.width,
+                        color: Colors.transparent,
+                        child: FutureBuilder<void>(
+                          future: _fetchCourtInfoResponse(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done) {
+                              return buidSheet();
+                            } else {
+                              // You can return a loading indicator or null while waiting for the future
+                              return Center(
+                                child: AnimatedTextKit(
+                                  animatedTexts: [
+                                    WavyAnimatedText(
+                                      'Loading...',
+                                      textStyle: TextStyle(
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? AppColors.headingTextColor
+                                              : AppColors.allHeadColor,
+                                          fontSize: 20,
+                                          fontFamily: FontFamily.satoshi,
+                                          fontWeight: FontWeight.w500,
+                                          height: 34 / 20,
+                                          decoration: TextDecoration.none),
+                                    ),
+                                  ],
+                                  repeatForever: true,
+                                  isRepeatingAnimation: true,
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
+                child: Container(
+                  width: 145,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.darkTextInput
+                        : Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Container(
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: 12,
+                            right: 12,
+                            top: 12,
+                            bottom: 8,
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(6)),
+                            height: 85,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: Image.network(
+                                court.courtImageURLs[
+                                    0], // Use the image URL from the Court model
+                                // You can also use AssetImage if the image is in the assets folder
+                                // e.g., Image.asset("assets/images/court.png"),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 12, right: 22),
+                          child: Stack(
+                            children: [
+                              Column(
+                                children: [
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      court.courtName,
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.booklight
+                                            : AppColors.allHeadColor,
+                                        fontSize: 16,
+                                        fontFamily: FontFamily.satoshi,
+                                        fontWeight: FontWeight.w500,
+                                        height: 24 / 16,
+                                      ),
+                                    ),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                      "${startTime} - ${endTime}",
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.darkSubHead
+                                            : AppColors.hintColor,
+                                        fontSize: 12,
+                                        fontFamily: FontFamily.satoshi,
+                                        fontWeight: FontWeight.w400,
+                                        height: 16 / 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(top: 4),
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Image.asset(
+                                    "assets/images/Right.png",
+                                    height: 24,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.headingTextColor
+                                        : Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+    /* Container(
         height: 138,
         decoration: BoxDecoration(
             color: Theme.of(context).brightness == Brightness.dark
@@ -1435,10 +1915,9 @@ late CurvedAnimation _animation;
             )
           ],
         ),
-      ),
-    );
+      ),*/
   }
-
+*/
   Widget buidSheet() {
     double screenWidth = MediaQuery.of(context).size.width;
     double containerWidth = screenWidth - 48; // 24 padding on each side
@@ -1625,8 +2104,8 @@ late CurvedAnimation _animation;
   @override
   void dispose() {
     // Clean up the controller when the Widget is removed from the Widget tree
-    
- _animationController.dispose();
+
+    _animationController.dispose();
     _passwordFocusNode.dispose();
     result = null;
     super.dispose();

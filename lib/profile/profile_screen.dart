@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/notifications/notification_screen.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
 
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
@@ -451,29 +452,34 @@ class ProfileScreenState extends State<ProfileScreen> {
                   SizedBox(
                     height: 26,
                   ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 21,
-                      ),
-                      Container(
-                        height: 17,
-                        width: 17,
-                        child: GestureDetector(
-                            onTap: () async {},
-                            child: Image.asset(
-                              "assets/images/Notification3.png",
-                              height: 15,
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.profileDarkText
-                                  : AppColors.subheadColor,
-                            )),
-                      ),
-                      const SizedBox(width: 25),
-                      GestureDetector(
-                        onTap: () async {},
-                        child: Text(
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => NotificationScreen(
+                                    pageName: "Notification",
+                                  )));
+                    },
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 21,
+                        ),
+                        Container(
+                          height: 17,
+                          width: 17,
+                          child: Image.asset(
+                            "assets/images/Notification3.png",
+                            height: 15,
+                            color: Theme.of(context).brightness ==
+                                    Brightness.dark
+                                ? AppColors.profileDarkText
+                                : AppColors.subheadColor,
+                          ),
+                        ),
+                        const SizedBox(width: 25),
+                        Text(
                           "Notifications",
                           style: TextStyle(
                             color:
@@ -486,28 +492,26 @@ class ProfileScreenState extends State<ProfileScreen> {
                             height: 24 / 16,
                           ),
                         ),
-                      ),
-                      Expanded(
-                        child: Container(),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 20),
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                              onTap: () async {},
-                              child: Image.asset(
-                                "assets/images/Right3.png",
-                                width: 24,
-                                height: 24,
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.profileDarkText
-                                    : AppColors.subheadColor,
-                              )),
+                        Expanded(
+                          child: Container(),
                         ),
-                      ),
-                    ],
+                        Padding(
+                          padding: const EdgeInsets.only(right: 20),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Image.asset(
+                              "assets/images/Right3.png",
+                              width: 24,
+                              height: 24,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.profileDarkText
+                                  : AppColors.subheadColor,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   SizedBox(
                     height: 26,
