@@ -104,6 +104,8 @@ flutter:
   - assets/images/Right.png
   - assets/images/selfie.png
   - assets/images/gallery.png
+  - assets/images/Shape33.png
+  - assets/images/Shape34.png
   - assets/jsons/
 
   # To add assets to your application, add an assets section, like this:

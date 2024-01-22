@@ -50,5 +50,6 @@ class AppColors {
   static const cancelBooking = Color(0xffF39E9E);
   static const cancelBack = Color(0xffFDEEEE);
   static const roundColorBooking = Color(0xff35A756);
-  static const requestedfriend=Color(0xff215AA6);
+  static const requestedfriend = Color(0xff215AA6);
+  static const announceDate = Color(0xffE9F7EF);
 }

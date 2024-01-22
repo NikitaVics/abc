@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tennis_court_booking_app/announcement/announcement_screen.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/mybookings/my_bookings.dart';
@@ -54,7 +55,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           children: const <Widget>[
             HomeScreen(),
             MyBookingScreen(),
-            ProfileScreen(),
+            AnnouncementScreen(),
             ProfileScreen()
           ],
         ),

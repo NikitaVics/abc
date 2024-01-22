@@ -17,7 +17,7 @@ class ExampleStepProgressIndicator extends StatelessWidget {
               padding:6,
                roundedEdges: const Radius.circular(10),
               customSize:(p0, p1) => 3,
-              totalSteps: 4,
+              totalSteps: 2,
               currentStep: step,
               selectedColor: AppColors.confirmValid,
               unselectedColor: AppColors.nondotcolor,

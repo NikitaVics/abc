@@ -26,17 +26,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
  List<String> pageTitles = [
     "Register as Member",
     "Registration Form",
-    "Membership Details",
-    "Membership payment",
+   // "Membership Details",
+   // "Membership payment",
   ];
 
   // Create a variable to hold the current title.
   String currentTitle = "Register as Member"; 
   List<Widget> pages = [
   RegisterAsMember(), 
-  
-    RegisterAsMember(), 
-     RegisterAsMember(), 
+    
 ];
 
   @override
@@ -99,7 +97,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         Row(
                           children: List.generate(
-                            4,
+                            2,
                             (index) => buildDot(index),
                           ),
                         ),
@@ -111,7 +109,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Expanded(
                       child: PageView.builder(
                         controller: _pageController,
-                        itemCount:4,
+                        itemCount:2,
                         onPageChanged: (int page) {
                           setState(() {
                             _currentPage = page;
@@ -146,12 +144,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget buildDot(int index) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final dotWidth = screenWidth * 0.76 / 4;
-    if (_currentPage < 4 ) {
+    final dotWidth = screenWidth * 0.76 / 2;
+    if (_currentPage < 2 ) {
       return Container(
           margin: EdgeInsets.symmetric(horizontal: 6),
           width: dotWidth,
-          height:_currentPage == index? 3:2,
+          height:_currentPage == index? 1:0,
           decoration: BoxDecoration(
             shape: BoxShape.rectangle,
             borderRadius: BorderRadius.circular(3),

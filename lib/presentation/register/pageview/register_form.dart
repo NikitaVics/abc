@@ -105,7 +105,7 @@ class _RegisterFormState extends State<RegisterForm> {
             primary: true,
             appBar: const CustomAppBar(
               isBoarder: false,
-              title: "Registration Form",
+              title: "Register as Member",
               isProgress: true,
               step: 2,
             ),
@@ -172,6 +172,7 @@ class _RegisterFormState extends State<RegisterForm> {
           //crossAxisAlignment: CrossAxisAlignment.stretch,
           //mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+              SizedBox(height: 36.0),
             _buildLoginText(),
             SizedBox(height: 24.0),
             _buildUserName(),
@@ -189,44 +190,25 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   Widget _buildLoginText() {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Align(
-          alignment: Alignment.topLeft,
-          child: Text(
-            "Registration",
-            style: TextStyle(
-              color: AppColors.allHeadColor,
-              fontSize: 32,
-              fontFamily: FontFamily.satoshi,
-              fontWeight: FontWeight.w700,
-              height: 40 / 32,
-            ),
-          ),
+    return const Align(
+      alignment: Alignment.topLeft,
+      child: Text(
+        "Tell Us About You",
+        style: TextStyle(
+          color: AppColors.allHeadColor,
+          fontSize: 32,
+          fontFamily: FontFamily.satoshi,
+          fontWeight: FontWeight.w700,
+          height: 40 / 32,
         ),
-        Align(
-          alignment: Alignment.topLeft,
-          child: Text(
-            "form",
-            style: TextStyle(
-              color: AppColors.allHeadColor,
-              fontSize: 32,
-              fontFamily: FontFamily.satoshi,
-              fontWeight: FontWeight.w700,
-              height: 40 / 32,
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
   Widget _buildUserName() {
     return TextFieldWidget(
       read: false,
-      hint: 'Name',
+      hint: 'User Name',
       inputType: TextInputType.name,
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint

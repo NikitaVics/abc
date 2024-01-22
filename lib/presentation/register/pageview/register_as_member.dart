@@ -188,10 +188,10 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
           children: <Widget>[
             _buildLoginText(),
             SizedBox(height: 24.0),
-            _buildUserName(),
+           // _buildUserName(),
             _buildUserIdField(),
             _buildPasswordField(),
-            _buildConfirmPasswordField(),
+           // _buildConfirmPasswordField(),
             _buildNotMemberText(),
           ],
         ),
@@ -513,7 +513,65 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
       ),
     );
   }
+  Widget _buildSignInButton() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 19),
+        child: FocusScope(
+          // Manage keyboard focus
+          child: 
+            CustomElevatedButton(
+              height: 60,
+              width: MediaQuery.of(context).orientation == Orientation.landscape
+                  ? 70
+                  : double.infinity,
+              text: "Next",
+              isLoading: isLoading,
+              onPressed: () async {
+                FocusManager.instance.primaryFocus?.unfocus();
+                //SharedPreferences pref = await SharedPreferences.getInstance();
+               
+                bool emailValid = await validateEmail();
+                bool passwordValid = await validatePassword();
+               
 
+                if (
+                    emailValid &&
+                    passwordValid 
+                   ) {
+                  setState(() {
+                    isLoading = true;
+                  });
+                  Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => RegisterForm(
+                                  email: _emailController.text,
+                                 
+                                )),
+                      );
+                      setState(() {
+                        isLoading = false;
+                      });
+                }
+
+                /* if (_formStore.canLogin) {
+                DeviceUtils.hideKeyboard(context);
+                _userStore.login(
+                    _userEmailController.text, _passwordController.text);
+              } else {
+                _showErrorMessage('Please fill in all fields');
+              }*/
+              },
+              buttonColor: AppColors.elevatedColor,
+              textColor: Colors.white,
+            )
+         
+        ),
+      ),
+    );
+  }
+/*
   Widget _buildSignInButton() {
     return Align(
       alignment: Alignment.bottomCenter,
@@ -585,7 +643,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
         ),
       ),
     );
-  }
+  }*/
 
   // dispose:-------------------------------------------------------------------
   @override

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tennis_court_booking_app/announcement/announcement_screen.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/constants/onboarding_data.dart';
@@ -111,7 +112,7 @@ class OnboardingScreenState extends State<OnboardingScreen> {
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
+                          builder: (context) => const AnnouncementScreen(),
                         ),
                       );
                     },
