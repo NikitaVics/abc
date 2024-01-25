@@ -231,9 +231,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
             String results =
                 "$formattedHour:${dateTime.minute.toString().padLeft(2, '0')} ${dateTime.hour < 12 ? 'am' : 'pm'}";
             print(courtData);
-            List<String> courtImageUrls = courtData.tennisCourt.courtImages
-                .map((courtImage) => courtImage.imageUrl)
-                .toList();
+          
             List teamMember = courtData.teamMembers
                 .map((teamMembers) => teamMembers.name)
                 .toList();
@@ -372,7 +370,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(4),
                                   child: Image.network(
-                                    courtImageUrls[0],
+                                   courtData.tennisCourt.courtImages[0],
                                     fit: BoxFit.cover,
                                   ),
                                 ),

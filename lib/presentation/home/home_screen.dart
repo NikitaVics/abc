@@ -113,7 +113,7 @@ class HomeScreenState extends State<HomeScreen>
   Future<void> profile() async {
     final profileProvider =
         Provider.of<ProfileProvider>(context, listen: false);
-         final upComingProvider =
+    final upComingProvider =
         Provider.of<UpcomingBookProvider>(context, listen: false);
     final checkstatusprovider =
         Provider.of<CheckStatusProvider>(context, listen: false);
@@ -311,7 +311,9 @@ class HomeScreenState extends State<HomeScreen>
                                                     MaterialPageRoute(
                                                       builder: (context) =>
                                                           RegisterForm(
-                                                              email: email!),
+                                                        email: email!,
+                                                        password: '',
+                                                      ),
                                                     ),
                                                   );
                                                 },
@@ -600,6 +602,7 @@ class HomeScreenState extends State<HomeScreen>
                   _buildSlotshowText(),
                   _buildShowCourt(courtShowProvider.courtList!),
                   _buildrecentBookText(),
+                   hasErrorMessage!?
                   Consumer<UpcomingBookProvider>(
                       builder: (context, provider, child) {
                     final bookingResponse = provider.upComingBookModel;
@@ -639,10 +642,12 @@ class HomeScreenState extends State<HomeScreen>
                         ),
                       );
                     } else {
-                      return const SizedBox();
+                      return buildnoBook();
                     }
-                  }),
-                  SizedBox(height: 20,)
+                  }):buildnoCompleteProfileforBook(),
+                  SizedBox(
+                    height: 20,
+                  )
                   // _buildForgotPasswordButton(),
                 ],
               );
@@ -1030,6 +1035,7 @@ class HomeScreenState extends State<HomeScreen>
                                           builder: (context) =>
                                               const RegisterForm(
                                                 email: '',
+                                                password: '',
                                               )));
 
                                   /*
@@ -1376,11 +1382,11 @@ class HomeScreenState extends State<HomeScreen>
               GestureDetector(
                 onTap: () {
                   Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const BottomNavBar(initial: 1),
-                      ),
-                    );
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const BottomNavBar(initial: 1),
+                    ),
+                  );
                 },
                 child: const Text(
                   "See all",
@@ -1389,7 +1395,7 @@ class HomeScreenState extends State<HomeScreen>
                     decorationThickness:
                         2.0, // Set the thickness of the underline
                     decorationStyle: TextDecorationStyle.solid,
-              
+
                     color: AppColors.dotColor,
                     fontSize: 14,
                     fontFamily: FontFamily.satoshi,
@@ -1449,9 +1455,9 @@ class HomeScreenState extends State<HomeScreen>
 
     // Format day (23)
     String day = DateFormat("d").format(dateTiming);
- 
+
     return Padding(
-       padding: const EdgeInsets.only(right: 20),
+      padding: const EdgeInsets.only(right: 20),
       child: Container(
         height: MediaQuery.of(context).size.height,
         width: 250,
@@ -1469,19 +1475,17 @@ class HomeScreenState extends State<HomeScreen>
             children: [
               Padding(
                 padding: const EdgeInsets.only(
-                
                   right: 2,
-                 
                 ),
                 child: ClipRRect(
-                            borderRadius: BorderRadius.circular(6),
-                            child: SilentErrorImage(
-                             height: 102,
-                             width: 82,
-                              imageUrl: booking?.tennisCourt.courtImageURLs[0] ??
-                                  'assets/images/ProfileImage.png',
-                            ),
-                          ),
+                  borderRadius: BorderRadius.circular(6),
+                  child: SilentErrorImage(
+                    height: 102,
+                    width: 82,
+                    imageUrl: booking?.tennisCourt.courtImageURLs[0] ??
+                        'assets/images/ProfileImage.png',
+                  ),
+                ),
               ),
               Padding(
                 padding: EdgeInsets.only(left: 14),
@@ -1493,12 +1497,12 @@ class HomeScreenState extends State<HomeScreen>
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                             booking?.tennisCourt.name ?? "",
+                            booking?.tennisCourt.name ?? "",
                             style: TextStyle(
-                              color:
-                                  Theme.of(context).brightness == Brightness.dark
-                                      ? AppColors.booklight
-                                      : AppColors.allHeadColor,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.booklight
+                                  : AppColors.allHeadColor,
                               fontSize: 16,
                               fontFamily: FontFamily.satoshi,
                               fontWeight: FontWeight.w500,
@@ -1506,136 +1510,145 @@ class HomeScreenState extends State<HomeScreen>
                             ),
                           ),
                         ),
-                        SizedBox(height: 2,),
+                        SizedBox(
+                          height: 2,
+                        ),
                         Container(
-                         /// color: Colors.pink,
+                          /// color: Colors.pink,
                           height: 16,
                           child: Row(
-                           //crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                          Image.asset(
-                              "assets/images/calender.png",
-                              height: 12,
-                              color:
-                                  Theme.of(context).brightness == Brightness.dark
-                                      ? AppColors.darkSubHead
-                                      : AppColors.subheadColor,
-                            ),
-                            SizedBox(width: 7,),
-                          Text(
-                            "${month}".toUpperCase(),
-                            style: TextStyle(
-                          color: Colors.black.withOpacity(0.5),
-                          fontSize: 10,
-                          fontFamily: FontFamily.roboto,
-                          fontWeight: FontWeight.w400,
-                          //height: 0.16,
-                          ),
-                          
-                          ),
-                          Text(
-                            " ${day}",
-                           style: TextStyle(
-                                                color: Colors.black.withOpacity(0.5),
-                                                fontSize: 10,
-                                                fontFamily: FontFamily.roboto,
-                                                fontWeight: FontWeight.w400,
-                                               // height: 0.16,
-                                                ),
-                          ),
-                          Text(
-                            " ${timePart} ${dateTime.hour < 12 ? 'am' : 'pm'}",
-                           style: TextStyle(
-                                                color: Colors.black.withOpacity(0.5),
-                                                fontSize: 10,
-                                                fontFamily: FontFamily.roboto,
-                                                fontWeight: FontWeight.w400,
-                                               // height: 0.16,
-                                                ),
-                          ),
-                                              ],
-                                            ),
-                                          
-                        ),
-                         SizedBox(height: 3,),
-                        Container(
-                         /// color: Colors.pink,
-                          height: 16,
-                          child: Row(
-                           //crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                          Image.asset(
-                              "assets/images/Group3.png",
-                              height: 12,
-                              color:
-                                  Theme.of(context).brightness == Brightness.dark
-                                      ? AppColors.darkSubHead
-                                      : Colors.black.withOpacity(0.5),
-                            ),
-                            SizedBox(width: 7,),
-                         
-                          Text(
-                            " Team Members",
-                           style: TextStyle(
-                                                color: Colors.black.withOpacity(0.5),
-                                                fontSize: 10,
-                                                fontFamily: FontFamily.roboto,
-                                                fontWeight: FontWeight.w400,
-                                               // height: 0.16,
-                                                ),
-                          ),
-                         
-                                              ],
-                                            ),
-                                          
-                        ),
-                        SizedBox(height: 4,),
-                          Row(children: [
-                                      SizedBox(
-                     width:100,
-                      height: 36,
-                      child: Stack(
-                        children: [
-                          Positioned(
-                              left: 0,
-                              top: 0,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(110.0),
-                                child: SilentErrorImage(
-                                  width: 30,
-                                  height: 30,
-                                  imageUrl: booking?.userImage ??
-                                      'assets/images/ProfileImage.png',
+                            //crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Image.asset(
+                                "assets/images/calender.png",
+                                height: 12,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.darkSubHead
+                                    : AppColors.subheadColor,
+                              ),
+                              SizedBox(
+                                width: 7,
+                              ),
+                              Text(
+                                "${month}".toUpperCase(),
+                                style: TextStyle(
+                                  color: Colors.black.withOpacity(0.5),
+                                  fontSize: 10,
+                                  fontFamily: FontFamily.roboto,
+                                  fontWeight: FontWeight.w400,
+                                  //height: 0.16,
                                 ),
-                              )),
-                          ...List.generate(
-                            booking?.teamMembers.length ??
-                                0, // Ensure the list has three items
-                            (index) {
-                              TeamMember teamMember =
-                                  booking!.teamMembers[index];
-                              double leftPad = (23 * (index + 1)).toDouble();
-                              return Positioned(
-                                left: leftPad,
-                                top: 0,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(150.0),
-                                  child: SilentErrorImage(
-                                    width:30,
-                                    height: 30,
-                                    imageUrl: teamMember.imageUrl,
+                              ),
+                              Text(
+                                " ${day}",
+                                style: TextStyle(
+                                  color: Colors.black.withOpacity(0.5),
+                                  fontSize: 10,
+                                  fontFamily: FontFamily.roboto,
+                                  fontWeight: FontWeight.w400,
+                                  // height: 0.16,
+                                ),
+                              ),
+                              Text(
+                                " ${timePart} ${dateTime.hour < 12 ? 'am' : 'pm'}",
+                                style: TextStyle(
+                                  color: Colors.black.withOpacity(0.5),
+                                  fontSize: 10,
+                                  fontFamily: FontFamily.roboto,
+                                  fontWeight: FontWeight.w400,
+                                  // height: 0.16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        Container(
+                          /// color: Colors.pink,
+                          height: 16,
+                          child: Row(
+                            //crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Image.asset(
+                                "assets/images/Group3.png",
+                                height: 12,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.darkSubHead
+                                    : Colors.black.withOpacity(0.5),
+                              ),
+                              SizedBox(
+                                width: 7,
+                              ),
+                              Text(
+                                " Team Members",
+                                style: TextStyle(
+                                  color: Colors.black.withOpacity(0.5),
+                                  fontSize: 10,
+                                  fontFamily: FontFamily.roboto,
+                                  fontWeight: FontWeight.w400,
+                                  // height: 0.16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 100,
+                              height: 36,
+                              child: Stack(
+                                children: [
+                                  Positioned(
+                                      left: 0,
+                                      top: 0,
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(110.0),
+                                        child: SilentErrorImage(
+                                          width: 30,
+                                          height: 30,
+                                          imageUrl: booking?.userImage ??
+                                              'assets/images/ProfileImage.png',
+                                        ),
+                                      )),
+                                  ...List.generate(
+                                    booking?.teamMembers.length ??
+                                        0, // Ensure the list has three items
+                                    (index) {
+                                      TeamMember teamMember =
+                                          booking!.teamMembers[index];
+                                      double leftPad =
+                                          (23 * (index + 1)).toDouble();
+                                      return Positioned(
+                                        left: leftPad,
+                                        top: 0,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(150.0),
+                                          child: SilentErrorImage(
+                                            width: 30,
+                                            height: 30,
+                                            imageUrl: teamMember.imageUrl,
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   ),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),           
-                                              ],)
+                                ],
+                              ),
+                            ),
+                          ],
+                        )
                       ],
                     ),
-                   
                   ],
                 ),
               ),
@@ -1842,82 +1855,163 @@ class HomeScreenState extends State<HomeScreen>
         },
       ),
     );
-    /* Container(
-        height: 138,
-        decoration: BoxDecoration(
-            color: Theme.of(context).brightness == Brightness.dark
-                ? AppColors.darkTextInput
-                : Colors.white,
-            borderRadius: BorderRadius.circular(12)),
-        child: Row(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(left: 10, top: 10, bottom: 10),
-              child: Image.asset(
-                "assets/images/Nobooking.png",
-              ),
-            ),
-            MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  //TextSpan
-                  SizedBox(
-                    width: 147,
-                    child: RichText(
-                      text: TextSpan(
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: "No Recent Bookings  ",
-                            style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.booklight
-                                  : AppColors.subheadColor,
-                              fontSize: 12,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w400,
-                              height: 20 / 12,
-                            ),
-                          ),
-                          TextSpan(
-                            text:
-                                'Complete your profile ', // The first half of the sentence
-                            style: TextStyle(
-                              color: AppColors.disableButtonTextColor,
-                              fontSize: 12,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w400,
-                              height: 20 / 12,
-                            ),
-                          ),
-                          TextSpan(
-                            text:
-                                'to start booking', // The second half of the sentence
-                            style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.darkSubHead
-                                  : AppColors.hintColor,
-                              fontSize: 12,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w400,
-                              height: 20 / 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            )
-          ],
-        ),
-      ),*/
+    /* */
   }
 */
+  Widget buildnoBook() {
+    return Container(
+      height: 138,
+      decoration: BoxDecoration(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkTextInput
+              : Colors.white,
+          borderRadius: BorderRadius.circular(12)),
+      child: Row(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 10, top: 10, bottom: 10),
+            child: Image.asset(
+              "assets/images/Nobooking.png",
+            ),
+          ),
+          MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                //TextSpan
+                SizedBox(
+                  width: 147,
+                  child: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: "No Recent Bookings  ",
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.booklight
+                                    : AppColors.subheadColor,
+                            fontSize: 12,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w400,
+                            height: 20 / 12,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              'Continue booking now ', // The first half of the sentence
+                          style: TextStyle(
+                            color: AppColors.disableButtonTextColor,
+                            fontSize: 12,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w400,
+                            height: 20 / 12,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              'for an amazing experience!', // The second half of the sentence
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.darkSubHead
+                                    : AppColors.hintColor,
+                            fontSize: 12,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w400,
+                            height: 20 / 12,
+                          ),
+                        ),
+                       
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+   Widget buildnoCompleteProfileforBook() {
+    return Container(
+      height: 138,
+      decoration: BoxDecoration(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkTextInput
+              : Colors.white,
+          borderRadius: BorderRadius.circular(12)),
+      child: Row(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 10, top: 10, bottom: 10),
+            child: Image.asset(
+              "assets/images/Nobooking.png",
+            ),
+          ),
+          MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                //TextSpan
+                SizedBox(
+                  width: 147,
+                  child: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: "No Recent Bookings  ",
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.booklight
+                                    : AppColors.subheadColor,
+                            fontSize: 12,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w400,
+                            height: 20 / 12,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              'Complete your profile ', // The first half of the sentence
+                          style: TextStyle(
+                            color: AppColors.disableButtonTextColor,
+                            fontSize: 12,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w400,
+                            height: 20 / 12,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              'to start booking', // The second half of the sentence
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.darkSubHead
+                                    : AppColors.hintColor,
+                            fontSize: 12,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w400,
+                            height: 20 / 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
   Widget buidSheet() {
     double screenWidth = MediaQuery.of(context).size.width;
     double containerWidth = screenWidth - 48; // 24 padding on each side

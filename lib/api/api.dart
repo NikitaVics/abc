@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tennis_court_booking_app/announcement/model/announcement_model.dart';
 import 'package:tennis_court_booking_app/model/bookResultofUser/bookresult_of_user.dart';
 import 'package:tennis_court_booking_app/model/bookingCourt/booking_response.dart';
 import 'package:tennis_court_booking_app/model/coachshow/Coach_show_model.dart';
@@ -18,7 +19,7 @@ import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/tennismodel/teniscourt/court.dart';
 
 class Api {
-  static const baseUrl = 'https://c6a3-117-98-34-84.ngrok-free.app';
+  static const baseUrl = 'https://15fd-117-98-58-149.ngrok-free.app';
   //'https://court-api.azurewebsites.net';
 
   static Map<String, String>? header;
@@ -156,7 +157,7 @@ class Api {
   }
 
   static Future register(body) async {
-    var url = "$baseUrl/api/UsersAuth/register";
+    var url = "$baseUrl/api/UsersAuth/Create account";
 
     // Convert the model to a JSON string
     Map<String, String> headers = {
@@ -783,6 +784,21 @@ class Api {
       print('Error: $e');
       return 0;
     }
+  }
+   static Future<AnnouncementModel> allAnnouncementResponse() async {
+    var url = "$baseUrl/api/MobileAnnouncement/Announcements";
+    Map<String, String> headers = {
+       "content-Type": "application/json; charset=UTF-8",
+    };
+
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    print(response.body);
+
+    return AnnouncementModel.fromJson(jsonDecode(response.body));
   }
 
 }

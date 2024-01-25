@@ -10,6 +10,7 @@ import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/presentation/register/pageview/congrats_screen.dart';
+import 'package:tennis_court_booking_app/presentation/register/verifyemail/verify_email.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/dateTextField.dart';
@@ -21,8 +22,9 @@ import 'package:intl/intl.dart';
 
 class RegisterForm extends StatefulWidget {
   final String email;
+  final String password;
 
-  const RegisterForm({super.key, required this.email});
+  const RegisterForm({super.key, required this.email, required this.password});
   @override
   State<RegisterForm> createState() => _RegisterFormState();
 }
@@ -36,14 +38,16 @@ class _RegisterFormState extends State<RegisterForm> {
       dobError = false,
       nameError = false,
       genderError = false,
-      isLoading = false;
+      isLoading = false,
+      ageError = false;
 
   String emailErrorText = '',
       loginErrorMessage = '',
       phoneErrorText = '',
       phoneprefixErrorText = '',
       generErrorText = '',
-      addressErrorText = '';
+      addressErrorText = '',
+      ageErrorText = '';
   bool isEmailValidationSuccessful = false;
   bool isPasswordValidationSuccessful = false;
   TextEditingController _userNameController = TextEditingController();
@@ -57,9 +61,10 @@ class _RegisterFormState extends State<RegisterForm> {
   TextEditingController _userAddressController = TextEditingController();
   final TextEditingController phonePrefixController = TextEditingController();
   final TextEditingController genderController = TextEditingController();
-
+  final TextEditingController ageController = TextEditingController();
   late FocusNode _dobFocusNode;
   late FocusNode _genderNode;
+  late FocusNode _ageNode;
   late FocusNode _phonePrefixNode;
   @override
   void initState() {
@@ -67,9 +72,8 @@ class _RegisterFormState extends State<RegisterForm> {
     _userEmailController.text = widget.email;
     _dobFocusNode = FocusNode();
     _genderNode = FocusNode();
-    _genderNode.addListener(() {
-      validateGender();
-    });
+    _ageNode = FocusNode();
+
     _phonePrefixNode = FocusNode();
     _phonePrefixNode.addListener(() {
       validatePhonePrefix();
@@ -169,20 +173,21 @@ class _RegisterFormState extends State<RegisterForm> {
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           mainAxisSize: MainAxisSize.max,
-          //crossAxisAlignment: CrossAxisAlignment.stretch,
-          //mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-              SizedBox(height: 36.0),
+            SizedBox(height: 6.0),
             _buildLoginText(),
             SizedBox(height: 24.0),
             _buildUserName(),
-            _buildUserIdField(),
-            _buildUserGender(),
-            _buildUserDOB(),
+            //_buildUserIdField(),
+
+            // _buildUserDOB(),
             _buildUserphone(),
-            _buildPasswordField(),
-            _buildUploadDocumentField(context),
-            _buildNotMemberText(),
+            _buildUserGender(),
+            // _buildPasswordField(),
+            //_buildUploadDocumentField(context),
+            // _buildNotMemberText(),
           ],
         ),
       ),
@@ -233,56 +238,105 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   Widget _buildUserGender() {
-    return GenderTextFieldWidget(
-      read: false,
-      hint: 'Gender',
-      inputType: TextInputType.none,
-      focusNode: _genderNode,
-      hintColor: Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkhint
-          : AppColors.hintColor,
-      // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
-      textController: genderController,
-      inputAction: TextInputAction.next,
-      errorBorderColor: genderError
-          ? AppColors.errorColor // Border color for validation error
-          : AppColors.textInputField,
-      focusBorderColor:
-          genderError ? AppColors.errorColor : AppColors.focusTextBoarder,
-      autoFocus: false,
-      onSuffixIconPressed: () async {
-        FocusScope.of(context).requestFocus(_genderNode);
-        String? selectedGender = await showGenderMenu(context);
+    return Row(
+      children: [
+        Expanded(
+          child: GenderTextFieldWidget(
+            read: false,
+            hint: 'Age',
+            inputType: TextInputType.none,
+            focusNode: _ageNode,
+            hintColor: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkhint
+                : AppColors.hintColor,
+            // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
+            textController: ageController,
+            inputAction: TextInputAction.next,
+            errorBorderColor: ageError
+                ? AppColors.errorColor // Border color for validation error
+                : AppColors.textInputField,
+            focusBorderColor:
+                ageError ? AppColors.errorColor : AppColors.focusTextBoarder,
+            autoFocus: false,
+            onSuffixIconPressed: () async {
+              FocusScope.of(context).requestFocus(_ageNode);
+              String? selectedAge = await showAgeMenu(context);
 
-        if (selectedGender != null) {
-          setState(() {
-            genderController.text = selectedGender;
-            genderError = false; // Reset the error flag
-          });
-        }
-      },
-      onChanged: (value) {
-        setState(() {
-          genderError = false; // Reset the error flag
-        });
-        validateGender(); // Trigger validation on text change
-      },
+              if (selectedAge != null) {
+                setState(() {
+                  ageController.text = selectedAge;
+                  ageError = false; // Reset the error flag
+                });
+              }
+            },
+            onChanged: (value) {
+              setState(() {
+                ageError = false; // Reset the error flag
+              });
+              validateAge(); // Trigger validation on text change
+            },
 
-      errorText: genderError ? "Please enter gender" : " ",
-      isIcon: true,
+            errorText: ageError ? "Please enter age" : " ",
+            isIcon: true,
+          ),
+        ),
+        SizedBox(
+          width: 19,
+        ),
+        Expanded(
+          child: GenderTextFieldWidget(
+            read: false,
+            hint: 'Gender',
+            inputType: TextInputType.none,
+            focusNode: _genderNode,
+            hintColor: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkhint
+                : AppColors.hintColor,
+            // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
+            textController: genderController,
+            inputAction: TextInputAction.next,
+            errorBorderColor: genderError
+                ? AppColors.errorColor // Border color for validation error
+                : AppColors.textInputField,
+            focusBorderColor:
+                genderError ? AppColors.errorColor : AppColors.focusTextBoarder,
+            autoFocus: false,
+            onSuffixIconPressed: () async {
+              FocusScope.of(context).requestFocus(_genderNode);
+              String? selectedGender = await showGenderMenu(context);
+
+              if (selectedGender != null) {
+                setState(() {
+                  genderController.text = selectedGender;
+                  genderError = false; // Reset the error flag
+                });
+              }
+            },
+            onChanged: (value) {
+              setState(() {
+                genderError = false; // Reset the error flag
+              });
+              validateGender(); // Trigger validation on text change
+            },
+
+            errorText: genderError ? "Please enter gender" : " ",
+            isIcon: true,
+          ),
+        ),
+      ],
     );
   }
 
   Future<String?> showGenderMenu(BuildContext context) async {
     final RenderBox overlay =
-        Overlay.of(context)!.context.findRenderObject() as RenderBox;
+        Overlay.of(context).context.findRenderObject() as RenderBox;
     final RenderBox iconBox =
         _genderNode.context?.findRenderObject() as RenderBox;
     final Offset iconPosition = iconBox.localToGlobal(Offset.zero);
 
     // Increase these values for more bottom distance
-    final double translateY = 20.0; // Adjust as needed
-    final double translateX = 0.0;
+    final double translateY = 25.0; // Adjust as needed
+    final double translateX = 170.0;
 
     final RelativeRect position = RelativeRect.fromRect(
       Rect.fromPoints(
@@ -307,6 +361,43 @@ class _RegisterFormState extends State<RegisterForm> {
       genderController.text = selectedGender;
       // Handle the selected gender as needed
       print('Selected Gender: $selectedGender');
+    }
+  }
+
+  Future<String?> showAgeMenu(BuildContext context) async {
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+    final RenderBox iconBox = _ageNode.context?.findRenderObject() as RenderBox;
+    final Offset iconPosition = iconBox.localToGlobal(Offset.zero);
+
+    // Increase these values for more bottom distance
+    final double translateY = 180.0; // Adjust as needed
+    final double translateX = -8.0;
+
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        iconPosition.translate(translateX, iconBox.size.height),
+        iconPosition.translate(translateX, iconBox.size.height + translateY),
+      ),
+      Offset.zero & overlay.size,
+    );
+
+    final String? selectedAge = await showMenu<String>(
+      context: context,
+      position: position,
+      items: List.generate(100, (index) => (index + 1).toString())
+          .map((String age) {
+        return PopupMenuItem<String>(
+          value: age,
+          child: Text(age),
+        );
+      }).toList(),
+    );
+
+    if (selectedAge != null) {
+      ageController.text = selectedAge;
+      // Handle the selected gender as needed
+      print('Selected age: $selectedAge');
     }
   }
 
@@ -620,7 +711,7 @@ class _RegisterFormState extends State<RegisterForm> {
                       ),
                     ),
                   ),
-                  if (showDErrorMessage==false)
+                  if (showDErrorMessage == false)
                     Text("Please Enter your picture",
                         style: TextStyle(color: Colors.red)),
                 ],
@@ -705,6 +796,7 @@ class _RegisterFormState extends State<RegisterForm> {
       ),
     );
   }
+
   Widget _buildSignInButton() {
     return Align(
       alignment: Alignment.bottomCenter,
@@ -732,47 +824,38 @@ class _RegisterFormState extends State<RegisterForm> {
                   backgroundColor: AppColors
                       .elevatedColor, // Change background color on hover
                 ),
-                onPressed:isLoading?null: isChecked
-                    ? () async {
+                onPressed:  () async {
                         FocusManager.instance.primaryFocus?.unfocus();
                         bool nameValid = await validateName();
 
                         bool phoneValid = await validatePhone();
-                        bool addressValid = await validateAddress();
-                        bool dobValid = await validateDOB();
-                        bool isGender = await validateGender();
-                       
-                        bool showProfile=showDErrorMessage = imageFile !=null;
+                        bool ageValid = await validateAge();
 
-                        if (nameValid &&
-                            phoneValid &&
-                            addressValid &&
-                            dobValid &&
-                            isGender&&
-                            isChecked&&
-                            showProfile
-                            ) {
+                        bool isGender = await validateGender();
+
+                        if (nameValid && phoneValid && ageValid && isGender) {
                           setState(() {
                             isLoading = true;
                           });
-                          print("result ${result!}");
+                        
+
                           value
-                              .registerFormApi(
-                                  _userEmailController.text,
+                              .registerApi(
+                                  widget.email,
+                                  widget.password,
                                   _userNameController.text,
-                                  _userPhoneController.text,
-                                  result!.toUtc().toIso8601String(),
-                                  _userAddressController.text,
-                                  imageFile!.path,
+                                  int.parse(ageController.text),
                                   genderController.text,
                                   phonePrefixController.text,
-                                 )
+                                  _userPhoneController.text)
                               .then((val) {
                             if (val['statusCode'] == 200) {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        const CongratsScreen()),
+                                    builder: (context) => VerifyEmailScreen(
+                                          email: widget.email,
+                                          password: widget.password,
+                                        )),
                               );
                               setState(() {
                                 isLoading = false;
@@ -786,8 +869,7 @@ class _RegisterFormState extends State<RegisterForm> {
                             }
                           });
                         }
-                      }
-                    : null,
+                      },
                 child: isLoading
                     ? const SizedBox(
                         height: 24,
@@ -799,7 +881,7 @@ class _RegisterFormState extends State<RegisterForm> {
                         ),
                       )
                     : const Text(
-                        "Register Now",
+                        "Next",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 14,
@@ -842,8 +924,6 @@ class _RegisterFormState extends State<RegisterForm> {
     );
   }
 
-  
-
   // dispose:-------------------------------------------------------------------
   @override
   void dispose() {
@@ -884,7 +964,21 @@ class _RegisterFormState extends State<RegisterForm> {
       }
     });
 
-    return !nameError;
+    return !ageError;
+  }
+
+  Future<bool> validateAge() async {
+    // var provider = Provider.of<SignInProvider>(context, listen: false);
+
+    setState(() {
+      if (ageController.text.isEmpty) {
+        ageError = true;
+      } else {
+        ageError = false;
+      }
+    });
+
+    return !ageError;
   }
 
   Future<bool> validateDOB() async {

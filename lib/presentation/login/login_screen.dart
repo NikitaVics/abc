@@ -31,7 +31,7 @@ class LoginScreen extends StatefulWidget {
 
 class LoginScreenState extends State<LoginScreen> {
   //text controllers:-----------------------------------------------------------
- final TextEditingController email = TextEditingController();
+  final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
   //predefine bool value for error:---------------------------------------------
   bool emailError = false, passwordError = false, loginError = false;
@@ -47,14 +47,18 @@ class LoginScreenState extends State<LoginScreen> {
   late FocusNode _passwordFocusNode;
   SignInProvider? provider;
   String? error;
- NotificationServices notificationServices = NotificationServices();
+  String? devToken;
+  NotificationServices notificationServices = NotificationServices();
   @override
   void initState() {
     super.initState();
     notificationServices.requestNotificationPermission();
     notificationServices.firebaseInit();
     //notificationServices.isTokenRefresh();
-    notificationServices.getDeviceToken().then((value) {
+    notificationServices.getDeviceToken().then((value) async {
+      devToken = value;
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      pref.setString('deviceToken', value);
       print('device token');
       print(value);
     });
@@ -66,8 +70,8 @@ class LoginScreenState extends State<LoginScreen> {
   @override
   void dispose() {
     // Clean up the controller when the Widget is removed from the Widget tree
-   email.clear(); // Clear email text
-   password.clear(); // Clear password text
+    email.clear(); // Clear email text
+    password.clear(); // Clear password text
     _passwordFocusNode.dispose();
     provider!.dispose(); // Dispose of the SignInProvider
     super.dispose();
@@ -77,10 +81,9 @@ class LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
       return WillPopScope(
-         onWillPop: () async {
-    
-    return false; 
-  },
+        onWillPop: () async {
+          return false;
+        },
         child: GestureDetector(
           onTap: () {
             FocusManager.instance.primaryFocus?.unfocus();
@@ -220,14 +223,14 @@ class LoginScreenState extends State<LoginScreen> {
 
   Widget _buildUserIdField() {
     return TextFieldWidget(
-        read: false,
+      read: false,
       hint: 'E-Mail/UserName',
       inputType: TextInputType.emailAddress,
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
           : AppColors.hintColor,
       // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
-      textController:email,
+      textController: email,
       inputAction: TextInputAction.next,
       defaultBoarder: AppColors.textInputField,
       errorBorderColor: emailError
@@ -248,13 +251,13 @@ class LoginScreenState extends State<LoginScreen> {
 
   Widget _buildPasswordField() {
     return TextFieldWidget(
-        read: false,
+      read: false,
       hint: "Password",
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
           : AppColors.hintColor,
       isObscure: true,
-      textController:password,
+      textController: password,
       focusNode: _passwordFocusNode,
       errorText: passwordError ? "Please enter your password" : " ",
       defaultBoarder: AppColors.textInputField,
@@ -305,7 +308,6 @@ class LoginScreenState extends State<LoginScreen> {
                 builder: (context) => const LoginEmailForotpScreen(),
               ),
             );
-            
           },
         ),
       ],
@@ -330,7 +332,6 @@ class LoginScreenState extends State<LoginScreen> {
             ),
           ),
           TextButton(
-          
             child: const Text(" Register now",
                 style: TextStyle(
                     color: AppColors.forgotpass,
@@ -367,16 +368,25 @@ class LoginScreenState extends State<LoginScreen> {
               });
 
               if (await validate()) {
-                 setState(() {
+                setState(() {
                   isLoading = true;
                 });
-                value.loginApi(email.text,password.text).then((val) {
-                  if (val != null &&val["statusCode"] == 200) {
-                  
+                value
+                    .loginApi(
+                  email.text,
+                  password.text,
+                devToken!
+                )
+                    .then((val) {
+                  if (val != null && val["statusCode"] == 200) {
                     pref.setString('authToken', val['result']['token']);
                     pref.setString('email', val['result']['user']['email']);
-                    Navigator.push(context,
-                MaterialPageRoute(builder: (context) =>  BottomNavBar(initial: 0,)));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => BottomNavBar(
+                                  initial: 0,
+                                )));
                     String? authToken = pref.getString('authToken');
                     if (authToken != null) {
                       print("Auth Token: $authToken");
@@ -388,17 +398,15 @@ class LoginScreenState extends State<LoginScreen> {
                     });
                   } else {
                     setState(() {
-                     
-                    if(val!=null)
-                    {
-                       loginError = true;
+                      if (val != null) {
+                        loginError = true;
                         AnimatedToast.showToastMessage(
-                        context,
-                        val["errorMessage"][0],
-                        const Color.fromRGBO(87, 87, 87, 0.93),
-                      );
-                    }
-                         isLoading = false;
+                          context,
+                          val["errorMessage"][0],
+                          const Color.fromRGBO(87, 87, 87, 0.93),
+                        );
+                      }
+                      isLoading = false;
                     });
                   }
                 });
@@ -426,7 +434,6 @@ class LoginScreenState extends State<LoginScreen> {
   // General Methods:-----------------------------------------------------------
 
   Future<bool> validate() async {
-   
     bool emailValid = RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+")
         .hasMatch(email.text);
@@ -436,8 +443,7 @@ class LoginScreenState extends State<LoginScreen> {
       if (email.text.isEmpty) {
         emailError = true;
         emailErrorText = 'Please enter your email address or username';
-      } else if (email.text !=
-         email.text.toLowerCase()) {
+      } else if (email.text != email.text.toLowerCase()) {
         emailError = true;
         emailErrorText = 'Entered email or username is not valid';
       } else {

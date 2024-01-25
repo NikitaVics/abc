@@ -58,7 +58,7 @@ class BookedResult {
       bookingDate: DateTime.parse(json['bookingDate'] ?? ''),
       slotId: json['slotId'] ?? 0,
       slot: json['slot'] ?? '',
-      tennisCourt: TennisCourt.fromJson(json['tennisCourt'] ?? {}),
+      tennisCourt: TennisCourt.fromJson(json['tennisCourt']),
       coachId: json['coachId'] ?? 0,
       coachName: json['coachName'] ?? '',
       coachImage: json['coachImage'],
@@ -78,7 +78,7 @@ class BookedResult {
 class TennisCourt {
   final int id;
   final String name;
-  final List<CourtImage> courtImages;
+  final List<String> courtImages;
 
   TennisCourt({
     required this.id,
@@ -91,7 +91,7 @@ class TennisCourt {
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
      courtImages: (json['courtImages'] as List<dynamic>? ?? [])
-          .map((item) => CourtImage.fromJson(item))
+          .map((item) => item.toString())
           .toList(),
     );
   }

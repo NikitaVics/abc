@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:tennis_court_booking_app/announcement/provider/announcement_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/coach_show_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/complete_booking_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/confirm_booking_provider.dart';
@@ -110,6 +111,9 @@ class _MyAppState extends State<MyApp> {
         ),
          ChangeNotifierProvider<SearchProvider>(
           create: (context) =>SearchProvider(),
+        ),
+        ChangeNotifierProvider<AnnouncementProvider>(
+          create: (context) =>AnnouncementProvider(),
         ),
        ],
        child:Builder(

@@ -11,6 +11,7 @@ import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/forgotPassword/reset_pass.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
+import 'package:tennis_court_booking_app/presentation/register/pageview/congrats_screen.dart';
 import 'package:tennis_court_booking_app/presentation/register/pageview/register_form.dart';
 import 'package:tennis_court_booking_app/presentation/register/register.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
@@ -20,8 +21,9 @@ import 'package:tennis_court_booking_app/widgets/otp_input.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   final String email;
- 
-  const VerifyEmailScreen({super.key, required this.email});
+  final String password;
+
+  const VerifyEmailScreen({super.key, required this.email, required this.password});
 
   @override
   VerifyEmailScreenState createState() => VerifyEmailScreenState();
@@ -76,13 +78,13 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-       onWillPop: () async {
-          return false; // Prevent going back
-        },
+      onWillPop: () async {
+        return false; // Prevent going back
+      },
       child: GestureDetector(
         onTap: () {
-              FocusManager.instance.primaryFocus?.unfocus();
-            },
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
         child: Scaffold(
           backgroundColor: Theme.of(context).brightness == Brightness.dark
               ? AppColors.darkThemeback
@@ -160,15 +162,15 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 OtpInput(_fieldOne, true),
-                 const SizedBox(
+                const SizedBox(
                   width: 20,
                 ),
                 OtpInput(_fieldTwo, false),
-                 const SizedBox(
+                const SizedBox(
                   width: 20,
                 ),
                 OtpInput(_fieldThree, false),
-                 const SizedBox(
+                const SizedBox(
                   width: 20,
                 ),
                 OtpInput(_fieldFour, false),
@@ -226,28 +228,29 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
         ),
         Row(
           children: [
-            resendTime != 0?
-            Text(
-              "This code will expired in ",
-              style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.darkSubHead
-                      : AppColors.subheadColor,
-                  fontSize: 14,
-                  fontFamily: FontFamily.satoshi,
-                  fontWeight: FontWeight.w400,
-                  height: 24 / 14),
-            ):Text(
-              "Your code was expired..Please resend the code... ",
-              style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.darkSubHead
-                      : AppColors.subheadColor,
-                  fontSize: 14,
-                  fontFamily: FontFamily.satoshi,
-                  fontWeight: FontWeight.w400,
-                  height: 24 / 14),
-            ),
+            resendTime != 0
+                ? Text(
+                    "This code will expired in ",
+                    style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkSubHead
+                            : AppColors.subheadColor,
+                        fontSize: 14,
+                        fontFamily: FontFamily.satoshi,
+                        fontWeight: FontWeight.w400,
+                        height: 24 / 14),
+                  )
+                : Text(
+                    "Your code was expired..Please resend the code... ",
+                    style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkSubHead
+                            : AppColors.subheadColor,
+                        fontSize: 14,
+                        fontFamily: FontFamily.satoshi,
+                        fontWeight: FontWeight.w400,
+                        height: 24 / 14),
+                  ),
             resendTime != 0
                 ? Text(
                     strFormatting(resendTime),
@@ -299,7 +302,6 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
     );
   }
 
-
   Widget _buildforgotPassButton() {
     return Align(
       alignment: Alignment.bottomCenter,
@@ -334,11 +336,10 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                 )
                     .then((val) {
                   if (val["statusCode"] == 200) {
-                    Navigator.of(context).push(
+                      Navigator.of(context).push(
                       MaterialPageRoute(
-                          builder: (context) => RegisterForm(
-                                email: widget.email,
-                              )),
+                          builder: (context) => CongratsScreen(email: widget.email,
+                                          password: widget.password,)),
                     );
                     setState(() {
                       isLoading = false;

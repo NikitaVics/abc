@@ -63,7 +63,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
   bool isFirstButtonSelected = false;
   bool isSecondButtonSelected = false;
   bool isFormDone = false;
-   bool isLoad = false;
+  bool isLoad = false;
   String name = "";
   String? tokens;
   Future<void> profile() async {
@@ -71,7 +71,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
         Provider.of<UpcomingBookProvider>(context, listen: false);
     final previousBookingProvider =
         Provider.of<PreviousBookProvider>(context, listen: false);
-        setState(() {
+    setState(() {
       isLoad = true;
     });
     String token = await SharePref.fetchAuthToken();
@@ -89,10 +89,9 @@ class MyBookingScreenState extends State<MyBookingScreen> {
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
       return WillPopScope(
-         onWillPop: () async {
-    
-    return false; 
-  },
+        onWillPop: () async {
+          return false;
+        },
         child: Scaffold(
           backgroundColor: Theme.of(context).brightness == Brightness.dark
               ? AppColors.darkThemeback
@@ -143,11 +142,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
         color: Theme.of(context).brightness == Brightness.dark
             ? AppColors.darkThemeback
             : AppColors.homeBack,
-        child: Column(
-          children: [
-            Expanded(child:isLoad?ShimmerEffect(): _buildRightSide()),
-          ],
-        ));
+        child: _buildRightSide());
   }
 
   Widget _buildRightSide() {
@@ -156,117 +151,201 @@ class MyBookingScreenState extends State<MyBookingScreen> {
           ? AppColors.darkThemeback
           : AppColors.homeBack,
       child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: isFirstButtonSelected
-              ? Consumer<UpcomingBookProvider>(
-                  builder: (context, provider, child) {
-                  final bookingResponse = provider.upComingBookModel;
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            _buildBookingButton(),
+            isFirstButtonSelected
+                ? _buildUpcomingBookings()
+                : _buildPreviousBookings(),
+          ],
+        ),
+      ),
+    );
+  }
 
-                  if (bookingResponse != null &&
-                      bookingResponse.result.isNotEmpty) {
-                    List result = bookingResponse.result
-                        .map((teamMembers) => teamMembers.bookingDate)
-                        .toList();
+  Widget _buildUpcomingBookings() {
+    return Expanded(
+      child: Consumer<UpcomingBookProvider>(
+        builder: (context, provider, child) {
+          final bookingResponse = provider.upComingBookModel;
+          if (bookingResponse != null) {
+            if (bookingResponse.result.isNotEmpty) {
+              List<Booking> bookings = bookingResponse.result;
 
-                    List<Booking> bookings = bookingResponse.result;
-
-                    print(bookings.length);
-                    return Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        _buildBookingButton(),
-                        Expanded(
-                          child: ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            itemCount: bookings.length,
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () {
-                                   context.read<BookResultShowProvider>().clearStateList();
-                                   Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => BookingDetailsScreen(id: bookings[index].bookingId)));
-                                },
-                                child: _buildupComingbooking(
-                                    index, bookings.length, bookings[index]),
-                              );
-                            },
-                          ),
-                        )
-                      ],
-                    );
-                  } else {
-                    return const ShimmerEffect();
-                  }
-                })
-              : Consumer<PreviousBookProvider>(
-                  builder: (context, provider, child) {
-                  final bookingResponse = provider.upComingBookModel;
-
-                  if (bookingResponse != null &&
-                      bookingResponse.result.isNotEmpty) {
-                    List result = bookingResponse.result
-                        .map((teamMembers) => teamMembers.bookingDate)
-                        .toList();
-
-                    List<Booking> bookings = bookingResponse.result;
-
-                    print(bookings.length);
-                    return Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        _buildBookingButton(),
-                        Expanded(
-                          child: ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            itemCount: bookings.length,
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () {
-                                    context.read<BookResultShowProvider>().clearStateList();
-                                Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => BookingDetailsScreen(id: bookings[index].bookingId)));
-                                },
-                                child: _buildupComingbooking(
-                                    index, bookings.length, bookings[index]),
-                              );
-                            },
-                          ),
+              print(bookings.length);
+              return ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: bookings.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      context.read<BookResultShowProvider>().clearStateList();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BookingDetailsScreen(
+                              id: bookings[index].bookingId),
                         ),
-                      ],
-                    );
-                  } else {
-                    return AnimatedTextKit(
+                      );
+                    },
+                    child: _buildupComingbooking(
+                        index, bookings.length, bookings[index]),
+                  );
+                },
+              );
+            } else {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 215,
+                      child: Image.asset(
+                        "assets/images/loadinggif.gif",
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 28,
+                    ),
+                    AnimatedTextKit(
                       animatedTexts: [
                         WavyAnimatedText(
-                          'Loading...',
+                          'Sorry no bookings to show!...',
                           textStyle: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
                                     ? AppColors.headingTextColor
                                     : AppColors.subheadColor,
-                            fontSize: 20,
+                            fontSize: 16,
                             fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w500,
-                            height: 34 / 20,
+                            fontWeight: FontWeight.w400,
+                            height: 24 / 16,
                           ),
                         ),
                       ],
                       repeatForever: true,
                       isRepeatingAnimation: true,
-                    );
-                  }
-                })
+                    ),
+                  ],
+                ),
+              );
+            }
+          } else {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 215,
+                    child: Image.asset(
+                      "assets/images/loadinggif.gif",
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  AnimatedTextKit(
+                    animatedTexts: [
+                      WavyAnimatedText(
+                        'Loading...',
+                        textStyle: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.headingTextColor
+                              : AppColors.subheadColor,
+                          fontSize: 20,
+                          fontFamily: FontFamily.satoshi,
+                          fontWeight: FontWeight.w500,
+                          height: 34 / 20,
+                        ),
+                      ),
+                    ],
+                    repeatForever: true,
+                    isRepeatingAnimation: true,
+                  ),
+                ],
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
 
-          /* */
-          ),
+  Widget _buildPreviousBookings() {
+    return Expanded(
+      child: Consumer<PreviousBookProvider>(
+        builder: (context, provider, child) {
+          final bookingResponse = provider.upComingBookModel;
+
+          if (bookingResponse != null && bookingResponse.result.isNotEmpty) {
+            List<Booking> bookings = bookingResponse.result;
+
+            print(bookings.length);
+            return ListView.builder(
+              scrollDirection: Axis.vertical,
+              itemCount: bookings.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    context.read<BookResultShowProvider>().clearStateList();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            BookingDetailsScreen(id: bookings[index].bookingId),
+                      ),
+                    );
+                  },
+                  child: _buildupComingbooking(
+                      index, bookings.length, bookings[index]),
+                );
+              },
+            );
+          } else {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 215,
+                    child: Image.asset(
+                      "assets/images/loadinggif.gif",
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 28,
+                  ),
+                  AnimatedTextKit(
+                    animatedTexts: [
+                      WavyAnimatedText(
+                        'Sorry no bookings to show!...',
+                        textStyle: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.headingTextColor
+                              : AppColors.subheadColor,
+                          fontSize: 16,
+                          fontFamily: FontFamily.satoshi,
+                          fontWeight: FontWeight.w400,
+                          height: 24 / 16,
+                        ),
+                      ),
+                    ],
+                    repeatForever: true,
+                    isRepeatingAnimation: true,
+                  ),
+                ],
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 

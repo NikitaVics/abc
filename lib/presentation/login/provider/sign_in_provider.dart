@@ -159,11 +159,12 @@ class SignInProvider with ChangeNotifier {
     }
   }
 
-  Future loginApi(String email, String password) async {
+  Future loginApi(String email, String password, String deviceToken) async {
     updateLoginLoader(true);
     var body = {
       'userNameOrEmail': email,
       'password': password,
+      'deviceToken': deviceToken
     };
 
     var res = await Api.login(body);
@@ -173,15 +174,19 @@ class SignInProvider with ChangeNotifier {
     return res;
   }
 
-  Future registerApi(
-      String email, String name, String pass, String confirmPass) async {
+  Future registerApi(String email, String pass, String name, int age,
+      String gender, String countryCode, String phone) async {
     updateRegisterLoader(true);
     var body = {
       "email": email,
-      "userName": name,
       "password": pass,
-      "confirmedPassword": confirmPass
+      "name": name,
+      "age": age,
+      "gender": gender,
+      "countryCode": countryCode,
+      "phone": phone
     };
+    print(body);
     var res = await Api.register(body);
     updateRegisterLoader(false);
     return res;

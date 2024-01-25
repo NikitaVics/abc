@@ -547,6 +547,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
                         MaterialPageRoute(
                             builder: (context) => RegisterForm(
                                   email: _emailController.text,
+                                  password: _passwordController.text,
                                  
                                 )),
                       );
