@@ -52,4 +52,5 @@ class AppColors {
   static const roundColorBooking = Color(0xff35A756);
   static const requestedfriend = Color(0xff215AA6);
   static const announceDate = Color(0xffE9F7EF);
+  static const successColor = Color(0xff27AE60);
 }

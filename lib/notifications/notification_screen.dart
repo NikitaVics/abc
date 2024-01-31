@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/notifications/notification_model.dart';
+import 'package:tennis_court_booking_app/notifications/provider/notification_provider.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/search_provider.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 
@@ -54,10 +56,11 @@ class NotificationScreenState extends State<NotificationScreen> {
 
   bool isLoad = false;
   Future<void> profile() async {
-    final searchProvider = Provider.of<SearchProvider>(context, listen: false);
+    final notificationProvider =
+        Provider.of<NotificationProvider>(context, listen: false);
     String token = await SharePref.fetchAuthToken();
     tokens = await SharePref.fetchAuthToken();
-    searchProvider.fetchSearch(token, _searchController.text);
+    notificationProvider.fetchNotification(token);
 
     print(name);
   }
@@ -168,101 +171,111 @@ class NotificationScreenState extends State<NotificationScreen> {
 
   Widget _buildRightSide() {
     return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(
-              height: 18,
-            ),
-            Expanded(
-              child: ListView.builder(
-                scrollDirection: Axis.vertical,
-                itemCount: 20,
-                itemBuilder: (context, index) {
-                  return _notificationsWidget(index, 10);
-                },
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-          ],
-        ));
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Consumer<NotificationProvider>(
+        builder: (context, provider, child) {
+          if (provider.notificationModel == null) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            final noticeData = provider.notificationModel!;
+            List<Notifications> notice = noticeData.result;
+           
+            return Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(
+                  height: 18,
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    itemCount: notice.length,
+                    itemBuilder: (context, index) {
+                      return _notificationsWidget(index,notice.length,notice);
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+              ],
+            );
+          }
+        },
+      ),
+    );
   }
 
-  Widget _notificationsWidget(int index, int itemCount) {
+  Widget _notificationsWidget(int index, int itemCount,List<Notifications> notice) {
+    Notifications notification = notice[index]; // Get the current notification
+  String? imageUrl = notification.imageUrl;
+  Color _getNotificationTitleColor(String title) {
+  if (title.contains("Successfull") || title.contains("Confirmed")) {
+    return AppColors.successColor;
+  } else if (title.contains("alert")) {
+    return AppColors.warningToast;
+  } else if (title.contains("Received")) {
+    return AppColors.errorColor;
+  } else {
+    return AppColors.allHeadColor; // Default color if none of the conditions are met
+  }
+}
+
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),
-          child: SizedBox(
-            height: 48,
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(110.0),
-                    child: SilentErrorImage(
-                      width: 48.0,
-                      height: 48.0,
-                      imageUrl: 'assets/images/ProfileImage.png',
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(110.0),
+                  child: SilentErrorImage(
+                    width: 48.0,
+                    height: 48.0,
+                    imageUrl: 'assets/images/ProfileImage.png',
+                  ),
+                ),
+                SizedBox(
+                  width: 19,
+                ),
+                Expanded(
+                  child: RichText(
+                    text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: "${notification.title} - "??"",
+                          style: TextStyle(
+                            color:_getNotificationTitleColor(notification.title),
+                            fontSize: 16,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w500,
+                            height: 24 / 16,
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                              notification.notificationBody, // The first half of the sentence
+                          style: TextStyle(
+                            color: AppColors.subheadColor,
+                            fontSize: 16,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w400,
+                            height: 24 / 16,
+                          ),
+                        ),
+                        
+                      ],
                     ),
                   ),
-                  SizedBox(
-                    width: 19,
-                  ),
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(
-                        children: <TextSpan>[
-                          TextSpan(
-                            text: "No Recent Bookings  ",
-                            style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.booklight
-                                  : AppColors.subheadColor,
-                              fontSize: 12,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w400,
-                              height: 20 / 12,
-                            ),
-                          ),
-                          TextSpan(
-                            text:
-                                'Complete your profile ', // The first half of the sentence
-                            style: TextStyle(
-                              color: AppColors.disableButtonTextColor,
-                              fontSize: 12,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w400,
-                              height: 20 / 12,
-                            ),
-                          ),
-                          TextSpan(
-                            text:
-                                'to start booking', // The second half of the sentence
-                            style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.darkSubHead
-                                  : AppColors.hintColor,
-                              fontSize: 12,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w400,
-                              height: 20 / 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

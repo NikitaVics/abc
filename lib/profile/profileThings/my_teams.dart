@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:motion_toast/motion_toast.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -27,6 +28,7 @@ import 'package:tennis_court_booking_app/profile/profileThings/addfriend_screen.
 import 'package:tennis_court_booking_app/profile/profileprovider/allfriend_provider.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/allfriendrequest_provider.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/myprofile_provider.dart';
+import 'package:tennis_court_booking_app/profile/profileprovider/profileCreate_provider.dart';
 
 import 'package:tennis_court_booking_app/profile/profileprovider/profile_provider.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
@@ -50,7 +52,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
 
   bool isLoading = false;
   //predefine bool value for error:---------------------------------------------
-  
+
   //stores:---------------------------------------------------------------------
 
   //focus node:-----------------------------------------------------------------
@@ -63,6 +65,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
   String? imageUrl;
   bool state = false;
   bool lightState = true;
+  String time="";
   //SignInProvider? provider;
 
   @override
@@ -96,6 +99,9 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
         Provider.of<MyProfileProvider>(context, listen: false);
     myProfileProv.fetchProfile(token);
     print(name);
+     final myTimeProv =
+        Provider.of<ProfileCreateProvider>(context, listen: false);
+    myTimeProv.fetchtime(token);
   }
 
   Future<void> frined() async {
@@ -221,18 +227,18 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
   Widget _buildRightSide() {
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Consumer<ProfileProvider>(
-          builder: (context, provider, child) {
+        child: Consumer2<ProfileProvider, ProfileCreateProvider>(
+          builder: (context, provider,mytimeProv, child) {
             if (provider.profileModel == null) {
               return Center(
                 child: CircularProgressIndicator(),
               );
             } else {
               final profileData = provider.profileModel!;
-
+  final mytime = mytimeProv.timeModel;
               imageUrl = profileData.result.imageUrl;
               name = profileData.result.name ?? "";
-
+ time = mytime?.result.toString()??"";
               return Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -350,7 +356,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                     ),
                   ),
                   Text(
-                    "Member from",
+                    "Member from $time",
                     style: TextStyle(
                       color: AppColors.dotColor,
                       fontSize: 14,
@@ -500,43 +506,44 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                     onTap: () async {
                       int response =
                           await Api.deleteFriend(tokens!, myfriend!.friendId);
-                          await frined();
-                        response==200?  
-                      MotionToast(
-                        primaryColor: AppColors.dotColor,
-                        description: Text(
-                         "Account Removed Successfully!",
-                          style: TextStyle(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? AppColors.headingTextColor
-                                    : AppColors.allHeadColor,
-                            fontSize: 16,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w400,
-                            height: 24 / 16,
-                          ),
-                        ),
-                        icon: Icons.warning,
-                        animationCurve: Curves.bounceInOut,
-                      ).show(context): MotionToast(
-                        primaryColor: AppColors.errorColor,
-                        description: Text(
-                         "Something went wrong!",
-                          style: TextStyle(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? AppColors.headingTextColor
-                                    : AppColors.allHeadColor,
-                            fontSize: 16,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w400,
-                            height: 24 / 16,
-                          ),
-                        ),
-                        icon: Icons.warning,
-                        animationCurve: Curves.bounceInOut,
-                      ).show(context);
+                      await frined();
+                      response == 200
+                          ? MotionToast(
+                              primaryColor: AppColors.dotColor,
+                              description: Text(
+                                "Account Removed Successfully!",
+                                style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : AppColors.allHeadColor,
+                                  fontSize: 16,
+                                  fontFamily: FontFamily.satoshi,
+                                  fontWeight: FontWeight.w400,
+                                  height: 24 / 16,
+                                ),
+                              ),
+                              icon: Icons.warning,
+                              animationCurve: Curves.bounceInOut,
+                            ).show(context)
+                          : MotionToast(
+                              primaryColor: AppColors.errorColor,
+                              description: Text(
+                                "Something went wrong!",
+                                style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : AppColors.allHeadColor,
+                                  fontSize: 16,
+                                  fontFamily: FontFamily.satoshi,
+                                  fontWeight: FontWeight.w400,
+                                  height: 24 / 16,
+                                ),
+                              ),
+                              icon: Icons.warning,
+                              animationCurve: Curves.bounceInOut,
+                            ).show(context);
                     },
                     child: Image.asset(
                       "assets/images/Delete.png",
@@ -562,148 +569,141 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),
-          child: SizedBox(
-            height: 48,
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(110.0),
-                    child: SilentErrorImage(
-                      width: 48.0,
-                      height: 48.0,
-                      imageUrl: myfriend?.friendImageUrl ??
-                          'assets/images/ProfileImage.png',
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(110.0),
+                  child: SilentErrorImage(
+                    width: 48.0,
+                    height: 48.0,
+                    imageUrl: myfriend?.friendImageUrl ??
+                        'assets/images/ProfileImage.png',
+                  ),
+                ),
+                SizedBox(
+                  width: 20,
+                ),
+                Expanded(
+                  child: Text(
+                    myfriend?.friendName ?? " ",
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.headingTextColor
+                          : AppColors.allHeadColor,
+                      fontSize: 16,
+                      fontFamily: FontFamily.satoshi,
+                      fontWeight: FontWeight.w400,
+                      height: 24 / 16,
                     ),
                   ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Expanded(
-                    child: Text(
-                      myfriend?.friendName ?? " ",
-                      style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.headingTextColor
-                            : AppColors.allHeadColor,
-                        fontSize: 16,
-                        fontFamily: FontFamily.satoshi,
-                        fontWeight: FontWeight.w400,
-                        height: 24 / 16,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () async {
-                      print(myfriend!.friendId);
-                      String response = await Api.rejectFriendRequest(
-                          tokens!, myfriend.friendId);
-                          await frined();
-                      MotionToast(
-                        primaryColor: AppColors.dotColor,
-                        description: Text(
-                          response,
-                          style: TextStyle(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? AppColors.headingTextColor
-                                    : AppColors.allHeadColor,
-                            fontSize: 16,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w400,
-                            height: 24 / 16,
-                          ),
+                ),
+                GestureDetector(
+                  onTap: () async {
+                    print(myfriend!.friendId);
+                    String response = await Api.rejectFriendRequest(
+                        tokens!, myfriend.friendId);
+                    await frined();
+                    MotionToast(
+                      primaryColor: AppColors.warningToast,
+                      description: Text(
+                        "🙁 Rejected ${myfriend?.friendName} request",
+                        style: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.headingTextColor
+                              : AppColors.allHeadColor,
+                          fontSize: 16,
+                          fontFamily: FontFamily.satoshi,
+                          fontWeight: FontWeight.w400,
+                          height: 24 / 16,
                         ),
-                        icon: Icons.warning,
-                        animationCurve: Curves.bounceInOut,
-                      ).show(context);
-                    },
-                    child: Container(
-                      height: 36,
-                      padding: EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        border:
-                            Border.all(color: AppColors.errorColor, width: 1),
                       ),
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 12, right: 12),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Reject',
-                              style: TextStyle(
-                                color: AppColors.errorColor,
-                                fontSize: 12,
-                                fontFamily: FontFamily.satoshi,
-                                fontWeight: FontWeight.w700,
-                              ),
+                      icon: Icons.warning_amber,
+                      animationCurve: Curves.bounceInOut,
+                    ).show(context);
+                  },
+                  child: Container(
+                    height: 36,
+                    padding: EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: AppColors.errorColor, width: 1),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.only(left: 12, right: 12),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Reject',
+                            style: TextStyle(
+                              color: AppColors.errorColor,
+                              fontSize: 12,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w700,
                             ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 12,
-                  ),
-                  GestureDetector(
-                    onTap: () async {
-                      String response = await Api.acceptFriendRequest(
-                          tokens!, myfriend!.friendId);
-                      await frined();
-                      MotionToast(
-                        primaryColor: AppColors.dotColor,
-                        description: Text(
-                          response,
-                          style: TextStyle(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? AppColors.headingTextColor
-                                    : AppColors.allHeadColor,
-                            fontSize: 16,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w400,
-                            height: 24 / 16,
                           ),
-                        ),
-                        icon: Icons.warning,
-                        animationCurve: Curves.bounceInOut,
-                      ).show(context);
-                    },
-                    child: Container(
-                      height: 36,
-                      padding: EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        border:
-                            Border.all(color: AppColors.confirmValid, width: 1),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 12, right: 12),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Accept',
-                              style: TextStyle(
-                                color: AppColors.confirmValid,
-                                fontSize: 12,
-                                fontFamily: FontFamily.satoshi,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
+                        ],
                       ),
                     ),
-                  )
-                ],
-              ),
+                  ),
+                ),
+                SizedBox(
+                  width: 12,
+                ),
+                GestureDetector(
+                  onTap: () async {
+                    String response = await Api.acceptFriendRequest(
+                        tokens!, myfriend!.friendId);
+                    await frined();
+                    MotionToast(
+                      primaryColor: AppColors.dotColor,
+                      description: Text(
+                        "😀 Accepted ${myfriend?.friendName} request",
+                        style: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.headingTextColor
+                              : AppColors.allHeadColor,
+                          fontSize: 16,
+                          fontFamily: FontFamily.satoshi,
+                          fontWeight: FontWeight.w400,
+                          height: 24 / 16,
+                        ),
+                      ),
+                      animationCurve: Curves.bounceInOut,
+                    ).show(context);
+                  },
+                  child: Container(
+                    height: 36,
+                    padding: EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      border:
+                          Border.all(color: AppColors.confirmValid, width: 1),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.only(left: 12, right: 12),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Accept',
+                            style: TextStyle(
+                              color: AppColors.confirmValid,
+                              fontSize: 12,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              ],
             ),
           ),
         ),
@@ -736,38 +736,35 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
     );
   }
 
-   Widget _buildSignInButton() {
+  Widget _buildSignInButton() {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 19),
         child: FocusScope(
-          // Manage keyboard focus
-          child: CustomElevatedButton(
-              height: 60,
-              width: MediaQuery.of(context).orientation == Orientation.landscape
-                  ? 70
-                  : double.infinity,
-              isLoading: isLoading,
-              text: "Add Friends",
-              onPressed: ()
-              {
- Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AddFriendScreen(
-                                    pageName: "Add Friends",
-                                  )));
-              },
-              buttonColor: AppColors.elevatedColor,
-              textColor: Colors.white,
-            )
-        ),
+            // Manage keyboard focus
+            child: CustomElevatedButton(
+          height: 60,
+          width: MediaQuery.of(context).orientation == Orientation.landscape
+              ? 70
+              : double.infinity,
+          isLoading: isLoading,
+          text: "Add Friends",
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => AddFriendScreen(
+                          pageName: "Add Friends",
+                        )));
+          },
+          buttonColor: AppColors.elevatedColor,
+          textColor: Colors.white,
+        )),
       ),
     );
   }
 
- 
   // General Methods:-----------------------------------------------------------
 
   // dispose:-------------------------------------------------------------------

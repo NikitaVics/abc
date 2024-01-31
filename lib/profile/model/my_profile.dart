@@ -23,7 +23,6 @@ class MyProfile {
 
 class ProfileResult {
   late String name;
-  late String userName;
   late String phoneNumber;
   late String gender;
   late String countryCode;
@@ -32,7 +31,7 @@ class ProfileResult {
 
   ProfileResult({
     required this.name,
-    required this.userName,
+   
     required this.phoneNumber,
     required this.gender,
     required this.totalBookings,
@@ -43,7 +42,6 @@ class ProfileResult {
   factory ProfileResult.fromJson(Map<String, dynamic> json) {
     return ProfileResult(
       name: json['name'],
-      userName: json['userName'],
       phoneNumber: json['phoneNumber'],
       gender: json['gender'],
       countryCode: json['countryCode'],

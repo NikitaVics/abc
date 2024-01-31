@@ -253,7 +253,7 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                     height: 13,
                   ),
                   Text(
-                    "12:08 PM",
+                    announcement.scheduledTime,
                     style: TextStyle(
                       color: Theme.of(context).brightness == Brightness.dark
                           ? AppColors.booklight

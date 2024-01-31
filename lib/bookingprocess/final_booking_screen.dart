@@ -7,6 +7,7 @@ import 'package:image_sequence_animator/image_sequence_animator.dart';
 import 'package:motion_toast/motion_toast.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:tennis_court_booking_app/api/api.dart';
 import 'package:tennis_court_booking_app/bookingprocess/booking_court.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/complete_booking_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/confirm_booking_provider.dart';
@@ -144,14 +145,13 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
               IconButton(
                   padding: EdgeInsets.zero,
                   onPressed: () async {
-                     
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const BottomNavBar(initial: 0),
                       ),
                     );
-                   context.read<BookResultShowProvider>().clearStateList();
+                    context.read<BookResultShowProvider>().clearStateList();
                   },
                   icon: const Icon(
                     Icons.close,
@@ -196,6 +196,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
     return '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
   }
 
+  int? bookId;
   Widget _buildBookingSlot() {
     return Padding(
       padding: const EdgeInsets.only(
@@ -231,14 +232,14 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
             String results =
                 "$formattedHour:${dateTime.minute.toString().padLeft(2, '0')} ${dateTime.hour < 12 ? 'am' : 'pm'}";
             print(courtData);
-          
+
             List teamMember = courtData.teamMembers
                 .map((teamMembers) => teamMembers.name)
                 .toList();
             List teamMemberUrl = courtData.teamMembers
                 .map((teamMembers) => teamMembers.imageUrl)
                 .toList();
-
+            bookId = courtData.bookingId;
             return Stack(
               children: [
                 HalfCutContainer(
@@ -370,7 +371,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(4),
                                   child: Image.network(
-                                   courtData.tennisCourt.courtImages[0],
+                                    courtData.tennisCourt.courtImages[0],
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -529,9 +530,9 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                 ),
                 Positioned.fill(
                   child: Image.asset(
-                        "assets/images/success.gif",
-                       // fit: BoxFit.cover,
-                      ),
+                    "assets/images/success.gif",
+                    // fit: BoxFit.cover,
+                  ),
                 ),
               ],
             );
@@ -557,9 +558,10 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                         WavyAnimatedText(
                           'Loading...',
                           textStyle: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? AppColors.headingTextColor
-                                : AppColors.subheadColor,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.subheadColor,
                             fontSize: 20,
                             fontFamily: FontFamily.satoshi,
                             fontWeight: FontWeight.w500,
@@ -623,7 +625,16 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                 : double.infinity,
             isLoading: false,
             text: "Cancel Booking",
-            onPressed: () async {},
+            onPressed: () async {
+              Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const BottomNavBar(initial: 0)));
+              await Api.deleteBooking(
+                tokens!,bookId!,
+              );
+            },
             buttonColor: Colors.white,
             textColor: AppColors.allHeadColor,
           ))),
@@ -672,6 +683,7 @@ class MySeparator extends StatelessWidget {
     );
   }
 }
+
 class HalfCutContainer extends StatelessWidget {
   final Widget innerContainer;
 
@@ -679,8 +691,8 @@ class HalfCutContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Stack(
-        children:[ Container(
+      child: Stack(children: [
+        Container(
           height: 560,
           decoration: const BoxDecoration(
             color: Colors.white,
@@ -702,30 +714,28 @@ class HalfCutContainer extends StatelessWidget {
             ],
           ),
         ),
-         Positioned(
-                left: -25, // Adjust the left position as needed
-                top: 560 / 2,
-                child: Container(
-                  height:43,
-                  width: 43,
-                  decoration:  BoxDecoration(
-                      shape: BoxShape.circle, color: AppColors.roundColorBooking),
-                ),
-              ),
-              // Positioned circle on the right side
-              Positioned(
-                right: -25, // Adjust the right position as needed
-                top: 560 / 2,
-                child: Container(
-                  height: 43,
-                  width: 43,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,  color: AppColors.roundColorBooking),
-                ),
-              ),
+        Positioned(
+          left: -25, // Adjust the left position as needed
+          top: 560 / 2,
+          child: Container(
+            height: 43,
+            width: 43,
+            decoration: BoxDecoration(
+                shape: BoxShape.circle, color: AppColors.roundColorBooking),
+          ),
+        ),
+        // Positioned circle on the right side
+        Positioned(
+          right: -25, // Adjust the right position as needed
+          top: 560 / 2,
+          child: Container(
+            height: 43,
+            width: 43,
+            decoration: BoxDecoration(
+                shape: BoxShape.circle, color: AppColors.roundColorBooking),
+          ),
+        ),
       ]),
     );
   }
 }
-
-

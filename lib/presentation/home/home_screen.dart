@@ -660,7 +660,7 @@ class HomeScreenState extends State<HomeScreen>
 
   Widget _buildLoginText() {
     return Padding(
-      padding: const EdgeInsets.only(top: 80),
+      padding: const EdgeInsets.only(top: 40),
       child: Stack(children: [
         MediaQuery(
           data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
@@ -1392,6 +1392,7 @@ class HomeScreenState extends State<HomeScreen>
                   "See all",
                   style: TextStyle(
                     decoration: TextDecoration.underline,
+                    decorationColor: AppColors.dotColor,
                     decorationThickness:
                         2.0, // Set the thickness of the underline
                     decorationStyle: TextDecorationStyle.solid,

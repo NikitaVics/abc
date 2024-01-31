@@ -7,6 +7,7 @@ import 'package:image_sequence_animator/image_sequence_animator.dart';
 import 'package:motion_toast/motion_toast.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:tennis_court_booking_app/api/api.dart';
 import 'package:tennis_court_booking_app/bookingprocess/booking_court.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/complete_booking_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/confirm_booking_provider.dart';
@@ -52,6 +53,7 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
   }
 
   final List<String> selectedCourts = [];
+  int? bookId;
 
   bool isFirstButtonSelected = false;
   bool isSecondButtonSelected = false;
@@ -72,9 +74,9 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
         child: MediaQuery(
           data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
           child: Scaffold(
-            backgroundColor:  Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkThemeback
-            : AppColors.homeBack,
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkThemeback
+                : AppColors.homeBack,
             primary: true,
             appBar: AppBar(
               toolbarHeight: 70,
@@ -108,9 +110,9 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                 height: 26,
                               ),
                             ),
-                           const Spacer(),
+                            const Spacer(),
                             Text(
-                             "Booking Details",
+                              "Booking Details",
                               style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark
@@ -148,7 +150,7 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
       width: double.infinity,
       height: double.infinity,
       decoration: BoxDecoration(
-       color:  Theme.of(context).brightness == Brightness.dark
+        color: Theme.of(context).brightness == Brightness.dark
             ? AppColors.darkThemeback
             : AppColors.homeBack,
       ),
@@ -170,15 +172,12 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-           
             Center(child: _buildBookingSlot()),
           ],
         ),
       ),
     );
   }
-
-  
 
   String convertTo24HourFormat(String time, String amPm) {
     List<String> parts = time.split(':');
@@ -210,6 +209,7 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
           if (bookingResponse != null) {
             final courtData = bookingResponse.result;
+            bookId = courtData.bookingId;
             DateTime date = DateTime.parse(courtData.bookingDate.toString());
 
             String formattedDate = DateFormat('MMM d').format(date);
@@ -234,8 +234,7 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
             String results =
                 "$formattedHour:${dateTime.minute.toString().padLeft(2, '0')} ${dateTime.hour < 12 ? 'am' : 'pm'}";
             print(courtData);
-           
-                
+
             List teamMember = courtData.teamMembers
                 .map((teamMembers) => teamMembers.name)
                 .toList();
@@ -373,7 +372,7 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(4),
                                 child: Image.network(
-                                 courtData.tennisCourt.courtImages[0],
+                                  courtData.tennisCourt.courtImages[0],
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -400,8 +399,7 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             const Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
@@ -430,9 +428,9 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
                               ],
                             ),
                             const SizedBox(height: 18.51),
-            
+
                             // Use ListView.builder to dynamically generate team members
-            
+
                             Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -440,8 +438,7 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Row(
                                       mainAxisAlignment:
@@ -451,8 +448,8 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                       children: [
                                         CircleAvatar(
                                           radius: 14.1,
-                                          backgroundImage: NetworkImage(
-                                              courtData.userImage),
+                                          backgroundImage:
+                                              NetworkImage(courtData.userImage),
                                         ),
                                         SizedBox(width: 10.58),
                                         Text(
@@ -484,9 +481,7 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     // Display team member information
-                                    for (int i = 1;
-                                        i < teamMember.length;
-                                        i++)
+                                    for (int i = 1; i < teamMember.length; i++)
                                       _buildTeamMemberRow(
                                           teamMember[i], teamMemberUrl[i]),
                                   ],
@@ -501,8 +496,7 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 19),
-                      child:
-                          const MySeparator(color: AppColors.appbarBoarder),
+                      child: const MySeparator(color: AppColors.appbarBoarder),
                     ),
                     Padding(
                       padding:
@@ -533,8 +527,9 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
             );
           } else {
             return Padding(
-             padding: const EdgeInsets.only(
-        top: 50,),
+              padding: const EdgeInsets.only(
+                top: 50,
+              ),
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -554,9 +549,10 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
                         WavyAnimatedText(
                           'Loading...',
                           textStyle: TextStyle(
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? AppColors.headingTextColor
-                                : AppColors.subheadColor,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.subheadColor,
                             fontSize: 20,
                             fontFamily: FontFamily.satoshi,
                             fontWeight: FontWeight.w500,
@@ -620,7 +616,17 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
                 : double.infinity,
             isLoading: false,
             text: "Cancel Booking",
-            onPressed: () async {},
+            onPressed: () async {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const BottomNavBar(initial: 0)));
+              await Api.deleteBooking(
+                tokens!,
+                bookId!,
+              );
+             _fetchBookingResponse();
+            },
             buttonColor: Colors.white,
             textColor: AppColors.allHeadColor,
           ))),
@@ -677,8 +683,8 @@ class HalfCutContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Stack(
-        children:[ Container(
+      child: Stack(children: [
+        Container(
           height: 560,
           decoration: const BoxDecoration(
             color: Colors.white,
@@ -700,31 +706,35 @@ class HalfCutContainer extends StatelessWidget {
             ],
           ),
         ),
-         Positioned(
-                left: -25, // Adjust the left position as needed
-                top: 560 / 2,
-                child: Container(
-                  height:43,
-                  width: 43,
-                  decoration:  BoxDecoration(
-                      shape: BoxShape.circle, color:  Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkThemeback
-              : AppColors.homeBack,),
-                ),
-              ),
-              // Positioned circle on the right side
-              Positioned(
-                right: -25, // Adjust the right position as needed
-                top: 560 / 2,
-                child: Container(
-                  height: 43,
-                  width: 43,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle, color: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkThemeback
-              : Color(0xffF8F8F8),),
-                ),
-              ),
+        Positioned(
+          left: -25, // Adjust the left position as needed
+          top: 560 / 2,
+          child: Container(
+            height: 43,
+            width: 43,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkThemeback
+                  : AppColors.homeBack,
+            ),
+          ),
+        ),
+        // Positioned circle on the right side
+        Positioned(
+          right: -25, // Adjust the right position as needed
+          top: 560 / 2,
+          child: Container(
+            height: 43,
+            width: 43,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkThemeback
+                  : Color(0xffF8F8F8),
+            ),
+          ),
+        ),
       ]),
     );
   }

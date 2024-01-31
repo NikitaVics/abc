@@ -75,9 +75,7 @@ class _RegisterFormState extends State<RegisterForm> {
     _ageNode = FocusNode();
 
     _phonePrefixNode = FocusNode();
-    _phonePrefixNode.addListener(() {
-      validatePhonePrefix();
-    });
+   
     _dobFocusNode.addListener(() {
       validateDOB();
     });
@@ -529,7 +527,7 @@ class _RegisterFormState extends State<RegisterForm> {
         PrefixPhoneTextFieldWidget(
           width: MediaQuery.of(context).size.width / 4,
           read: false,
-          hint: '+91 ',
+          hint: '+ ',
           inputType: TextInputType.none,
           focusNode: _phonePrefixNode,
           hintColor: Theme.of(context).brightness == Brightness.dark

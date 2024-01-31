@@ -18,6 +18,7 @@ import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/profile/passwardChange/password_change.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/myprofile_provider.dart';
+import 'package:tennis_court_booking_app/profile/profileprovider/profileCreate_provider.dart';
 
 import 'package:tennis_court_booking_app/profile/profileprovider/profile_provider.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
@@ -122,6 +123,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   String cancelBook = "";
   String? tokens;
   File? imageFile;
+
   Future<void> profile() async {
     final profileProvider =
         Provider.of<ProfileProvider>(context, listen: false);
@@ -131,6 +133,8 @@ class MyProfileScreenState extends State<MyProfileScreen> {
     final myProfileProv =
         Provider.of<MyProfileProvider>(context, listen: false);
     myProfileProv.fetchProfile(token);
+   
+
     print(name);
   }
 
@@ -251,7 +255,8 @@ class MyProfileScreenState extends State<MyProfileScreen> {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Consumer2<ProfileProvider, MyProfileProvider>(
+        child: Consumer2<ProfileProvider, MyProfileProvider
+           >(
           builder: (context, provider, providers, child) {
             if (provider.profileModel == null) {
               return Center(
@@ -260,16 +265,17 @@ class MyProfileScreenState extends State<MyProfileScreen> {
             } else {
               final profileData = provider.profileModel!;
               final myprofileData = providers.myProfile;
+            
               imageUrl = profileData.result.imageUrl;
               name = profileData.result.name ?? "";
-              userName = myprofileData?.result.userName ?? "";
               phoneNum = myprofileData?.result.phoneNumber ?? "";
               gen = myprofileData?.result.gender ?? "";
-              prefPhone = myprofileData?.result.countryCode??"";
+              prefPhone = myprofileData?.result.countryCode ?? "";
               bookCount = myprofileData?.result.totalBookings.toString() ?? "0";
               cancelBook =
                   myprofileData?.result.totalCancelledBookings.toString() ??
                       "0";
+             
               return Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -386,7 +392,6 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   Widget _buildProfilePerfomence() {
     Color borderColor = AppColors.appbarBoarder;
     final themeNotifier = context.watch<ThemeModeNotifier>();
-    final textScaleFactor = MediaQuery.of(context).textScaleFactor;
     return Padding(
         padding: const EdgeInsets.only(top: 20),
         child: Consumer<MyProfileProvider>(builder: (context, provider, child) {
@@ -401,33 +406,9 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                 child: Column(
                   children: [
                     const SizedBox(
-                      height: 20,
+                      height: 30,
                     ),
-                    TextFieldNonEditable(
-                      width: MediaQuery.of(context).size.width,
-                      controller: nameController,
-                      focusBorderColor: AppColors.focusTextBoarder,
-                      fillColor: isEdited
-                          ? AppColors.textInputField
-                          : Colors.transparent,
-                      boarderColor: isEdited
-                          ? AppColors.transparent
-                          : AppColors.appbarBoarder,
-                      color: isEdited
-                          ? AppColors.textInputField
-                          : Colors.transparent,
-                      hintColor: isEdited
-                          ? AppColors.hintColor
-                          : AppColors.subheadColor,
-                      hint: isEdited ? "User Name " : userName,
-                      obscure: false,
-                      textInputType: TextInputType.name,
-                      textInputAction: TextInputAction.next,
-                      editable: isEdited,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
+                   
                     Row(
                       children: [
                         InkWell(

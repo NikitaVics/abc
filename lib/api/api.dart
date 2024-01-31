@@ -9,17 +9,19 @@ import 'package:tennis_court_booking_app/model/courtInfo/court_info.dart';
 import 'package:tennis_court_booking_app/model/finalBookModel/final_book_model.dart';
 import 'package:tennis_court_booking_app/model/friendShow/friend_show_model.dart';
 import 'package:tennis_court_booking_app/model/upComingBooking/upcoming_booking_model.dart';
+import 'package:tennis_court_booking_app/notifications/notification_model.dart';
 import 'package:tennis_court_booking_app/presentation/home/model/checkstatus.dart';
 import 'package:tennis_court_booking_app/profile/model/allfriend_model.dart';
 import 'package:tennis_court_booking_app/profile/model/allfriend_request_model.dart';
 import 'package:tennis_court_booking_app/profile/model/my_profile.dart';
+import 'package:tennis_court_booking_app/profile/model/profileCreateTime.dart';
 import 'package:tennis_court_booking_app/profile/model/profile_model.dart';
 import 'package:tennis_court_booking_app/profile/model/search_model.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/tennismodel/teniscourt/court.dart';
 
 class Api {
-  static const baseUrl = 'https://15fd-117-98-58-149.ngrok-free.app';
+  static const baseUrl = 'https://2db3-117-96-184-37.ngrok-free.app';
   //'https://court-api.azurewebsites.net';
 
   static Map<String, String>? header;
@@ -800,5 +802,61 @@ class Api {
 
     return AnnouncementModel.fromJson(jsonDecode(response.body));
   }
+  //Delete Booking
+  static Future<int> deleteBooking(String bearerToken, int id) async {
+    var url = "$baseUrl/api/Booking?bookingId=$id";
 
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+      "content-Type": "application/json; charset=UTF-8",
+    };
+
+    http.Response response = await http.delete(
+      Uri.parse(url),
+      headers: headers,
+    );
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      // Successful response
+      print(response.body);
+      return response.statusCode;
+    } else {
+      // Error response
+      print('Error: ${response.statusCode}\n${response.body}');
+      return response.statusCode;
+    }
+  }
+//Notification
+ static Future<NotificationModel> allNotificationResponse(String token) async {
+    var url = "$baseUrl/api/Profile/All Notifications";
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $token',
+       "content-Type": "application/json; charset=UTF-8",
+    };
+
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    print(response.body);
+
+    return NotificationModel.fromJson(jsonDecode(response.body));
+  }
+  static Future<ProfileCreateTimeModel> createTime(String token) async {
+    var url = "$baseUrl/api/Profile/MemberSince";
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $token',
+       "content-Type": "application/json; charset=UTF-8",
+    };
+
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    print(response.body);
+
+    return ProfileCreateTimeModel.fromJson(jsonDecode(response.body));
+  }
 }

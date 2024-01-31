@@ -286,10 +286,11 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
   Widget _buildDatePick() {
     print(result);
     return Padding(
-        padding: const EdgeInsets.only(top: 12),
+        padding: const EdgeInsets.only(top: 10),
         child: Container(
-          height: 87,
+          height: 90,
           child: DatePicker(
+            height:90,
             DateTime.now(),
             initialSelectedDate: result,
             selectionColor: AppColors.dotColor,
