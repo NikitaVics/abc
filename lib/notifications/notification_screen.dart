@@ -91,7 +91,7 @@ class NotificationScreenState extends State<NotificationScreen> {
                 color: Theme.of(context).brightness == Brightness.dark
                     ? AppColors.darkAppBarboarder
                     : AppColors.appbarBoarder,
-                width: 2.0,
+                width: 1.0,
               ))),
               child: Column(
                 children: [
@@ -106,6 +106,10 @@ class NotificationScreenState extends State<NotificationScreen> {
                           },
                           icon: Image.asset(
                             "assets/images/leftIcon.png",
+                             color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.profileHead,
                             //width: 18,
                             height: 26,
                           ),
@@ -133,8 +137,8 @@ class NotificationScreenState extends State<NotificationScreen> {
             ),
           ),
           backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkTextInput
-              : Colors.white,
+            ? AppColors.darkThemeback
+            : AppColors.lightThemeback,
           elevation: 0,
         ),
         body: _buildBody(),
@@ -218,10 +222,10 @@ class NotificationScreenState extends State<NotificationScreen> {
     return AppColors.successColor;
   } else if (title.contains("alert")) {
     return AppColors.warningToast;
-  } else if (title.contains("Received")) {
+  } else if (title.contains("Cancellation")) {
     return AppColors.errorColor;
   } else {
-    return AppColors.allHeadColor; // Default color if none of the conditions are met
+    return AppColors.requestedfriend; // Default color if none of the conditions are met
   }
 }
 
@@ -263,7 +267,9 @@ class NotificationScreenState extends State<NotificationScreen> {
                           text:
                               notification.notificationBody, // The first half of the sentence
                           style: TextStyle(
-                            color: AppColors.subheadColor,
+                            color:  Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkSubHead
+          : AppColors.subheadColor,
                             fontSize: 16,
                             fontFamily: FontFamily.satoshi,
                             fontWeight: FontWeight.w400,

@@ -602,49 +602,50 @@ class HomeScreenState extends State<HomeScreen>
                   _buildSlotshowText(),
                   _buildShowCourt(courtShowProvider.courtList!),
                   _buildrecentBookText(),
-                   hasErrorMessage!?
-                  Consumer<UpcomingBookProvider>(
-                      builder: (context, provider, child) {
-                    final bookingResponse = provider.upComingBookModel;
+                  hasErrorMessage!
+                      ? Consumer<UpcomingBookProvider>(
+                          builder: (context, provider, child) {
+                          final bookingResponse = provider.upComingBookModel;
 
-                    if (bookingResponse != null &&
-                        bookingResponse.result.isNotEmpty) {
-                      List result = bookingResponse.result
-                          .map((teamMembers) => teamMembers.bookingDate)
-                          .toList();
+                          if (bookingResponse != null &&
+                              bookingResponse.result.isNotEmpty) {
+                            List result = bookingResponse.result
+                                .map((teamMembers) => teamMembers.bookingDate)
+                                .toList();
 
-                      List<Booking> bookings = bookingResponse.result;
+                            List<Booking> bookings = bookingResponse.result;
 
-                      print(bookings.length);
-                      return Container(
-                        height: 126,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: bookings.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                context
-                                    .read<BookResultShowProvider>()
-                                    .clearStateList();
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            BookingDetailsScreen(
-                                                id: bookings[index]
-                                                    .bookingId)));
-                              },
-                              child: _buildupComingbooking(
-                                  index, bookings.length, bookings[index]),
+                            print(bookings.length);
+                            return Container(
+                              height: 126,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: bookings.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      context
+                                          .read<BookResultShowProvider>()
+                                          .clearStateList();
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  BookingDetailsScreen(
+                                                      id: bookings[index]
+                                                          .bookingId)));
+                                    },
+                                    child: _buildupComingbooking(index,
+                                        bookings.length, bookings[index]),
+                                  );
+                                },
+                              ),
                             );
-                          },
-                        ),
-                      );
-                    } else {
-                      return buildnoBook();
-                    }
-                  }):buildnoCompleteProfileforBook(),
+                          } else {
+                            return buildnoBook();
+                          }
+                        })
+                      : buildnoCompleteProfileforBook(),
                   SizedBox(
                     height: 20,
                   )
@@ -698,6 +699,7 @@ class HomeScreenState extends State<HomeScreen>
                   ? GestureDetector(
                       onTap: () async {
                         result = await showDatePicker(
+                          
                           context: context,
                           initialDate: dateTime ?? DateTime.now(),
                           firstDate: DateTime.now(),
@@ -705,12 +707,44 @@ class HomeScreenState extends State<HomeScreen>
                           helpText: "Select Date",
                           builder: (BuildContext context, Widget? child) {
                             return Theme(
-                              data: ThemeData.light().copyWith(
-                                primaryColor: AppColors.darkSubHead,
-                                hintColor: Colors.teal,
+                              data:Theme.of(context).brightness == Brightness.dark
+                      ? ThemeData.dark().copyWith(
+                                // Customize the color scheme here
+                                colorScheme: const ColorScheme.dark(
+                                  primary: AppColors.darkEditColor, // Change primary color
+                                  onPrimary:AppColors.darkThemeback, // Change text color on primary
+                                  surface: AppColors.darkThemeback, // Change surface color
+                                  onSurface: AppColors.darkSubHead,
+
+                                  // Change text color on surface
+                                ),
+                               
+                                textButtonTheme: TextButtonThemeData(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor:
+                                        AppColors.darkEditColor, // button text color
+                                  ),
+                                ),
+                                // You can customize more properties here if needed
+                              ):ThemeData.light().copyWith(
+                                // Customize the color scheme here
                                 colorScheme: const ColorScheme.light(
-                                        primary: AppColors.dotColor)
-                                    .copyWith(background: Colors.blueGrey),
+                                  primary: AppColors.dotColor, // Change primary color
+                                  onPrimary: Colors
+                                      .white, // Change text color on primary
+                                  surface: Colors.white, // Change surface color
+                                  onSurface: AppColors.allHeadColor,
+
+                                  // Change text color on surface
+                                ),
+                                selectedRowColor: AppColors.dotColor,
+                                textButtonTheme: TextButtonThemeData(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor:
+                                        AppColors.dotColor, // button text color
+                                  ),
+                                ),
+                                // You can customize more properties here if needed
                               ),
                               child: child!,
                             );
@@ -1924,7 +1958,6 @@ class HomeScreenState extends State<HomeScreen>
                             height: 20 / 12,
                           ),
                         ),
-                       
                       ],
                     ),
                   ),
@@ -1936,7 +1969,8 @@ class HomeScreenState extends State<HomeScreen>
       ),
     );
   }
-   Widget buildnoCompleteProfileforBook() {
+
+  Widget buildnoCompleteProfileforBook() {
     return Container(
       height: 138,
       decoration: BoxDecoration(

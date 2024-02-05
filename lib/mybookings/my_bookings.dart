@@ -398,14 +398,15 @@ class MyBookingScreenState extends State<MyBookingScreen> {
 
   Widget _buildBookingButton() {
     return Padding(
-        padding: const EdgeInsets.only(top: 22, bottom: 20, left: 7, right: 6),
+        padding: const EdgeInsets.only(top: 22, bottom: 20, left: 2, right: 2),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Flexible(
+              flex: 2,
               child: SizedBox(
                 height: 40,
-                width: MediaQuery.of(context).size.width * 0.4,
+                width: MediaQuery.of(context).size.width * 0.58,
                 child: ElevatedButton(
                   onPressed: () {
                     setState(() {
@@ -416,14 +417,18 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isFirstButtonSelected
                         ? AppColors.elevatedColor
-                        : AppColors.homeBack,
+                        : Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkThemeback
+          : AppColors.homeBack,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
                         side: BorderSide(
                             color: isFirstButtonSelected
                                 ? Colors.transparent
-                                : AppColors.bookingInvalid)),
+                                : Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkAppBarboarder
+          : AppColors.appbarBoarder,)),
                   ),
                   child: Text(
                     'Up comming Booking',
@@ -431,7 +436,9 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                     style: TextStyle(
                       color: isFirstButtonSelected
                           ? Colors.white
-                          : AppColors.bookingInvalid,
+                          : Theme.of(context).brightness == Brightness.dark
+          ? AppColors.hintColor
+          : AppColors.bookingInvalid,
                       fontSize: 12,
                       fontFamily: FontFamily.satoshi,
                       fontWeight: FontWeight.w700,
@@ -443,9 +450,10 @@ class MyBookingScreenState extends State<MyBookingScreen> {
             ),
             const SizedBox(width: 9),
             Flexible(
+              flex: 2,
               child: SizedBox(
                 height: 40,
-                width: MediaQuery.of(context).size.width * 0.4,
+                width: MediaQuery.of(context).size.width * 0.39,
                 child: ElevatedButton(
                   onPressed: () {
                     setState(() {
@@ -456,21 +464,27 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isSecondButtonSelected
                         ? AppColors.elevatedColor
-                        : AppColors.homeBack,
+                        :  Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkThemeback
+          : AppColors.homeBack,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
                         side: BorderSide(
                             color: isSecondButtonSelected
                                 ? Colors.transparent
-                                : AppColors.bookingInvalid)),
+                                : Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkAppBarboarder
+          : AppColors.appbarBoarder,)),
                   ),
                   child: Text('Previous Booking',
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: isSecondButtonSelected
                             ? Colors.white
-                            : AppColors.bookingInvalid,
+                            : Theme.of(context).brightness == Brightness.dark
+          ? AppColors.hintColor
+          : AppColors.bookingInvalid,
                         fontSize: 12,
                         fontFamily: FontFamily.satoshi,
                         fontWeight: FontWeight.w700,
@@ -538,7 +552,14 @@ class MyBookingScreenState extends State<MyBookingScreen> {
           child: Stack(
             //fit: StackFit.expand,
             children: [
+              Theme.of(context).brightness ==
+                                      Brightness.dark?
               ClipRRect(
+                borderRadius: BorderRadius.circular(12.0),
+                child: Image.asset(
+                  "assets/images/DarkShape.png",
+                ),
+              ): ClipRRect(
                 borderRadius: BorderRadius.circular(12.0),
                 child: Image.asset(
                   "assets/images/Shape.png",
@@ -573,7 +594,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
-                                  ? Colors.white
+                                  ? AppColors.darkTextInput
                                   : Colors.white,
                               fontSize: 16,
                               fontFamily: FontFamily.satoshi,
@@ -590,7 +611,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
-                                  ? Colors.white
+                                  ? AppColors.darkTextInput
                                   : Colors.white,
                               fontSize: 14,
                               fontFamily: FontFamily.satoshi,
@@ -603,7 +624,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
-                                  ? Colors.white
+                                  ? AppColors.darkTextInput
                                   : Colors.white,
                               fontSize: 14,
                               fontFamily: FontFamily.satoshi,
@@ -627,7 +648,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                       "Team -",
                       style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white
+                            ? AppColors.darkTextInput
                             : Colors.white,
                         fontSize: 14,
                         fontFamily: FontFamily.satoshi,
@@ -706,7 +727,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white
+                                    ? AppColors.elevatedColor
                                     : AppColors.elevatedColor,
                             fontSize: 24,
                             fontFamily: FontFamily.satoshi,

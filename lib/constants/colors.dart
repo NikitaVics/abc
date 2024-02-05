@@ -53,4 +53,6 @@ class AppColors {
   static const requestedfriend = Color(0xff215AA6);
   static const announceDate = Color(0xffE9F7EF);
   static const successColor = Color(0xff27AE60);
+  static const backDarkAnnounce = Color(0xff1C1C1C);
+  static const darkEditColor = Color(0xff62D181);
 }

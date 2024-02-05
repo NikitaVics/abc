@@ -122,7 +122,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                     color: Theme.of(context).brightness == Brightness.dark
                         ? AppColors.darkAppBarboarder
                         : AppColors.appbarBoarder,
-                    width: 2.0,
+                    width: 1.0,
                   ))),
                   child: Column(
                     children: [
@@ -137,6 +137,10 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                               },
                               icon: Image.asset(
                                 "assets/images/leftIcon.png",
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.profileHead,
                                 //width: 18,
                                 height: 26,
                               ),
@@ -165,8 +169,8 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                 ),
               ),
               backgroundColor: Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.darkTextInput
-                  : Colors.white,
+                  ? AppColors.darkThemeback
+                  : AppColors.lightThemeback,
               elevation: 0,
             ),
             body: _buildBody(),
@@ -285,7 +289,9 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
         padding: const EdgeInsets.only(top: 14),
         child: Container(
           decoration: BoxDecoration(
-            color: AppColors.homeBack,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkTextInput
+                : AppColors.homeBack,
             borderRadius: BorderRadius.circular(8),
           ),
           height: 78,
@@ -301,7 +307,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                         "Date - ",
                         style: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.headingTextColor
+                              ? AppColors.profileDarkText
                               : AppColors.subheadColor,
                           fontSize: 14,
                           fontFamily: FontFamily.satoshi,
@@ -313,7 +319,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                         "$formattedDate ,",
                         style: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.headingTextColor
+                              ? AppColors.profileDarkText
                               : AppColors.subheadColor,
                           fontSize: 14,
                           fontFamily: FontFamily.satoshi,
@@ -325,7 +331,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                         dayOfWeek,
                         style: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.headingTextColor
+                              ? AppColors.profileDarkText
                               : AppColors.subheadColor,
                           fontSize: 14,
                           fontFamily: FontFamily.satoshi,
@@ -341,7 +347,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                         "Time - ",
                         style: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.headingTextColor
+                              ? AppColors.profileDarkText
                               : AppColors.subheadColor,
                           fontSize: 14,
                           fontFamily: FontFamily.satoshi,
@@ -353,7 +359,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                         "$timePart - ",
                         style: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.headingTextColor
+                              ? AppColors.profileDarkText
                               : AppColors.subheadColor,
                           fontSize: 14,
                           fontFamily: FontFamily.satoshi,
@@ -365,7 +371,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                         results,
                         style: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.headingTextColor
+                              ? AppColors.profileDarkText
                               : AppColors.subheadColor,
                           fontSize: 14,
                           fontFamily: FontFamily.satoshi,
@@ -394,7 +400,12 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                         decoration: BoxDecoration(
                             color: Colors.transparent,
                             borderRadius: BorderRadius.circular(4),
-                            border: Border.all(color: AppColors.confirmValid)),
+                            border: Border.all(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.darkEditColor
+                                  : AppColors.confirmValid,
+                            )),
                         child: Padding(
                           padding: const EdgeInsets.only(
                               left: 13, right: 13, top: 11, bottom: 11),
@@ -403,8 +414,8 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
-                                  ? AppColors.dotColor
-                                  : AppColors.dotColor,
+                                  ? AppColors.darkEditColor
+                                  : AppColors.confirmValid,
                               fontSize: 12,
                               fontFamily: FontFamily.satoshi,
                               fontWeight: FontWeight.w400,
@@ -423,7 +434,9 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
   Widget _buildImage(bool isVisible, bool isVisi) {
     return Visibility(
       visible: isVisible && isVisi,
-      child: Image.asset("assets/images/teamsadd.png"),
+      child: Theme.of(context).brightness == Brightness.dark
+          ? Image.asset("assets/images/darkillustration.png")
+          : Image.asset("assets/images/teamsadd.png"),
     );
   }
 
@@ -468,8 +481,8 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                       3, // Ensure the list has three items
                       (index) {
                         String imageUrl = index < selectedImageUrls.length
-                            ? selectedImageUrls[index]
-                            : "assets/images/userTeam.png";
+                                  ? selectedImageUrls[index]
+                                  : "";
                         double leftPad = (35 * (index + 1)).toDouble();
                         return Positioned(
                           left: leftPad,
@@ -499,7 +512,11 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                 decoration: BoxDecoration(
                     color: Colors.transparent,
                     borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: AppColors.dotColor)),
+                    border: Border.all(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.darkEditColor
+                          : AppColors.dotColor,
+                    )),
                 child: Padding(
                     padding: EdgeInsets.only(
                         left: 26, right: 26, top: 11, bottom: 11),
@@ -508,11 +525,17 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                       child: isImageVisible
                           ? Icon(
                               Icons.add,
-                              color: AppColors.dotColor,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.darkEditColor
+                                  : AppColors.dotColor,
                             )
                           : Icon(
                               Icons.close,
-                              color: AppColors.dotColor,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.darkEditColor
+                                  : AppColors.dotColor,
                             ),
                     )),
               ),
@@ -529,16 +552,23 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.appbarBoarder)),
+            border: Border.all(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkAppBarboarder
+                    : AppColors.appbarBoarder)),
         child: Padding(
           padding: EdgeInsets.only(left: 20, right: 20, bottom: 24, top: 20),
           child: Column(
             children: [
               Container(
                 padding: const EdgeInsets.only(bottom: 10),
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                     border: Border(
-                        bottom: BorderSide(color: AppColors.appbarBoarder))),
+                        bottom: BorderSide(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.darkAppBarboarder
+                                    : AppColors.appbarBoarder))),
                 child: Row(
                   children: [
                     Expanded(
@@ -550,7 +580,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                             (index) {
                               String imageUrl = index < selectedImageUrls.length
                                   ? selectedImageUrls[index]
-                                  : "assets/images/userTeam.png";
+                                  : "";
                               double leftPad = (35 * index).toDouble();
                               return Positioned(
                                 left: leftPad,
@@ -579,13 +609,20 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                         decoration: BoxDecoration(
                             color: Colors.transparent,
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppColors.dateColor)),
-                        child: const Padding(
+                            border: Border.all(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Color(0xff2CC36B)
+                                    : AppColors.dateColor)),
+                        child: Padding(
                             padding: EdgeInsets.all(10),
                             child: Text(
                               "Repeat Team",
                               style: TextStyle(
-                                color: AppColors.dateColor,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Color(0xff5FC388)
+                                    : AppColors.dateColor,
                                 fontSize: 14,
                                 fontFamily: FontFamily.satoshi,
                                 fontWeight: FontWeight.w500,
@@ -783,7 +820,11 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                 decoration: BoxDecoration(
                     color: Colors.transparent,
                     borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: AppColors.dotColor)),
+                    border: Border.all(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.darkEditColor
+                          : AppColors.dotColor,
+                    )),
                 child: Padding(
                     padding: EdgeInsets.only(
                         left: 26, right: 26, top: 11, bottom: 11),
@@ -792,11 +833,17 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                       child: isImage
                           ? Icon(
                               Icons.add,
-                              color: AppColors.dotColor,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.darkEditColor
+                                  : AppColors.dotColor,
                             )
                           : Icon(
                               Icons.close,
-                              color: AppColors.dotColor,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.darkEditColor
+                                  : AppColors.dotColor,
                             ),
                     )),
               ),
@@ -813,16 +860,23 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.appbarBoarder)),
+            border: Border.all(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkAppBarboarder
+                    : AppColors.appbarBoarder)),
         child: Padding(
           padding: EdgeInsets.only(left: 20, right: 20, bottom: 24, top: 20),
           child: Column(
             children: [
               Container(
                 padding: const EdgeInsets.only(bottom: 10),
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                     border: Border(
-                        bottom: BorderSide(color: AppColors.appbarBoarder))),
+                        bottom: BorderSide(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.darkAppBarboarder
+                                    : AppColors.appbarBoarder))),
                 child: Row(
                   children: [
                     Expanded(
@@ -855,13 +909,20 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                         decoration: BoxDecoration(
                             color: Colors.transparent,
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppColors.dateColor)),
-                        child: const Padding(
+                            border: Border.all(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Color(0xff2CC36B)
+                                    : AppColors.dateColor)),
+                        child: Padding(
                             padding: EdgeInsets.all(10),
                             child: Text(
                               "Repeat Coach",
                               style: TextStyle(
-                                color: AppColors.dateColor,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Color(0xff5FC388)
+                                    : AppColors.dateColor,
                                 fontSize: 14,
                                 fontFamily: FontFamily.satoshi,
                                 fontWeight: FontWeight.w500,
@@ -1060,7 +1121,9 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                 //_buildSignInButton();
               });
             },
-            buttonColor: AppColors.elevatedColor,
+            buttonColor: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkEditColor
+          : AppColors.elevatedColor,
             textColor: Colors.white,
           ))),
     );
@@ -1118,11 +1181,17 @@ class SilentErrorImage extends StatelessWidget {
       errorBuilder:
           (BuildContext context, Object exception, StackTrace? stackTrace) {
         // Return an empty container (or any other widget) to silently handle errors
-        return Image.asset(
-          "assets/images/userTeam.png",
-          width: width,
-          height: height,
-        );
+        return Theme.of(context).brightness == Brightness.dark
+            ? Image.asset(
+                "assets/images/darkavat.png",
+                width: width,
+                height: height,
+              )
+            : Image.asset(
+                "assets/images/userTeam.png",
+                width: width,
+                height: height,
+              );
       },
     );
   }

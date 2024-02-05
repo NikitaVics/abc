@@ -60,6 +60,7 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
             : AppColors.lightThemeback,
         primary: true,
         appBar: AppBar(
+          
           toolbarHeight: 60,
           automaticallyImplyLeading: false,
           title: Row(
@@ -161,6 +162,11 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                   dateFormat.parse(announcement.scheduledDate);
               return scheduledDateTime.isAfter(DateTime.now());
             }).toList();
+            filteredAnnouncements.sort((a, b) {
+  DateTime scheduledDateTimeA = dateFormat.parse(a.scheduledDate);
+  DateTime scheduledDateTimeB = dateFormat.parse(b.scheduledDate);
+  return scheduledDateTimeA.compareTo(scheduledDateTimeB);
+});
             String name = announce[1].scheduledDate;
             print(name);
             //imageUrl = profileData.result.imageUrl;
@@ -214,8 +220,12 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
 
     if (announcementType == 'CourtMaintenance') {
       return _buildCourtMaintanance(announcement);
-    } else {
+    } else if(announcementType == 'EventAnnouncement'){
       return _buildEventMaintanance(announcement);
+    }
+    else
+    {
+      return _buildGeneralAnnouncement(announcement);
     }
   }
 
@@ -230,7 +240,9 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                        color: AppColors.announceDate,
+                        color: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.backDarkAnnounce
+            : AppColors.announceDate,
                         borderRadius: BorderRadius.circular(4)),
                     child: Padding(
                       padding: const EdgeInsets.only(
@@ -239,7 +251,7 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                         announcement.scheduledDate,
                         style: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.booklight
+                              ? AppColors.profileDarkText
                               : AppColors.subheadColor,
                           fontSize: 12,
                           fontFamily: FontFamily.satoshi,
@@ -256,7 +268,7 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                     announcement.scheduledTime,
                     style: TextStyle(
                       color: Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.booklight
+                          ? AppColors.profileDarkText
                           : AppColors.subheadColor,
                       fontSize: 9,
                       fontFamily: FontFamily.poppins,
@@ -270,7 +282,7 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                     "Court Maintenance",
                     style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.booklight
+                            ? AppColors.profileDarkText
                             : AppColors.allHeadColor,
                         fontSize: 18,
                         fontFamily: FontFamily.satoshi,
@@ -285,7 +297,7 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                           crossAxisSpacing: 15.58,
                           mainAxisSpacing: 16.34 // Two containers per row
                           ),
-                      itemCount: 10, // Total number of containers
+                      itemCount: announcement.court.length, // Total number of containers
                       itemBuilder: (BuildContext context, int index) {
                         String containImage = index % 2 == 0
                             ? "assets/images/Shape33.png"
@@ -294,24 +306,28 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                           height: 125.0,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
-                            color: AppColors.booklight,
+                            color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkTextInput
+                            : AppColors.booklight,
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(7.01),
-                                child: Image.asset(containImage),
+                                child:announcement.imageUrl.isNotEmpty? ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(announcement.imageUrl[index],  fit: BoxFit.fill,)): Image.asset(containImage),
                               ),
                               Padding(
                                   padding:
                                       EdgeInsets.only(left: 7.01, top: 6.79),
                                   child: Text(
-                                    "Court $index",
+                                announcement.court[index],
                                     style: TextStyle(
                                         color: Theme.of(context).brightness ==
                                                 Brightness.dark
-                                            ? AppColors.booklight
+                                            ? AppColors.profileDarkText
                                             : AppColors.allHeadColor,
                                         fontSize: 15,
                                         fontFamily: FontFamily.satoshi,
@@ -326,7 +342,10 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                   ),
                   SizedBox(height: 39.34),
                   Divider(
-                    color: AppColors.appbarBoarder,
+                    color:Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkAppBarboarder
+                            : AppColors.appbarBoarder
+                            ,
                     thickness: 1,
                   )
                 ]),
@@ -350,7 +369,9 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                 children: [
                   Container(
                     decoration: BoxDecoration(
-                        color: AppColors.announceDate,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.backDarkAnnounce
+                            : AppColors.announceDate,
                         borderRadius: BorderRadius.circular(4)),
                     child: Padding(
                       padding: const EdgeInsets.only(
@@ -359,8 +380,8 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                         formattedDate,
                         style: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.booklight
-                              : AppColors.subheadColor,
+                            ? AppColors.profileDarkText
+                            : AppColors.subheadColor,
                           fontSize: 12,
                           fontFamily: FontFamily.satoshi,
                           fontWeight: FontWeight.w400,
@@ -375,9 +396,9 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                   Text(
                     announcement.scheduledTime,
                     style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.booklight
-                          : AppColors.subheadColor,
+                      color:Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.profileDarkText
+                            : AppColors.subheadColor,
                       fontSize: 9,
                       fontFamily: FontFamily.poppins,
                       fontWeight: FontWeight.w500,
@@ -390,7 +411,7 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                     "Event Announcement",
                     style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.booklight
+                            ? AppColors.profileDarkText
                             : AppColors.allHeadColor,
                         fontSize: 18,
                         fontFamily: FontFamily.satoshi,
@@ -404,7 +425,9 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                     height: 325,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        color: AppColors.primaryColor),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkTextInput
+                            : AppColors.primaryColor,),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -547,9 +570,11 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                                 child: SizedBox(
                                     height: 85,
                                     child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(7),
-                                        child: Image.asset(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child:(announcement.imageUrl .isNotEmpty && announcement.imageUrl.length > 0) ? Image.network(announcement.imageUrl[0],
+                                        fit: BoxFit.fill,) : Image.asset(
                                             "assets/images/Shape33.png"))),
+                                            //  (announcement.imageUrl .isNotEmpty && announcement.imageUrl.length > 0) ? Image.asset(announcement.imageUrl[0]) :
                               ),
                               SizedBox(
                                 width: 15,
@@ -558,9 +583,10 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                                 child: SizedBox(
                                     height: 85,
                                     child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(7),
-                                        child: Image.asset(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child:(announcement.imageUrl .isNotEmpty && announcement.imageUrl.length > 1) ? Image.network(announcement.imageUrl[1],  fit: BoxFit.fill,) : Image.asset(
                                             "assets/images/Shape34.png"))),
+                                            // (announcement.imageUrl .isNotEmpty && announcement.imageUrl.length > 1) ? Image.asset(announcement.imageUrl[1]) : 
                               ),
                             ],
                           ),
@@ -570,7 +596,162 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                   ),
                   SizedBox(height: 39.34),
                   Divider(
-                    color: AppColors.appbarBoarder,
+                    color:Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkAppBarboarder
+                            : AppColors.appbarBoarder
+                            ,
+                    thickness: 1,
+                  )
+                ]),
+          ),
+        ));
+  }
+Widget _buildGeneralAnnouncement(Announcement announcement) {
+    DateFormat dateFormat = DateFormat("dd MMM, yyyy");
+    DateTime scheduledDateTime = dateFormat.parse(announcement.scheduledDate);
+    String formattedDate = DateFormat("MMM dd, EEE -yyyy").format(scheduledDateTime);
+
+  print(formattedDate);
+    return Padding(
+        padding: const EdgeInsets.only(top: 23),
+        child: Center(
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.backDarkAnnounce
+                            : AppColors.announceDate,
+                        borderRadius: BorderRadius.circular(4)),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          top: 3, bottom: 3, left: 9, right: 9),
+                      child: Text(
+                        formattedDate,
+                        style: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.profileDarkText
+                            : AppColors.subheadColor,
+                          fontSize: 12,
+                          fontFamily: FontFamily.satoshi,
+                          fontWeight: FontWeight.w400,
+                          height: 16 / 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 13,
+                  ),
+                  Text(
+                    announcement.scheduledTime,
+                    style: TextStyle(
+                      color:Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.profileDarkText
+                            : AppColors.subheadColor,
+                      fontSize: 9,
+                      fontFamily: FontFamily.poppins,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    "General Announcement",
+                    style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.profileDarkText
+                            : AppColors.allHeadColor,
+                        fontSize: 18,
+                        fontFamily: FontFamily.satoshi,
+                        fontWeight: FontWeight.w700,
+                        height: 24 / 18),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    height: 200,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkTextInput
+                            : AppColors.primaryColor,),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                       
+                        
+                        Padding(
+                            padding: const EdgeInsets.only(
+                                top: 16, left: 23, right: 23),
+                            child: Container(
+                              height: 49,
+                              child: SingleChildScrollView(
+                                child: Text(
+                                 announcement.message,
+                                  style: TextStyle(
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? AppColors.booklight
+                                          : AppColors.subheadColor,
+                                      fontSize: 13,
+                                      fontFamily: FontFamily.satoshi,
+                                      fontWeight: FontWeight.w500,
+                                      fontStyle: FontStyle.normal,
+                                      height: 19 / 13),
+                                ),
+                              ),
+                            )),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                top: 19, left: 23, bottom: 24, right: 22),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: SizedBox(
+                                      height: 85,
+                                      child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(8),
+                                          child:(announcement.imageUrl .isNotEmpty && announcement.imageUrl.length > 0) ? ClipRRect(
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Image.network(announcement.imageUrl[0],  fit: BoxFit.fill,)) : Image.asset(
+                                              "assets/images/Shape33.png"))),
+                                              //  (announcement.imageUrl .isNotEmpty && announcement.imageUrl.length > 0) ? Image.asset(announcement.imageUrl[0]) :
+                                ),
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                Expanded(
+                                  child: SizedBox(
+                                      height: 85,
+                                      child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(8),
+                                          child:(announcement.imageUrl .isNotEmpty && announcement.imageUrl.length > 1) ? ClipRRect(
+                                              borderRadius: BorderRadius.circular(8),
+                                            child: Image.network(announcement.imageUrl[1],  fit: BoxFit.fill,)) : Image.asset(
+                                              "assets/images/Shape34.png"))),
+                                              // (announcement.imageUrl .isNotEmpty && announcement.imageUrl.length > 1) ? Image.asset(announcement.imageUrl[1]) : 
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 39.34),
+                  Divider(
+                    color:Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkAppBarboarder
+                            : AppColors.appbarBoarder
+                            ,
                     thickness: 1,
                   )
                 ]),
@@ -616,13 +797,13 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
 class SilentErrorImage extends StatelessWidget {
   final String imageUrl;
   final double width;
-  final double height;
+ 
 
   const SilentErrorImage({
     super.key,
     required this.imageUrl,
-    this.width = 80.0,
-    this.height = 80.0,
+     this.width=double.infinity,
+  
   });
 
   @override
@@ -630,7 +811,7 @@ class SilentErrorImage extends StatelessWidget {
     return Image.network(
       imageUrl,
       width: width,
-      height: height,
+   
       fit: BoxFit.fill,
       errorBuilder:
           (BuildContext context, Object exception, StackTrace? stackTrace) {
@@ -638,7 +819,7 @@ class SilentErrorImage extends StatelessWidget {
         return Image.asset(
           "assets/images/userImage.png",
           width: width,
-          height: height,
+        
         );
       },
     );

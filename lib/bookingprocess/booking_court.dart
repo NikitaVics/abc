@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:date_picker_timeline/date_picker_widget.dart';
@@ -128,7 +130,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                     color: Theme.of(context).brightness == Brightness.dark
                         ? AppColors.darkAppBarboarder
                         : AppColors.appbarBoarder,
-                    width: 2.0,
+                    width: 1.0,
                   ))),
                   child: Column(
                     children: [
@@ -151,6 +153,10 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                               },
                               icon: Image.asset(
                                 "assets/images/leftIcon.png",
+                                                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.profileHead,
                                 //width: 18,
                                 height: 26,
                               ),
@@ -174,17 +180,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                             SizedBox(
                               width: 10,
                             ),
-                            IconButton(
-                              padding: EdgeInsets.zero,
-                              onPressed: () {
-                                Navigator.pop(context, null);
-                              },
-                              icon: Image.asset(
-                                "assets/images/Search.png",
-                                //width: 18,
-                                height: 18,
-                              ),
-                            ),
+                           
                             IconButton(
                               padding: EdgeInsets.zero,
                               onPressed: () {
@@ -196,6 +192,10 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                               },
                               icon: Image.asset(
                                 "assets/images/Filter.png",
+                                                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.profileHead,
                                 //width: 18,
                                 height: 15,
                               ),
@@ -208,8 +208,8 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                 ),
               ),
               backgroundColor: Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.darkTextInput
-                  : Colors.white,
+                ? AppColors.darkThemeback
+                : AppColors.lightThemeback,
               elevation: 0,
             ),
             body: _buildBody(),
@@ -293,8 +293,39 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
             height:90,
             DateTime.now(),
             initialSelectedDate: result,
-            selectionColor: AppColors.dotColor,
-            selectedTextColor: Colors.white,
+            selectionColor: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.darkEditColor
+                                      : AppColors.dotColor,
+            selectedTextColor: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ?Color(0xff121213)
+                                      : AppColors.headingTextColor
+                                    ,
+            dateTextStyle: TextStyle(color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : AppColors.allHeadColor,
+                                        fontSize: 20,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w700,
+                                  
+                                      ),
+                                      dayTextStyle: TextStyle(color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : AppColors.allHeadColor,
+                                        fontSize: 12,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w400,),
+                                      monthTextStyle:  TextStyle(color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : AppColors.allHeadColor,
+                                       fontSize: 12,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w400,),
+           
             onDateChange: (date) {
               setState(() {
                 result = date;
@@ -328,7 +359,10 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                     Container(
                       //padding: EdgeInsets.fromLTRB(12, 12,12, 12),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.darkTextInput
+                                      : Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: const [
                           BoxShadow(
@@ -380,7 +414,14 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                               return buidSheet();
                                             } else {
                                               // You can return a loading indicator or null while waiting for the future
-                                              return CircularProgressIndicator();
+                                              return const Center(
+                                                child: SizedBox(
+                                                  width: 45,
+                                                  height: 45,
+                                                  child: CircularProgressIndicator(
+                                                    color: AppColors.darkEditColor,
+                                                  )),
+                                              );
                                             }
                                           },
                                         );
@@ -398,6 +439,11 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                         height: 17,
                                         child: Image.asset(
                                           "assets/images/informationCircle.png",
+                                          color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? AppColors.hintColor
+                                                    : AppColors.bookingInvalid,
                                           //width: 18,
                                           height: 17,
                                         ),
@@ -410,7 +456,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                             color:
                                                 Theme.of(context).brightness ==
                                                         Brightness.dark
-                                                    ? AppColors.headingTextColor
+                                                    ? AppColors.hintColor
                                                     : AppColors.bookingInvalid,
                                             fontSize: 10.50,
                                             fontFamily: FontFamily.satoshi,
@@ -425,124 +471,87 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                               ],
                             ),
                             SizedBox(height: 27),
-                            Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.start,
-                              runSpacing: 0.0,
-                              spacing: 9.56,
-                              children: court.availableSlots
-                                  .map(
-                                    (slot) => Padding(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 12,
-                                      ),
-                                      child: InkWell(
-                                          onTap: () {
-                                            slot.isAvailable
-                                                ? Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          TeamSelectScreen(
-                                                              result: result!,
-                                                              time:
-                                                                  slot.timeSlot,
-                                                              courtName: court
-                                                                  .courtName),
-                                                    ),
-                                                  )
-                                                : MotionToast(
-                                                    primaryColor:
-                                                        AppColors.disableTime,
-                                                    description: Text(
-                                                      "This timeslot is booked. Please select another one..",
-                                                      style: TextStyle(
-                                                        color: Theme.of(context)
-                                                                    .brightness ==
-                                                                Brightness.dark
-                                                            ? AppColors
-                                                                .headingTextColor
-                                                            : AppColors
-                                                                .allHeadColor,
-                                                        fontSize: 16,
-                                                        fontFamily:
-                                                            FontFamily.satoshi,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        height: 24 / 16,
-                                                      ),
-                                                    ),
-                                                    icon: Icons.warning,
-                                                    animationCurve:
-                                                        Curves.bounceInOut,
-                                                  ).show(context);
-                                          },
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                color: Colors.transparent,
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                border: Border.all(
-                                                    color: slot.isAvailable ==
-                                                            true
-                                                        ? AppColors.confirmValid
-                                                        : AppColors
-                                                            .disableTime)),
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 17.5,
-                                                  right: 17.5,
-                                                  top: 8.75,
-                                                  bottom: 8.75),
-                                              child: Text(
-                                                slot.timeSlot,
-                                                style: TextStyle(
-                                                  color: slot.isAvailable ==
-                                                          true
-                                                      ? AppColors.dateColor
-                                                      : AppColors.disableTime,
-                                                  fontSize: 14,
-                                                  fontFamily: FontFamily.roboto,
-                                                  fontWeight: FontWeight.w500,
-                                                  height: 20 / 14,
-                                                ),
-                                              ),
-                                            ),
-                                          )
-                                          /*Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.transparent,
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              border: Border.all(
-                                                  color:
-                                                      AppColors.dateColor)),
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 17.5,
-                                                right: 17.5,
-                                                top: 8.75,
-                                                bottom: 8.75),
-                                            child: Text(
-                                              slot,
-                                              style: TextStyle(
-                                                color: Theme.of(context)
-                                                            .brightness ==
-                                                        Brightness.dark
-                                                    ? AppColors
-                                                        .headingTextColor
-                                                    : AppColors.dateColor,
-                                                fontSize: 14,
-                                                fontFamily: FontFamily.roboto,
-                                                fontWeight: FontWeight.w500,
-                                                height: 20 / 14,
-                                              ),
-                                            ),
-                                          ),
-                                        ),*/
-                                          ),
-                                    ),
-                                  )
-                                  .toList(),
-                            ),
+                           Wrap(
+  crossAxisAlignment: WrapCrossAlignment.start,
+  runSpacing: 12.0, // spacing between rows
+  children: List.generate(
+    (court.availableSlots.length / 3).ceil(), // determine number of rows
+    (rowIndex) {
+      final start = rowIndex * 3;
+      final end = (rowIndex + 1) * 3;
+      return Row(
+        children: court.availableSlots
+            .sublist(start, min(end, court.availableSlots.length))
+            .map(
+              (slot) => Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 12, right: 12),
+                  child: InkWell(
+                    onTap: () {
+                      slot.isAvailable
+                          ? Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => TeamSelectScreen(
+                                    result: result!,
+                                    time: slot.timeSlot,
+                                    courtName: court.courtName),
+                              ),
+                            )
+                          : MotionToast(
+                              primaryColor: AppColors.disableTime,
+                              description: Text(
+                                "This timeslot is booked. Please select another one..",
+                                style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : AppColors.allHeadColor,
+                                  fontSize: 16,
+                                  fontFamily: FontFamily.satoshi,
+                                  fontWeight: FontWeight.w400,
+                                  height: 24 / 16,
+                                ),
+                              ),
+                              icon: Icons.warning,
+                              animationCurve: Curves.bounceInOut,
+                            ).show(context);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: slot.isAvailable
+                              ? AppColors.confirmValid
+                              : AppColors.disableTime,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          slot.timeSlot,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: slot.isAvailable
+                                ? AppColors.dateColor
+                                : AppColors.disableTime,
+                            fontSize: 14,
+                            fontFamily: FontFamily.roboto,
+                            fontWeight: FontWeight.w500,
+                            height: 20 / 14,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )
+            .toList(),
+      );
+    },
+  ),
+),
                             // Add a divider for better separation
                           ],
                         ),
@@ -625,6 +634,9 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
             return Container(
               width: containerWidth,
               height: containerHeight,
+              color:  Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkThemeback
+          : AppColors.primaryColor,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: SingleChildScrollView(
@@ -649,7 +661,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                               style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark
-                                    ? AppColors.booklight
+                                    ? AppColors.headingTextColor
                                     : AppColors.allHeadColor,
                                 fontSize: 20,
                                 fontFamily: FontFamily.satoshi,
@@ -662,7 +674,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                               style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark
-                                    ? AppColors.darkSubHead
+                                    ? AppColors.confirmValid
                                     : AppColors.confirmValid,
                                 fontSize: 12,
                                 fontFamily: FontFamily.satoshi,
@@ -681,7 +693,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
-                                    ? AppColors.darkSubHead
+                                    ? AppColors.profileDarkText
                                     : AppColors.subheadColor,
                             fontSize: 14,
                             fontFamily: FontFamily.satoshi,
@@ -690,11 +702,13 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                           ),
                         ),
                       ),
-                      const Padding(
+                      Padding(
                         padding:
                             EdgeInsets.only(left: 24, right: 24, top: 19.2),
                         child: Divider(
-                          color: AppColors.appbarBoarder,
+                          color:  Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.darkAppBarboarder
+                                    : AppColors.appbarBoarder,
                           thickness: 1,
                         ),
                       ),
@@ -706,7 +720,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
-                                    ? AppColors.darkSubHead
+                                    ? AppColors.headingTextColor
                                     : AppColors.subheadColor,
                             fontSize: 16,
                             fontFamily: FontFamily.satoshi,
@@ -732,6 +746,10 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                         "assets/images/parking.png",
                                         height: 24,
                                         width: 24,
+                                         color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? AppColors.profileDarkText
+                                              : AppColors.allHeadColor,
                                       ),
                                       SizedBox(
                                         height: 14,
@@ -741,7 +759,7 @@ class BookingCourtScreenState extends State<BookingCourtScreen> {
                                         style: TextStyle(
                                           color: Theme.of(context).brightness ==
                                                   Brightness.dark
-                                              ? AppColors.darkSubHead
+                                              ? AppColors.profileDarkText
                                               : AppColors.allHeadColor,
                                           fontSize: 12,
                                           fontFamily: FontFamily.satoshi,
@@ -919,7 +937,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   activeSize: ui.Size(15.75, 8.0),
                   activeShape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5.0)),
-                  color: AppColors.nondotcolor,
+                  color: AppColors.headingTextColor,
                   activeColor: AppColors.dotColor,
                 ),
               ),

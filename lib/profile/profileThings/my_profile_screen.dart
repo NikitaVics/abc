@@ -160,7 +160,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                 color: Theme.of(context).brightness == Brightness.dark
                     ? AppColors.darkAppBarboarder
                     : AppColors.appbarBoarder,
-                width: 2.0,
+                width: 1.0,
               ))),
               child: Column(
                 children: [
@@ -175,6 +175,9 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                           },
                           icon: Image.asset(
                             "assets/images/leftIcon.png",
+                            color:  Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.profileHead,
                             //width: 18,
                             height: 26,
                           ),
@@ -203,8 +206,8 @@ class MyProfileScreenState extends State<MyProfileScreen> {
             ),
           ),
           backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkTextInput
-              : Colors.white,
+            ? AppColors.darkThemeback
+            : AppColors.lightThemeback,
           elevation: 0,
         ),
         body: _buildBody(),
@@ -303,7 +306,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
 
   Widget _buildLoginText() {
     return Padding(
-        padding: const EdgeInsets.only(top: 28),
+        padding: const EdgeInsets.only(top: 38),
         child: MediaQuery(
           data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -371,7 +374,9 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                       style: TextStyle(
                         color: isEdited
                             ? AppColors.errorColor
-                            : AppColors.dotColor,
+                            :Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.darkEditColor
+                          : AppColors.dotColor,
                         fontSize: 14,
                         fontFamily: FontFamily.satoshi,
                         fontWeight: FontWeight.w400,
@@ -434,13 +439,17 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                             controller: phonePrefixController,
                             focusBorderColor: isEdited
                                 ? AppColors.focusTextBoarder
-                                : AppColors.appbarBoarder,
+                                : Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.headingTextColor
+                          : AppColors.appbarBoarder,
                             fillColor: isEdited
                                 ? AppColors.textInputField
                                 : Colors.transparent,
                             boarderColor: isEdited
                                 ? AppColors.transparent
-                                : AppColors.appbarBoarder,
+                                : Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.darkAppBarboarder
+                          : AppColors.appbarBoarder,
                             color: isEdited
                                 ? AppColors.textInputField
                                 : Colors.transparent,

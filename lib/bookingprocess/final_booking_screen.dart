@@ -87,12 +87,10 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFF4ECB71), Color(0xFF259445)],
-        ),
+      decoration: BoxDecoration(
+      color: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkThemeback
+          : const Color(0xFF259445)
       ),
       child: Column(
         children: [
@@ -153,10 +151,12 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                     );
                     context.read<BookResultShowProvider>().clearStateList();
                   },
-                  icon: const Icon(
+                  icon:  Icon(
                     Icons.close,
                     size: 25,
-                    color: Colors.white,
+                    color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.headingTextColor
+                      : Colors.white,
                   )),
             ],
           ),
@@ -259,7 +259,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                   style: TextStyle(
                                     color: Theme.of(context).brightness ==
                                             Brightness.dark
-                                        ? AppColors.headingTextColor
+                                        ? Colors.white
                                         : Colors.black,
                                     fontSize: 18,
                                     fontFamily: FontFamily.satoshi,
@@ -274,7 +274,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                       style: TextStyle(
                                         color: Theme.of(context).brightness ==
                                                 Brightness.dark
-                                            ? AppColors.headingTextColor
+                                            ? AppColors.profileDarkText
                                             : Colors.black,
                                         fontSize: 14,
                                         fontFamily: FontFamily.satoshi,
@@ -287,7 +287,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                       style: TextStyle(
                                         color: Theme.of(context).brightness ==
                                                 Brightness.dark
-                                            ? AppColors.headingTextColor
+                                            ? AppColors.profileDarkText
                                             : Colors.black,
                                         fontSize: 14,
                                         fontFamily: FontFamily.satoshi,
@@ -304,7 +304,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                       style: TextStyle(
                                         color: Theme.of(context).brightness ==
                                                 Brightness.dark
-                                            ? AppColors.headingTextColor
+                                            ? AppColors.profileDarkText
                                             : Colors.black,
                                         fontSize: 14,
                                         fontFamily: FontFamily.satoshi,
@@ -317,7 +317,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                       style: TextStyle(
                                         color: Theme.of(context).brightness ==
                                                 Brightness.dark
-                                            ? AppColors.headingTextColor
+                                            ? AppColors.profileDarkText
                                             : Colors.black,
                                         fontSize: 14,
                                         fontFamily: FontFamily.satoshi,
@@ -334,7 +334,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                       style: TextStyle(
                                         color: Theme.of(context).brightness ==
                                                 Brightness.dark
-                                            ? AppColors.headingTextColor
+                                            ? AppColors.profileDarkText
                                             : Colors.black,
                                         fontSize: 14,
                                         fontFamily: FontFamily.satoshi,
@@ -347,7 +347,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                       style: TextStyle(
                                         color: Theme.of(context).brightness ==
                                                 Brightness.dark
-                                            ? AppColors.headingTextColor
+                                            ? AppColors.profileDarkText
                                             : Colors.black,
                                         fontSize: 14,
                                         fontFamily: FontFamily.satoshi,
@@ -390,14 +390,17 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10.58),
                             border: Border.all(
-                                color: const Color.fromRGBO(0, 0, 0, 0.1),
+                                color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? const Color.fromRGBO(255, 255, 255, 0.10)
+                                            : const Color.fromRGBO(0, 0, 0, 0.1),
                                 width: 0.88),
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              const Row(
+                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -405,7 +408,10 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                   Text(
                                     'Team',
                                     style: TextStyle(
-                                      color: Colors.black,
+                                      color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? Colors.white
+                                            : Colors.black,
                                       fontSize: 15.86,
                                       fontFamily: FontFamily.satoshi,
                                       fontWeight: FontWeight.w700,
@@ -416,7 +422,14 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                   Text(
                                     'Edit team',
                                     style: TextStyle(
-                                      color: AppColors.dotColor,
+                                      color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.darkEditColor
+                                            : AppColors.dotColor,
+                                      decorationColor:Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.darkEditColor
+                                            : AppColors.dotColor,
                                       fontSize: 12.34,
                                       fontFamily: FontFamily.satoshi,
                                       fontWeight: FontWeight.w700,
@@ -455,8 +468,11 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                           SizedBox(width: 10.58),
                                           Text(
                                             courtData.userName,
-                                            style: const TextStyle(
-                                              color: Colors.black,
+                                            style:  TextStyle(
+                                              color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : Colors.black,
                                               fontSize: 13.34,
                                               fontFamily: FontFamily.satoshi,
                                               fontWeight: FontWeight.w400,
@@ -500,7 +516,10 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                       Padding(
                         padding: const EdgeInsets.only(top: 17),
                         child:
-                            const MySeparator(color: AppColors.appbarBoarder),
+                           MySeparator(color:  Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.darkAppBarboarder
+                                            : AppColors.appbarBoarder),
                       ),
                       Padding(
                         padding:
@@ -508,6 +527,10 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                         child: Container(
                           height: 190,
                           child: QrImageView(
+                            foregroundColor: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.headingTextColor
+                                            : AppColors.allHeadColor,
                             data: courtData.bookingId.toString(),
                             version: 1,
                             size: 190,
@@ -544,11 +567,12 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      height: 215,
-                      child: Image.asset(
-                        "assets/images/loadinggif.gif",
-                        fit: BoxFit.cover,
-                      ),
+                      height: 100,
+                      child:Center(
+                        child: CircularProgressIndicator(color: Theme.of(context).brightness == Brightness.dark
+                                  ? AppColors.darkEditColor
+                                  : Colors.white),
+                      )
                     ),
                     SizedBox(
                       height: 5,
@@ -598,8 +622,11 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
         SizedBox(width: 10.58),
         Text(
           memberName.isNotEmpty ? memberName : "",
-          style: const TextStyle(
-            color: Colors.black,
+          style: TextStyle(
+            color:  Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : Colors.black,
             fontSize: 13.34,
             fontFamily: FontFamily.satoshi,
             fontWeight: FontWeight.w400,
@@ -626,17 +653,22 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
             isLoading: false,
             text: "Cancel Booking",
             onPressed: () async {
-              Navigator.push(
+              
+             /* Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
                                             const BottomNavBar(initial: 0)));
               await Api.deleteBooking(
                 tokens!,bookId!,
-              );
+              );*/
             },
-            buttonColor: Colors.white,
-            textColor: AppColors.allHeadColor,
+            buttonColor: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkEditColor
+          : Colors.white,
+            textColor: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.headingTextColor
+          : AppColors.allHeadColor,
           ))),
     );
   }
@@ -694,8 +726,10 @@ class HalfCutContainer extends StatelessWidget {
       child: Stack(children: [
         Container(
           height: 560,
-          decoration: const BoxDecoration(
-            color: Colors.white,
+          decoration:  BoxDecoration(
+            color: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkTextInput
+          : Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(12)),
             boxShadow: [
               BoxShadow(
@@ -721,7 +755,9 @@ class HalfCutContainer extends StatelessWidget {
             height: 43,
             width: 43,
             decoration: BoxDecoration(
-                shape: BoxShape.circle, color: AppColors.roundColorBooking),
+                shape: BoxShape.circle, color: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkThemeback
+          : const Color(0xFF259445)),
           ),
         ),
         // Positioned circle on the right side
@@ -732,10 +768,49 @@ class HalfCutContainer extends StatelessWidget {
             height: 43,
             width: 43,
             decoration: BoxDecoration(
-                shape: BoxShape.circle, color: AppColors.roundColorBooking),
+                shape: BoxShape.circle, color: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkThemeback
+          : const Color(0xFF259445)),
           ),
         ),
       ]),
+    );
+  }
+}
+class SilentErrorImage extends StatelessWidget {
+  final String imageUrl;
+  final double width;
+  final double height;
+
+  const SilentErrorImage({
+    super.key,
+    required this.imageUrl,
+    this.width = 48.0,
+    this.height = 48.0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.network(
+      imageUrl,
+      width: width,
+      height: height,
+      fit: BoxFit.fill,
+      errorBuilder:
+          (BuildContext context, Object exception, StackTrace? stackTrace) {
+        // Return an empty container (or any other widget) to silently handle errors
+        return Theme.of(context).brightness == Brightness.dark
+            ? Image.asset(
+                "assets/images/darkavat.png",
+                width: width,
+                height: height,
+              )
+            : Image.asset(
+                "assets/images/userTeam.png",
+                width: width,
+                height: height,
+              );
+      },
     );
   }
 }

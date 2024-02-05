@@ -31,6 +31,7 @@ class Announcement {
   final String scheduledDate;
   final String scheduledTime;
   final List<String> imageUrl;
+  final List<String> court;
 
   Announcement({
      required this.id,
@@ -39,6 +40,7 @@ class Announcement {
     required this.scheduledDate,
     required this.scheduledTime,
     required this.imageUrl,
+      required this.court,
   });
 
   factory Announcement.fromJson(Map<String, dynamic> json) {
@@ -49,6 +51,7 @@ class Announcement {
     scheduledDate: json['scheduledDate'] ?? '',
     scheduledTime: json['scheduledTime'] ?? '',
     imageUrl: List<String>.from(json['imageUrl'] ?? []),
+    court: List<String>.from(json['courts'] ?? []),
     );
   }
 }

@@ -88,10 +88,13 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
                               onPressed: () {
                                 Navigator.pop(context, null);
                               },
-                              icon: const Icon(
+                              icon:  Icon(
                                 Icons.close,
                                 size: 25,
-                                color: Colors.black,
+                              color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.profileDarkText
+                                    : AppColors.allHeadColor,
                               )),
                           SizedBox(
                             width: 110,
@@ -102,8 +105,8 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
                               style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark
-                                    ? AppColors.headingTextColor
-                                    : AppColors.profileHead,
+                                    ? AppColors.profileDarkText
+                                    : AppColors.allHeadColor,
                                 fontSize: 20,
                                 fontFamily: FontFamily.satoshi,
                                 fontWeight: FontWeight.w700,
@@ -121,8 +124,8 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
                 ),
               ),
               backgroundColor: Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.darkTextInput
-                  : const Color(0xffFCFCFC),
+                ? AppColors.darkThemeback
+                : Color(0xffFCFCFC),
               elevation: 0.0,
             ),
             body: _buildBody(),
@@ -157,6 +160,7 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          _buildLoginText(),
           Expanded(
               //  flex: 1,
               child: _buildBookingSlot()),
@@ -164,6 +168,37 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
       ),
     );
   }
+
+  Widget _buildLoginText() {
+    return Container(
+      height: 60,
+      width: double.infinity,
+      color:Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkTextInput
+              : AppColors.headingTextColor,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 24),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            "PREFERRED COURT",
+          
+            style: TextStyle(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.hintColor
+                  : AppColors.hintColor,
+          
+              fontSize:14,
+              fontFamily: FontFamily.satoshi,
+              fontWeight: FontWeight.w500,
+              height: 24 / 14,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
 
   Widget _buildBookingSlot() {
     return Padding(
@@ -174,7 +209,16 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
       child: Consumer<BookingResponseProvider>(
         builder: (context, provider, child) {
           final bookingResponse = provider.bookingResponse;
+  if (bookingResponse == null ) {
+              // If not loaded, fetch the data
 
+              // You can show a loading indicator here if needed
+              return Center(
+                child: CircularProgressIndicator(color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkEditColor
+                  : AppColors.dotColor,),
+              );
+            }
           if (bookingResponse != null &&
               bookingResponse.result.courtsWithSlots.isNotEmpty) {
             final courtData = bookingResponse.result.courtsWithSlots;
@@ -190,11 +234,13 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
                   children: [
                     Container(
                       height: 56,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                           color: Colors.transparent,
                           border: Border(
                               bottom:
-                                  BorderSide(color: AppColors.appbarBoarder))),
+                                  BorderSide(color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkAppBarboarder
+                  : AppColors.appbarBoarder,))),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Center(
@@ -207,7 +253,7 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
                                   style: TextStyle(
                                     color: Theme.of(context).brightness ==
                                             Brightness.dark
-                                        ? AppColors.headingTextColor
+                                        ? AppColors.profileDarkText
                                         : AppColors.allHeadColor,
                                     fontSize: 16,
                                     fontFamily: FontFamily.satoshi,
@@ -221,7 +267,10 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
                                   color: AppColors.disableNavIconColor,
                                   width: 2.0
                                 ),
-                                activeColor: AppColors.dotColor,
+                                activeColor: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.darkEditColor
+                                        : AppColors.dotColor,
                                 value: isSelected,
                                 onChanged: (value) {
                                   // Handle court selection/deselection
@@ -247,7 +296,7 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
               },
             );
           } else {
-            return const Text('No court data available.');
+            return const SizedBox();
           }
         },
       ),
@@ -272,6 +321,7 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
                       text: "Apply Filter",
                       onPressed: () async {
                         MotionToast(
+
   primaryColor: AppColors.warningToast,
   description:  Text("Please select your prefer court..",
   style: TextStyle(
@@ -309,7 +359,10 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
     ),
   );
                       },
-                      buttonColor: AppColors.elevatedColor,
+                      buttonColor:  Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.darkEditColor
+                                        : AppColors.dotColor,
                       textColor: Colors.white,
                     ))),
     );
