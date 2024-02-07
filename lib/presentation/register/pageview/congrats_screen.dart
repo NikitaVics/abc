@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gradient_text/flutter_gradient_text.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -147,22 +148,27 @@ class CongratsScreenState extends State<CongratsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Text(
-          "Congrats!",
-          style: TextStyle(
+        GradientText(
+        Text(  "Congrats!", style: TextStyle(
             color: AppColors.dotColor,
             fontSize: 38,
             fontFamily: FontFamily.satoshi,
             fontWeight: FontWeight.w700,
             height: 40 / 32,
-          ),
+          ),),
+          
+            colors: [Color(0xFF4ECB71), Color(0xFF259445)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+         
+         
         ),
         const SizedBox(height: 10.0),
         Text(
           "Your Account was ",
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.dark
-                ? AppColors.darkSubHead
+                ? AppColors.profileDarkText
                 : AppColors.subheadColor,
             fontSize: 16,
             fontFamily: FontFamily.satoshi,
@@ -173,7 +179,7 @@ class CongratsScreenState extends State<CongratsScreen> {
           "successfull created.",
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.dark
-                ? AppColors.darkSubHead
+                ? AppColors.profileDarkText
                 : AppColors.subheadColor,
             fontSize: 16,
             fontFamily: FontFamily.satoshi,

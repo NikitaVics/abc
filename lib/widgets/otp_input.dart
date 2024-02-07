@@ -11,8 +11,10 @@ class OtpInput extends StatelessWidget {
   Widget build(BuildContext context) {
     OutlineInputBorder outlineInputBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(8.0),
-      borderSide: const BorderSide(
-        color: AppColors.appbarBoarder, 
+      borderSide:  BorderSide(
+        color:  Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.darkAppBarboarder
+                              : AppColors.appbarBoarder, 
           width: 1.0,// Customize focused border color
       ),
     );
@@ -27,18 +29,25 @@ class OtpInput extends StatelessWidget {
       height:56,
       width:67,
      
-      child: TextField(
+      child: TextFormField(
+
+        
         autofocus: autoFocus,
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,
         controller: controller,
         maxLength: 1,
-        cursorColor: AppColors.focusCursorColor,
+        cursorColor: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.booklight
+                          : AppColors.focusCursorColor,
         decoration:  InputDecoration(
           contentPadding:const EdgeInsets.symmetric(vertical: 16.0, horizontal: 14.0),
            enabledBorder: outlineInputBorder,
            focusedBorder:focusedOutlineInputBorder ,
             counterText: '',
+             fillColor: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkTextInput
+                  : AppColors.textInputField,
             hintStyle:const TextStyle(
                 color:AppColors.hintColor,
                 fontSize: 14,

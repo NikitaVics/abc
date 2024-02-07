@@ -18,12 +18,14 @@ import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/otp_input.dart';
+import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   final String email;
   final String password;
 
-  const VerifyEmailScreen({super.key, required this.email, required this.password});
+  const VerifyEmailScreen(
+      {super.key, required this.email, required this.password});
 
   @override
   VerifyEmailScreenState createState() => VerifyEmailScreenState();
@@ -91,6 +93,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
               : AppColors.lightThemeback,
           primary: true,
           appBar: const CustomAppBar(
+            isIcon: false,
             isBoarder: true,
             title: "Verify mail id",
             isProgress: false,
@@ -206,7 +209,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
               "Code sent to ",
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.darkSubHead
+                      ? AppColors.profileDarkText
                       : AppColors.subheadColor,
                   fontSize: 14,
                   fontFamily: FontFamily.satoshi,
@@ -217,7 +220,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
               widget.email,
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.darkSubHead
+                      ? AppColors.profileDarkText
                       : AppColors.subheadColor,
                   fontSize: 14,
                   fontFamily: FontFamily.satoshi,
@@ -233,7 +236,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     "This code will expired in ",
                     style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.darkSubHead
+                            ? AppColors.profileDarkText
                             : AppColors.subheadColor,
                         fontSize: 14,
                         fontFamily: FontFamily.satoshi,
@@ -244,7 +247,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     "Your code was expired..Please resend the code... ",
                     style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.darkSubHead
+                            ? AppColors.profileDarkText
                             : AppColors.subheadColor,
                         fontSize: 14,
                         fontFamily: FontFamily.satoshi,
@@ -256,7 +259,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                     strFormatting(resendTime),
                     style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.darkSubHead
+                            ? AppColors.profileDarkText
                             : AppColors.subheadColor,
                         fontSize: 14,
                         fontFamily: FontFamily.satoshi,
@@ -289,15 +292,28 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
             }
           });
         },
-        child: const Text(
-          "Resend Code",
-          style: TextStyle(
-            color: AppColors.dotColor,
-            fontSize: 14,
-            fontFamily: FontFamily.satoshi,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        child: resendTime != 0
+            ? Text(
+                "Resend Code",
+                style: TextStyle(
+                  color: AppColors.dotColor,
+                  fontSize: 14,
+                  fontFamily: FontFamily.satoshi,
+                  fontWeight: FontWeight.w500,
+                ),
+              )
+            : WidgetAnimator(
+                atRestEffect: WidgetRestingEffects.size(),
+                child: const Text(
+                  "Resend Code",
+                  style: TextStyle(
+                    color: AppColors.dotColor,
+                    fontSize: 14,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
       ),
     );
   }
@@ -317,49 +333,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   ? 70
                   : double.infinity,
               text: "Verify Otp",
-              onPressed: () async {
-                FocusManager.instance.primaryFocus?.unfocus();
-                SharedPreferences pref = await SharedPreferences.getInstance();
-                setState(() {
-                  otp = _fieldOne.text +
-                      _fieldTwo.text +
-                      _fieldThree.text +
-                      _fieldFour.text;
-                });
-                setState(() {
-                  isLoading = true;
-                });
-                value
-                    .verifyEmail(
-                  widget.email,
-                  otp!,
-                )
-                    .then((val) {
-                  if (val["statusCode"] == 200) {
-                      Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) => CongratsScreen(email: widget.email,
-                                          password: widget.password,)),
-                    );
-                    setState(() {
-                      isLoading = false;
-                    });
-                    print(val);
-                  } else {
-                    setState(() {
-                      isLoading = false;
-                      print(val['errorMessage']);
-                    });
-                  }
-                });
-                /* if (_formStore.canLogin) {
-                DeviceUtils.hideKeyboard(context);
-                _userStore.login(
-                    _userEmailController.text, _passwordController.text);
-              } else {
-                _showErrorMessage('Please fill in all fields');
-              }*/
-              },
+              onPressed:  _verifyOtp,
               buttonColor: AppColors.elevatedColor,
               textColor: Colors.white,
             );
@@ -367,5 +341,57 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
         ),
       ),
     );
+  }
+
+  bool allFieldsFilled = false;
+
+  Future<bool> validate() async {
+    setState(() {
+      if (_fieldOne.text.isEmpty &
+          _fieldTwo.text.isEmpty &
+          _fieldThree.text.isEmpty &
+          _fieldFour.text.isEmpty) {
+        allFieldsFilled = true;
+      }
+    });
+    return allFieldsFilled;
+  }
+
+  void _verifyOtp() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    setState(() {
+      otp =
+          _fieldOne.text + _fieldTwo.text + _fieldThree.text + _fieldFour.text;
+    });
+   
+      setState(() {
+        isLoading = true;
+      });
+
+      final signInProvider =
+          Provider.of<SignInProvider>(context, listen: false);
+      signInProvider.verifyEmail(widget.email, otp!).then((val) {
+        if (val["statusCode"] == 200) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => CongratsScreen(
+                email: widget.email,
+                password: widget.password,
+              ),
+            ),
+          );
+        }
+        setState(() {
+          isLoading = false;
+        });
+      });
+  
+  }
+
+  @override
+  void dispose() {
+    
+    super.dispose();
   }
 }

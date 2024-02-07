@@ -56,6 +56,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       backgroundColor: Theme.of(context).brightness == Brightness.dark? AppColors.darkThemeback:AppColors.lightThemeback,
       primary: true,
       appBar: CustomAppBar(
+         isIcon: false,
         isProgress: true,
         step: 2,
         isBoarder: false,

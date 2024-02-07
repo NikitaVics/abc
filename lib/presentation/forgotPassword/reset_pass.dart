@@ -100,6 +100,7 @@ class ResetPassScreenState extends State<ResetPassScreen> {
               : AppColors.lightThemeback,
           primary: true,
           appBar: const CustomAppBar(
+             isIcon: false,
             isBoarder: true,
             title: "Forgot Password",
             isProgress: false,

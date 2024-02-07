@@ -94,6 +94,7 @@ class LoginScreenState extends State<LoginScreen> {
                 : AppColors.lightThemeback,
             primary: true,
             appBar: const CustomAppBar(
+               isIcon: false,
               isBoarder: true,
               title: "Login",
               isProgress: false,
@@ -223,7 +224,7 @@ class LoginScreenState extends State<LoginScreen> {
 
   Widget _buildUserIdField() {
     return TextFieldWidget(
-      read: false,
+      read:isLoading?true: false,
       hint: 'E-Mail/UserName',
       inputType: TextInputType.emailAddress,
       hintColor: Theme.of(context).brightness == Brightness.dark
@@ -251,7 +252,8 @@ class LoginScreenState extends State<LoginScreen> {
 
   Widget _buildPasswordField() {
     return TextFieldWidget(
-      read: false,
+      read:     isLoading?true: false,
+
       hint: "Password",
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
@@ -422,7 +424,9 @@ class LoginScreenState extends State<LoginScreen> {
               text: "Login",
               onPressed:
                   passwordError & emailError ? () {} : loginButtonPressed,
-              buttonColor: AppColors.elevatedColor,
+              buttonColor: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.darkEditColor
+                              : AppColors.elevatedColor,
               textColor: Colors.white,
             );
           }),

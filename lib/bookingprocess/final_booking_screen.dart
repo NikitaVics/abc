@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:math';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
@@ -14,6 +16,7 @@ import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/conf
 import 'package:tennis_court_booking_app/bottomnavbar/bottom_navbar.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/mybookings/provider/upComing_provider.dart';
 import 'package:tennis_court_booking_app/provider/booking_response_provider.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
@@ -38,11 +41,13 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
 
   //SignInProvider? provider;
   String? tokens;
+  bool isLoading = false;
   @override
   void initState() {
     super.initState();
 
     _fetchBookingResponse();
+    _fetchUpcomingData();
   }
 
   void _fetchBookingResponse() async {
@@ -50,6 +55,13 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
     await context
         .read<BookResultShowProvider>()
         .fetchBookResult(tokens!, widget.id);
+  }
+
+  void _fetchUpcomingData() async {
+    tokens = await SharePref.fetchAuthToken();
+    final upComingProvider =
+        Provider.of<UpcomingBookProvider>(context, listen: false);
+    upComingProvider.fetchupComingData(tokens!);
   }
 
   final List<String> selectedCourts = [];
@@ -60,7 +72,13 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
   String name = "";
 
   Future _onWilPop() async {
-    Navigator.pop(context);
+      Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BottomNavBar(initial: 0),
+                      ),
+                    );
+                    context.read<BookResultShowProvider>().clearStateList();
   }
 
   @override
@@ -72,10 +90,13 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
         },
         child: MediaQuery(
           data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            primary: true,
-            body: _buildBody(),
+          child: AbsorbPointer(
+            absorbing: isLoading,
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              primary: true,
+              body: _buildBody(),
+            ),
           ),
         ),
       );
@@ -84,20 +105,24 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
 
   // body methods:--------------------------------------------------------------
   Widget _buildBody() {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      decoration: BoxDecoration(
-      color: Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkThemeback
-          : const Color(0xFF259445)
-      ),
-      child: Column(
-        children: [
-          Expanded(child: _buildRightSide()),
-          _buildSignInButton(),
-        ],
-      ),
+    return Stack(
+      children: [
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkThemeback
+                  : const Color(0xFF259445)),
+          child: Column(
+            children: [
+              Expanded(child: _buildRightSide()),
+              _buildSignInButton(),
+            ],
+          ),
+        ),
+        
+      ],
     );
   }
 
@@ -151,12 +176,12 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                     );
                     context.read<BookResultShowProvider>().clearStateList();
                   },
-                  icon:  Icon(
+                  icon: Icon(
                     Icons.close,
                     size: 25,
                     color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.headingTextColor
-                      : Colors.white,
+                        ? AppColors.headingTextColor
+                        : Colors.white,
                   )),
             ],
           ),
@@ -391,16 +416,16 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                             borderRadius: BorderRadius.circular(10.58),
                             border: Border.all(
                                 color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? const Color.fromRGBO(255, 255, 255, 0.10)
-                                            : const Color.fromRGBO(0, 0, 0, 0.1),
+                                        Brightness.dark
+                                    ? const Color.fromRGBO(255, 255, 255, 0.10)
+                                    : const Color.fromRGBO(0, 0, 0, 0.1),
                                 width: 0.88),
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                               Row(
+                              Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -409,9 +434,9 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                     'Team',
                                     style: TextStyle(
                                       color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? Colors.white
-                                            : Colors.black,
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black,
                                       fontSize: 15.86,
                                       fontFamily: FontFamily.satoshi,
                                       fontWeight: FontWeight.w700,
@@ -423,13 +448,14 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                     'Edit team',
                                     style: TextStyle(
                                       color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? AppColors.darkEditColor
-                                            : AppColors.dotColor,
-                                      decorationColor:Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? AppColors.darkEditColor
-                                            : AppColors.dotColor,
+                                              Brightness.dark
+                                          ? AppColors.darkEditColor
+                                          : AppColors.dotColor,
+                                      decorationColor:
+                                          Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? AppColors.darkEditColor
+                                              : AppColors.dotColor,
                                       fontSize: 12.34,
                                       fontFamily: FontFamily.satoshi,
                                       fontWeight: FontWeight.w700,
@@ -468,11 +494,12 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                           SizedBox(width: 10.58),
                                           Text(
                                             courtData.userName,
-                                            style:  TextStyle(
-                                              color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? AppColors.profileDarkText
-                                            : Colors.black,
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.dark
+                                                  ? AppColors.profileDarkText
+                                                  : Colors.black,
                                               fontSize: 13.34,
                                               fontFamily: FontFamily.satoshi,
                                               fontWeight: FontWeight.w400,
@@ -515,11 +542,11 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 17),
-                        child:
-                           MySeparator(color:  Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? AppColors.darkAppBarboarder
-                                            : AppColors.appbarBoarder),
+                        child: MySeparator(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.darkAppBarboarder
+                                    : AppColors.appbarBoarder),
                       ),
                       Padding(
                         padding:
@@ -527,10 +554,10 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                         child: Container(
                           height: 190,
                           child: QrImageView(
-                            foregroundColor: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? AppColors.headingTextColor
-                                            : AppColors.allHeadColor,
+                            foregroundColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.allHeadColor,
                             data: courtData.bookingId.toString(),
                             version: 1,
                             size: 190,
@@ -567,13 +594,14 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      height: 100,
-                      child:Center(
-                        child: CircularProgressIndicator(color: Theme.of(context).brightness == Brightness.dark
+                        height: 100,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
                                   ? AppColors.darkEditColor
                                   : Colors.white),
-                      )
-                    ),
+                        )),
                     SizedBox(
                       height: 5,
                     ),
@@ -611,22 +639,31 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        CircleAvatar(
+       memberImageUrl.isNotEmpty? CircleAvatar(
           radius: 14.1,
-          backgroundImage: NetworkImage(
-            memberImageUrl.isNotEmpty
-                ? memberImageUrl
-                : "assets/images/Profile1.png",
-          ),
+          backgroundImage:  NetworkImage(
+            memberImageUrl
+              
+          )  
+        ): CircleAvatar(
+          radius: 14.1,
+          backgroundImage: Theme.of(context).brightness == Brightness.dark
+            ? AssetImage(
+                "assets/images/darkavat.png",
+             
+              )
+            :AssetImage(
+                "assets/images/userTeam.png",
+               
+              )
         ),
         SizedBox(width: 10.58),
         Text(
           memberName.isNotEmpty ? memberName : "",
           style: TextStyle(
-            color:  Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? AppColors.profileDarkText
-                                            : Colors.black,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.profileDarkText
+                : Colors.black,
             fontSize: 13.34,
             fontFamily: FontFamily.satoshi,
             fontWeight: FontWeight.w400,
@@ -653,8 +690,119 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
             isLoading: false,
             text: "Cancel Booking",
             onPressed: () async {
-              
-             /* Navigator.push(
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  surfaceTintColor:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.hintColor
+                          : AppColors.homeBack,
+                  backgroundColor:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.darkThemeback
+                          : AppColors.homeBack,
+                  title: Text(
+                    "Cancel Booking",
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.headingTextColor
+                          : AppColors.logoutColor,
+                      fontSize: 24,
+                      fontFamily: FontFamily.satoshi,
+                      fontWeight: FontWeight.w700,
+                      height: 32 / 24,
+                    ),
+                  ),
+                  content:isLoading?Text(
+                    "Keep Patience..Caneclling....",
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.profileDarkText
+                          : Color(0xff49454F),
+                      fontSize: 12,
+                      fontFamily: FontFamily.poppins,
+                      fontWeight: FontWeight.w400,
+                      height: 20 / 12,
+                    ),
+                  ): Text(
+                    "You are attempting to cancel your recent booking.",
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.profileDarkText
+                          : Color(0xff49454F),
+                      fontSize: 12,
+                      fontFamily: FontFamily.poppins,
+                      fontWeight: FontWeight.w400,
+                      height: 20 / 12,
+                    ),
+                  ),
+                  actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.of(ctx).pop();
+          },
+          child: Container(
+            color: Colors.transparent,
+            padding: const EdgeInsets.all(12),
+            child: Text(
+              "Cancel",
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.hoverColor
+                    : AppColors.subheadColor,
+                fontSize: 14,
+                fontFamily: FontFamily.roboto,
+                fontWeight: FontWeight.w500,
+                height: 20 / 14,
+              ),
+            ),
+          ),
+        ),
+        TextButton(
+          onPressed: () async {
+        
+                  setState(() {
+                    isLoading = true;
+                  });
+                  await Api.deleteBooking(
+                    tokens!,
+                    bookId!,
+                  );
+                  _fetchUpcomingData();
+                
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const BottomNavBar(initial: 0),
+                    ),
+                  );
+                    setState(() {
+                    isLoading = false;
+                  });
+                  Navigator.of(ctx).pop();
+                },
+          child: Container(
+            color: Colors.transparent,
+            padding: const EdgeInsets.all(12),
+            child: Text(
+              "Confirm",
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkEditColor
+                    : AppColors.dotColor,
+                fontSize: 14,
+                fontFamily: FontFamily.roboto,
+                fontWeight: FontWeight.w500,
+                height: 20 / 14,
+              ),
+            ),
+          ),
+        ),
+      ],
+                ),
+              );
+
+              /* Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
@@ -664,11 +812,11 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
               );*/
             },
             buttonColor: Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkEditColor
-          : Colors.white,
+                ? AppColors.darkEditColor
+                : Colors.white,
             textColor: Theme.of(context).brightness == Brightness.dark
-          ? AppColors.headingTextColor
-          : AppColors.allHeadColor,
+                ? AppColors.headingTextColor
+                : AppColors.allHeadColor,
           ))),
     );
   }
@@ -726,10 +874,10 @@ class HalfCutContainer extends StatelessWidget {
       child: Stack(children: [
         Container(
           height: 560,
-          decoration:  BoxDecoration(
+          decoration: BoxDecoration(
             color: Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkTextInput
-          : Colors.white,
+                ? AppColors.darkTextInput
+                : Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(12)),
             boxShadow: [
               BoxShadow(
@@ -755,9 +903,10 @@ class HalfCutContainer extends StatelessWidget {
             height: 43,
             width: 43,
             decoration: BoxDecoration(
-                shape: BoxShape.circle, color: Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkThemeback
-          : const Color(0xFF259445)),
+                shape: BoxShape.circle,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkThemeback
+                    : const Color(0xFF259445)),
           ),
         ),
         // Positioned circle on the right side
@@ -768,15 +917,17 @@ class HalfCutContainer extends StatelessWidget {
             height: 43,
             width: 43,
             decoration: BoxDecoration(
-                shape: BoxShape.circle, color: Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkThemeback
-          : const Color(0xFF259445)),
+                shape: BoxShape.circle,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkThemeback
+                    : const Color(0xFF259445)),
           ),
         ),
       ]),
     );
   }
 }
+
 class SilentErrorImage extends StatelessWidget {
   final String imageUrl;
   final double width;

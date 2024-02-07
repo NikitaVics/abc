@@ -133,8 +133,8 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
                 ),
               ),
               backgroundColor: Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.darkTextInput
-                  : Colors.white,
+                ? AppColors.darkThemeback
+                : AppColors.homeBack,
               elevation: 0,
             ),
             body: _buildBody(),

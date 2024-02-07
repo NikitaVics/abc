@@ -454,6 +454,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.5.1"
+  flutter_gradient_text:
+    dependency: "direct main"
+    description:
+      name: flutter_gradient_text
+      sha256: "375549aa68c07a2c3ba81870347601c884b5dda4b9a2321fa81c0bca15b9a3f3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   flutter_image_slideshow:
     dependency: "direct main"
     description:
@@ -1314,6 +1322,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.0"
+  widget_and_text_animator:
+    dependency: "direct main"
+    description:
+      name: widget_and_text_animator
+      sha256: dafad1df89f3038643f80853e0eb3a7ffc8a0e2abd9b189bff462d9d76d41bca
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.5"
   win32:
     dependency: transitive
     description:
@@ -1347,5 +1363,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.2.0 <4.0.0"
+  dart: ">=3.2.3 <4.0.0"
   flutter: ">=3.16.0"

@@ -34,16 +34,19 @@ class _CustomElevatedButtonState extends State<CustomElevatedButton> {
       height: widget.height,
       width: widget.width,
       child: ElevatedButton(
-        
+       
         style: ElevatedButton.styleFrom(
+          
           elevation: 0,
           shape: RoundedRectangleBorder(
            
             borderRadius: BorderRadius.circular(8),
           ),
+        
           backgroundColor:
              widget.isLoading? widget.buttonColor:widget.buttonColor, 
-             disabledBackgroundColor: widget.buttonColor
+             disabledBackgroundColor: widget.buttonColor,
+           visualDensity: VisualDensity.standard,
              // Change background color on hover
         ),
         onPressed:widget.isLoading?null: widget.onPressed,

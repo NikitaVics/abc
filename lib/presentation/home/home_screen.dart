@@ -1559,7 +1559,7 @@ class HomeScreenState extends State<HomeScreen>
                                 height: 12,
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark
-                                    ? AppColors.darkSubHead
+                                    ? AppColors.profileDarkText
                                     : AppColors.subheadColor,
                               ),
                               SizedBox(
@@ -1568,7 +1568,10 @@ class HomeScreenState extends State<HomeScreen>
                               Text(
                                 "${month}".toUpperCase(),
                                 style: TextStyle(
-                                  color: Colors.black.withOpacity(0.5),
+                                  color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.profileDarkText
+                                    :Colors.black.withOpacity(0.5),
                                   fontSize: 10,
                                   fontFamily: FontFamily.roboto,
                                   fontWeight: FontWeight.w400,
@@ -1578,7 +1581,10 @@ class HomeScreenState extends State<HomeScreen>
                               Text(
                                 " ${day}",
                                 style: TextStyle(
-                                  color: Colors.black.withOpacity(0.5),
+                                  color:  Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.profileDarkText
+                                    :Colors.black.withOpacity(0.5),
                                   fontSize: 10,
                                   fontFamily: FontFamily.roboto,
                                   fontWeight: FontWeight.w400,
@@ -1588,7 +1594,10 @@ class HomeScreenState extends State<HomeScreen>
                               Text(
                                 " ${timePart} ${dateTime.hour < 12 ? 'am' : 'pm'}",
                                 style: TextStyle(
-                                  color: Colors.black.withOpacity(0.5),
+                                  color:  Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.profileDarkText
+                                    :Colors.black.withOpacity(0.5),
                                   fontSize: 10,
                                   fontFamily: FontFamily.roboto,
                                   fontWeight: FontWeight.w400,
@@ -1610,10 +1619,10 @@ class HomeScreenState extends State<HomeScreen>
                               Image.asset(
                                 "assets/images/Group3.png",
                                 height: 12,
-                                color: Theme.of(context).brightness ==
+                                color:  Theme.of(context).brightness ==
                                         Brightness.dark
-                                    ? AppColors.darkSubHead
-                                    : Colors.black.withOpacity(0.5),
+                                    ? AppColors.profileDarkText
+                                    :Colors.black.withOpacity(0.5),
                               ),
                               SizedBox(
                                 width: 7,
@@ -1621,7 +1630,10 @@ class HomeScreenState extends State<HomeScreen>
                               Text(
                                 " Team Members",
                                 style: TextStyle(
-                                  color: Colors.black.withOpacity(0.5),
+                                  color:  Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.profileDarkText
+                                    :Colors.black.withOpacity(0.5),
                                   fontSize: 10,
                                   fontFamily: FontFamily.roboto,
                                   fontWeight: FontWeight.w400,
@@ -2283,11 +2295,17 @@ class SilentErrorImage extends StatelessWidget {
       errorBuilder:
           (BuildContext context, Object error, StackTrace? stackTrace) {
         // Handle the error, e.g., display a placeholder image
-        return Image.asset(
-          "assets/images/userImage.png",
-          width: width,
-          height: height,
-        );
+        return Theme.of(context).brightness == Brightness.dark
+            ? Image.asset(
+                "assets/images/darkavat.png",
+                width: width,
+                height: height,
+              )
+            : Image.asset(
+                "assets/images/userTeam.png",
+                width: width,
+                height: height,
+              );
       },
     );
   }

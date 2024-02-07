@@ -91,6 +91,7 @@ bool allowNavigation = false;
               : AppColors.lightThemeback,
           primary: true,
           appBar: const CustomAppBar(
+             isIcon: false,
             isBoarder: true,
             title: "Login with OTP",
             isProgress: false,

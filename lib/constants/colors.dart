@@ -55,4 +55,5 @@ class AppColors {
   static const successColor = Color(0xff27AE60);
   static const backDarkAnnounce = Color(0xff1C1C1C);
   static const darkEditColor = Color(0xff62D181);
+  static const logoutColor = Color(0xff1D1B20);
 }

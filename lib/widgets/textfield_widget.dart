@@ -102,7 +102,9 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
                 widget.isObscure && !_isPasswordVisible, // Toggle visibility
             maxLength: 50,
             keyboardType: widget.inputType,
-            cursorColor: AppColors.focusCursorColor,
+            cursorColor: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.booklight
+                          : AppColors.focusCursorColor,
             style: Theme.of(context).textTheme.bodyLarge,
             decoration: InputDecoration(
               hintText: widget.hint,
@@ -133,7 +135,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
                             ? Icons.visibility
                             : Icons.visibility_off,
                         color: Theme.of(context).brightness == Brightness.dark
-                            ? AppColors.darkSubHead
+                            ? AppColors.darkAppBarboarder
                             : AppColors.darkSubHead,
                       ),
                       onPressed: () {

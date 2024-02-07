@@ -118,6 +118,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
                 : AppColors.lightThemeback,
             primary: true,
             appBar: const CustomAppBar(
+               isIcon: false,
               isBoarder: false,
               title: "Register as Member",
               isProgress: true,
@@ -206,36 +207,17 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
         Text(
           "Register as Member",
           style: TextStyle(
-            color: AppColors.allHeadColor,
+            color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.headingTextColor
+                              : AppColors.allHeadColor,
             fontSize: 32,
             fontFamily: FontFamily.satoshi,
             fontWeight: FontWeight.w700,
             height: 40 / 32,
           ),
         ),
-        SizedBox(height: 8.0),
-        Row(
-          children: [
-            Text(
-              "If you need any support",
-              style: TextStyle(
-                color: AppColors.subheadColor,
-                fontSize: 12,
-                fontFamily: FontFamily.satoshi,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-            Text(
-              " Click Here",
-              style: TextStyle(
-                color: AppColors.dotColor,
-                fontSize: 12,
-                fontFamily: FontFamily.satoshi,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
-        )
+      
+       
       ],
     );
   }
@@ -385,7 +367,9 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
           Visibility(
             visible: !isPasswordValids,
             child: Card(
-              color: AppColors.textInputField,
+              color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.darkTextInput
+                              : AppColors.textInputField,
               child: Column(
                 children: [
                   for (int i = 0; i < 5; i++)
@@ -409,7 +393,9 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
                                   passwordConditions[i]
                                       ? Icons.check
                                       : Icons.clear,
-                                  color: Colors.white,
+                                  color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.allHeadColor
+                              : AppColors.headingTextColor,
                                   size: 15,
                                 ),
                               ),
@@ -417,7 +403,12 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
                             const SizedBox(
                               width: 10,
                             ),
-                            Text(_getConditionText(i)),
+                            Text(_getConditionText(i),
+                            style: TextStyle(
+                              color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.headingTextColor
+                              : AppColors.allHeadColor,
+                            ),),
                           ],
                         ),
                         const SizedBox(height: 5),
@@ -485,7 +476,9 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
           Text(
             "Already a member ?",
             style: TextStyle(
-              color: AppColors.allHeadColor,
+              color: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.profileDarkText
+                              : AppColors.allHeadColor,
               fontSize: 14,
               fontFamily: FontFamily.satoshi,
               fontWeight: FontWeight.w500,
@@ -495,7 +488,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => LoginScreen(),
+                  builder: (context) => const LoginScreen(),
                 ),
               );
             },
@@ -564,7 +557,9 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
                 _showErrorMessage('Please fill in all fields');
               }*/
               },
-              buttonColor: AppColors.elevatedColor,
+              buttonColor: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.darkEditColor
+                              : AppColors.elevatedColor,
               textColor: Colors.white,
             )
          

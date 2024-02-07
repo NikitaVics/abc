@@ -104,76 +104,79 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
         },
         child: MediaQuery(
           data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-          child: Scaffold(
-            backgroundColor: Theme.of(context).brightness == Brightness.dark
-                ? AppColors.darkThemeback
-                : AppColors.lightThemeback,
-            primary: true,
-            appBar: AppBar(
-              toolbarHeight: 70,
-              automaticallyImplyLeading: false,
-              title: Padding(
-                padding: const EdgeInsets.only(left: 0),
-                child: Container(
-                  // height: 100,
-                  decoration: BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? AppColors.darkAppBarboarder
-                        : AppColors.appbarBoarder,
-                    width: 1.0,
-                  ))),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 15, top: 5),
-                        child: Row(
-                          children: [
-                            IconButton(
-                              padding: EdgeInsets.zero,
-                              onPressed: () {
-                                Navigator.pop(context, null);
-                              },
-                              icon: Image.asset(
-                                "assets/images/leftIcon.png",
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.headingTextColor
-                                    : AppColors.profileHead,
-                                //width: 18,
-                                height: 26,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 106,
-                            ),
-                            Text(
-                              widget.courtName,
-                              style: TextStyle(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.headingTextColor
-                                    : AppColors.profileHead,
-                                fontSize: 20,
-                                fontFamily: FontFamily.satoshi,
-                                fontWeight: FontWeight.w700,
-                                height: 32 / 20,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+          child: AbsorbPointer(
+            absorbing: isProcessing,
+            child: Scaffold(
               backgroundColor: Theme.of(context).brightness == Brightness.dark
                   ? AppColors.darkThemeback
                   : AppColors.lightThemeback,
-              elevation: 0,
+              primary: true,
+              appBar: AppBar(
+                toolbarHeight: 70,
+                automaticallyImplyLeading: false,
+                title: Padding(
+                  padding: const EdgeInsets.only(left: 0),
+                  child: Container(
+                    // height: 100,
+                    decoration: BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.darkAppBarboarder
+                          : AppColors.appbarBoarder,
+                      width: 1.0,
+                    ))),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 15, top: 5),
+                          child: Row(
+                            children: [
+                              IconButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: () {
+                                  Navigator.pop(context, null);
+                                },
+                                icon: Image.asset(
+                                  "assets/images/leftIcon.png",
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : AppColors.profileHead,
+                                  //width: 18,
+                                  height: 26,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 106,
+                              ),
+                              Text(
+                                widget.courtName,
+                                style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : AppColors.profileHead,
+                                  fontSize: 20,
+                                  fontFamily: FontFamily.satoshi,
+                                  fontWeight: FontWeight.w700,
+                                  height: 32 / 20,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                backgroundColor: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkThemeback
+                    : AppColors.lightThemeback,
+                elevation: 0,
+              ),
+              body: _buildBody(),
             ),
-            body: _buildBody(),
           ),
         ),
       );

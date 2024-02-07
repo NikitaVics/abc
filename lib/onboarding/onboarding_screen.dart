@@ -104,21 +104,26 @@ class OnboardingScreenState extends State<OnboardingScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  CustomElevatedButton(
-                    height: 60,
-                    width: 153,
-                    text: 'Login',
-                    isLoading: false,
-                    onPressed: () {
+                  TextButton( onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => const LoginScreen(),
                         ),
                       );
                     },
-                    buttonColor: Colors.white,
-                    textColor: AppColors.loginButtonColor,
-                  ),
+                  child:Container(
+                    color: Colors.transparent,
+                    child: Text("Login",
+                     style: TextStyle(
+            color:AppColors.loginButtonColor,
+            fontSize: 14,
+            fontFamily: FontFamily.satoshi,
+            fontWeight: FontWeight.w700,
+            height: 24 / 14,
+          ),
+                    ),
+                  )),
+                  
                   CustomElevatedButton(
                     height: 60,
                     width: 153,

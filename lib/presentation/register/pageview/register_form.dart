@@ -75,7 +75,7 @@ class _RegisterFormState extends State<RegisterForm> {
     _ageNode = FocusNode();
 
     _phonePrefixNode = FocusNode();
-   
+
     _dobFocusNode.addListener(() {
       validateDOB();
     });
@@ -106,6 +106,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 : AppColors.lightThemeback,
             primary: true,
             appBar: const CustomAppBar(
+              isIcon: true,
               isBoarder: false,
               title: "Register as Member",
               isProgress: true,
@@ -166,39 +167,44 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   Widget _buildRightSide() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(height: 6.0),
-            _buildLoginText(),
-            SizedBox(height: 24.0),
-            _buildUserName(),
-            //_buildUserIdField(),
-
-            // _buildUserDOB(),
-            _buildUserphone(),
-            _buildUserGender(),
-            // _buildPasswordField(),
-            //_buildUploadDocumentField(context),
-            // _buildNotMemberText(),
-          ],
+    return AbsorbPointer(
+      absorbing: isLoading,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(height: 6.0),
+              _buildLoginText(),
+              SizedBox(height: 24.0),
+              _buildUserName(),
+              //_buildUserIdField(),
+      
+              // _buildUserDOB(),
+              _buildUserphone(),
+              _buildUserGender(),
+              // _buildPasswordField(),
+              //_buildUploadDocumentField(context),
+              // _buildNotMemberText(),
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildLoginText() {
-    return const Align(
+    return Align(
       alignment: Alignment.topLeft,
       child: Text(
         "Tell Us About You",
         style: TextStyle(
-          color: AppColors.allHeadColor,
+          color: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.headingTextColor
+              : AppColors.allHeadColor,
           fontSize: 32,
           fontFamily: FontFamily.satoshi,
           fontWeight: FontWeight.w700,
@@ -263,15 +269,13 @@ class _RegisterFormState extends State<RegisterForm> {
               if (selectedAge != null) {
                 setState(() {
                   ageController.text = selectedAge;
-                  ageError = false; // Reset the error flag
+                  ageError = false;
+                   validateAge(); // Reset the error flag
                 });
               }
             },
             onChanged: (value) {
-              setState(() {
-                ageError = false; // Reset the error flag
-              });
-              validateAge(); // Trigger validation on text change
+              
             },
 
             errorText: ageError ? "Please enter age" : " ",
@@ -306,17 +310,13 @@ class _RegisterFormState extends State<RegisterForm> {
               if (selectedGender != null) {
                 setState(() {
                   genderController.text = selectedGender;
-                  genderError = false; // Reset the error flag
+                  genderError = false;
+                   validateGender(); // Reset the error flag
                 });
+                
               }
             },
-            onChanged: (value) {
-              setState(() {
-                genderError = false; // Reset the error flag
-              });
-              validateGender(); // Trigger validation on text change
-            },
-
+          
             errorText: genderError ? "Please enter gender" : " ",
             isIcon: true,
           ),
@@ -345,6 +345,9 @@ class _RegisterFormState extends State<RegisterForm> {
     );
 
     final String? selectedGender = await showMenu<String>(
+      surfaceTintColor:  Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.darkTextInput
+                              : AppColors.textInputField,
       context: context,
       position: position,
       items: ['Male', 'Female', 'Not Disclosed'].map((String gender) {
@@ -357,6 +360,8 @@ class _RegisterFormState extends State<RegisterForm> {
 
     if (selectedGender != null) {
       genderController.text = selectedGender;
+      genderError = false;
+      validateGender();
       // Handle the selected gender as needed
       print('Selected Gender: $selectedGender');
     }
@@ -383,7 +388,7 @@ class _RegisterFormState extends State<RegisterForm> {
     final String? selectedAge = await showMenu<String>(
       context: context,
       position: position,
-      items: List.generate(100, (index) => (index + 1).toString())
+      items:  List.generate(61, (index) => (index + 10).toString())
           .map((String age) {
         return PopupMenuItem<String>(
           value: age,
@@ -394,6 +399,8 @@ class _RegisterFormState extends State<RegisterForm> {
 
     if (selectedAge != null) {
       ageController.text = selectedAge;
+        ageError = false;
+                   validateAge();
       // Handle the selected gender as needed
       print('Selected age: $selectedAge');
     }
@@ -524,72 +531,77 @@ class _RegisterFormState extends State<RegisterForm> {
             ),
           ),
         ),*/
-        PrefixPhoneTextFieldWidget(
-          width: MediaQuery.of(context).size.width / 4,
-          read: false,
-          hint: '+ ',
-          inputType: TextInputType.none,
-          focusNode: _phonePrefixNode,
-          hintColor: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkhint
-              : AppColors.hintColor,
-          // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
-          textController: phonePrefixController,
-          inputAction: TextInputAction.next,
-          errorBorderColor: phoneprefixError
-              ? AppColors.errorColor // Border color for validation error
-              : AppColors.textInputField,
-          focusBorderColor: phoneprefixError
-              ? AppColors.errorColor
-              : AppColors.focusTextBoarder,
-          autoFocus: false,
-          onSuffixIconPressed: () async {
-            FocusScope.of(context).requestFocus(_phonePrefixNode);
-            showCountryPicker(
-              context: context,
-              showPhoneCode: true,
-              onSelect: (Country country) {
-                phonePrefixController.text = "+ ${country.phoneCode}";
-              },
-            );
-          },
-          onChanged: (value) {
-            setState(() {
-              phoneprefixError = false; // Reset the error flag
-            });
-            validatePhonePrefix(); // Trigger validation on text change
-          },
-          errorText: phoneprefixError ? phoneprefixErrorText : " ",
-          isIcon: true,
+        Expanded(
+          flex: 1,
+          child: GenderTextFieldWidget(
+            read: false,
+            hint: '+ ',
+            inputType: TextInputType.none,
+            focusNode: _phonePrefixNode,
+            hintColor: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkhint
+                : AppColors.hintColor,
+            // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
+            textController: phonePrefixController,
+            inputAction: TextInputAction.next,
+            errorBorderColor: phoneprefixError
+                ? AppColors.errorColor // Border color for validation error
+                : AppColors.textInputField,
+            focusBorderColor: phoneprefixError
+                ? AppColors.errorColor
+                : AppColors.focusTextBoarder,
+            autoFocus: false,
+            onSuffixIconPressed: () async {
+              FocusScope.of(context).requestFocus(_phonePrefixNode);
+              showCountryPicker(
+                context: context,
+                showPhoneCode: true,
+                onSelect: (Country country) {
+                  phonePrefixController.text = "+ ${country.phoneCode}";
+                   setState(() {
+                phoneprefixError = false; // Reset the error flag
+              });
+              validatePhonePrefix(); 
+                },
+              );
+            },
+            onChanged: (value) {
+             // Trigger validation on text change
+            },
+            errorText: phoneprefixError ? phoneprefixErrorText : " ",
+            isIcon: true,
+          ),
         ),
         SizedBox(
           width: 8,
         ),
         Expanded(
+            flex: 2,
             child: TextFieldWidget(
-          read: false,
-          hint: 'Phone No.',
-          inputType: TextInputType.phone,
-          hintColor: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkhint
-              : AppColors.hintColor,
-          // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
-          textController: _userPhoneController,
-          inputAction: TextInputAction.next,
-          errorBorderColor: phoneError
-              ? AppColors.errorColor // Border color for validation error
-              : AppColors.textInputField,
-          focusBorderColor:
-              phoneError ? AppColors.errorColor : AppColors.focusTextBoarder,
-          autoFocus: false,
-          onChanged: (value) {
-            setState(() {
-              phoneError = false; // Reset the error flag
-            });
-            validatePhone(); // Trigger validation on text change
-          },
-          errorText: phoneError ? phoneErrorText : " ",
-        )),
+              read: false,
+              hint: 'Phone No.',
+              inputType: TextInputType.phone,
+              hintColor: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkhint
+                  : AppColors.hintColor,
+              // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
+              textController: _userPhoneController,
+              inputAction: TextInputAction.next,
+              errorBorderColor: phoneError
+                  ? AppColors.errorColor // Border color for validation error
+                  : AppColors.textInputField,
+              focusBorderColor: phoneError
+                  ? AppColors.errorColor
+                  : AppColors.focusTextBoarder,
+              autoFocus: false,
+              onChanged: (value) {
+                setState(() {
+                  phoneError = false; // Reset the error flag
+                });
+                validatePhone(); // Trigger validation on text change
+              },
+              errorText: phoneError ? phoneErrorText : " ",
+            )),
       ],
     );
 
@@ -796,127 +808,134 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   Widget _buildSignInButton() {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 19),
-        child: FocusScope(
-          // Manage keyboard focus
-          child: Consumer<SignInProvider>(builder: (context, value, child) {
-            return SizedBox(
+    return AbsorbPointer(
+      absorbing: isLoading,
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 19),
+          child: FocusScope(
+            
+            // Manage keyboard focus
+            child: Consumer<SignInProvider>(builder: (context, value, child) {
+               // FocusManager.instance.primaryFocus?.unfocus();
+              return SizedBox(
+                height: 60,
+                width: MediaQuery.of(context).orientation == Orientation.landscape
+                    ? 70
+                    : double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(
+                        width: 1.0,
+                        color: AppColors.elevatedColor,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    disabledBackgroundColor: AppColors.disableButtonColor,
+                    disabledForegroundColor: AppColors.disableButtonTextColor,
+                    backgroundColor: AppColors
+                        .elevatedColor, // Change background color on hover
+                  ),
+                  onPressed: isLoading  ? (){
+                      //FocusManager.instance.primaryFocus?.unfocus();
+                  }:() async {
+                    
+                    FocusManager.instance.primaryFocus?.unfocus();
+                    bool nameValid = await validateName();
+      
+                    bool phoneValid = await validatePhone();
+                    bool ageValid = await validateAge();
+                    bool prefValid = await validatePhonePrefix();
+                    bool isGender = await validateGender();
+      
+                    if (nameValid && phoneValid && ageValid && isGender &&prefValid) {
+                      setState(() {
+                        isLoading = true;
+                      });
+      
+                      value
+                          .registerApi(
+                              widget.email,
+                              widget.password,
+                              _userNameController.text,
+                              int.parse(ageController.text),
+                              genderController.text,
+                              phonePrefixController.text,
+                              _userPhoneController.text)
+                          .then((val) {
+                        if (val['statusCode'] == 200) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => VerifyEmailScreen(
+                                      email: widget.email,
+                                      password: widget.password,
+                                    )),
+                          );
+                          setState(() {
+                            isLoading = false;
+                          });
+                          print("yup");
+                        } else {
+                          setState(() {
+                            isLoading = false;
+                          });
+                          print("false");
+                        }
+                      });
+                    }
+                  },
+                  child: isLoading
+                      ? const SizedBox(
+                          height: 24,
+                          child: SpinKitThreeBounce(
+                            // Use the spinner from Spinkit you prefer
+      
+                            color: Colors.white,
+                            size: 24.0,
+                          ),
+                        )
+                      : const Text(
+                          "Next",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w700,
+                            height: 24 / 14,
+                          ),
+                        ),
+                ),
+              );
+            }),
+      
+            /*CustomElevatedButton(
+              isLoading: false,
               height: 60,
               width: MediaQuery.of(context).orientation == Orientation.landscape
                   ? 70
                   : double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(
-                      width: 1.0,
-                      color: AppColors.elevatedColor,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  disabledBackgroundColor: AppColors.disableButtonColor,
-                  disabledForegroundColor: AppColors.disableButtonTextColor,
-                  backgroundColor: AppColors
-                      .elevatedColor, // Change background color on hover
-                ),
-                onPressed:  () async {
-                        FocusManager.instance.primaryFocus?.unfocus();
-                        bool nameValid = await validateName();
-
-                        bool phoneValid = await validatePhone();
-                        bool ageValid = await validateAge();
-
-                        bool isGender = await validateGender();
-
-                        if (nameValid && phoneValid && ageValid && isGender) {
-                          setState(() {
-                            isLoading = true;
-                          });
-                        
-
-                          value
-                              .registerApi(
-                                  widget.email,
-                                  widget.password,
-                                  _userNameController.text,
-                                  int.parse(ageController.text),
-                                  genderController.text,
-                                  phonePrefixController.text,
-                                  _userPhoneController.text)
-                              .then((val) {
-                            if (val['statusCode'] == 200) {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (context) => VerifyEmailScreen(
-                                          email: widget.email,
-                                          password: widget.password,
-                                        )),
-                              );
-                              setState(() {
-                                isLoading = false;
-                              });
-                              print("yup");
-                            } else {
-                              setState(() {
-                                isLoading = false;
-                              });
-                              print("false");
-                            }
-                          });
-                        }
-                      },
-                child: isLoading
-                    ? const SizedBox(
-                        height: 24,
-                        child: SpinKitThreeBounce(
-                          // Use the spinner from Spinkit you prefer
-
-                          color: Colors.white,
-                          size: 24.0,
-                        ),
-                      )
-                    : const Text(
-                        "Next",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontFamily: FontFamily.satoshi,
-                          fontWeight: FontWeight.w700,
-                          height: 24 / 14,
-                        ),
-                      ),
-              ),
-            );
-          }),
-
-          /*CustomElevatedButton(
-            isLoading: false,
-            height: 60,
-            width: MediaQuery.of(context).orientation == Orientation.landscape
-                ? 70
-                : double.infinity,
-            text: "Register Now",
-            onPressed: () async {
-              FocusManager.instance.primaryFocus?.unfocus();
-              bool nameValid = await validateName();
-              bool emailValid = await validateEmail();
-              bool phoneValid = await validatePhone();
-              bool addressValid = await validateAddress();
-              bool dobValid = await validateDOB();
-              if (nameValid &&
-                  emailValid &&
-                  phoneValid &&
-                  addressValid &&
-                  dobValid && isChecked) {
-                print("yes");
-              }
-            },
-            buttonColor: AppColors.elevatedColor,
-            textColor: Colors.white,
-          ),*/
+              text: "Register Now",
+              onPressed: () async {
+                FocusManager.instance.primaryFocus?.unfocus();
+                bool nameValid = await validateName();
+                bool emailValid = await validateEmail();
+                bool phoneValid = await validatePhone();
+                bool addressValid = await validateAddress();
+                bool dobValid = await validateDOB();
+                if (nameValid &&
+                    emailValid &&
+                    phoneValid &&
+                    addressValid &&
+                    dobValid && isChecked) {
+                  print("yes");
+                }
+              },
+              buttonColor: AppColors.elevatedColor,
+              textColor: Colors.white,
+            ),*/
+          ),
         ),
       ),
     );
@@ -995,7 +1014,7 @@ class _RegisterFormState extends State<RegisterForm> {
     setState(() {
       if (_userPhoneController.text.isEmpty) {
         phoneError = true;
-        phoneErrorText = 'Please enter your phone number';
+        phoneErrorText = 'Please enter your contact number';
       } else {
         phoneError = false;
       }

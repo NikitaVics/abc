@@ -756,8 +756,9 @@ class MyBookingScreenState extends State<MyBookingScreen> {
           ),
         ),
         if (index < itemCount - 1)
-          const Divider(
-            color: AppColors.appbarBoarder,
+           Divider(
+            color:  Theme.of(context).brightness == Brightness.dark?AppColors.darkAppBarboarder
+            :AppColors.appbarBoarder,
             thickness: 1,
           ),
       ],
@@ -796,9 +797,19 @@ class SilentErrorImage extends StatelessWidget {
       height: height,
       fit: BoxFit.fill,
       errorBuilder:
-          (BuildContext context, Object exception, StackTrace? stackTrace) {
-        // Return an empty container (or any other widget) to silently handle errors
-        return SizedBox(width: width, height: height);
+          (BuildContext context, Object error, StackTrace? stackTrace) {
+        // Handle the error, e.g., display a placeholder image
+        return Theme.of(context).brightness == Brightness.dark
+            ? Image.asset(
+                "assets/images/darkavat.png",
+                width: width,
+                height: height,
+              )
+            : Image.asset(
+                "assets/images/userTeam.png",
+                width: width,
+                height: height,
+              );
       },
     );
   }

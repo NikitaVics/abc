@@ -83,6 +83,7 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
             : AppColors.lightThemeback,
         primary: true,
         appBar: const CustomAppBar(
+           isIcon: false,
           isBoarder: true,
           title: "Forgot password",
           isProgress: false,

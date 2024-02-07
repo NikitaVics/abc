@@ -19,8 +19,12 @@ class ExampleStepProgressIndicator extends StatelessWidget {
               customSize:(p0, p1) => 3,
               totalSteps: 2,
               currentStep: step,
-              selectedColor: AppColors.confirmValid,
-              unselectedColor: AppColors.nondotcolor,
+              selectedColor: Theme.of(context).brightness == Brightness.dark
+                              ? Color(0xff2CC36B)
+                              : AppColors.confirmValid,
+              unselectedColor:Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.darkTextInput
+                              :  AppColors.nondotcolor,
             ),
           ),
         ],
