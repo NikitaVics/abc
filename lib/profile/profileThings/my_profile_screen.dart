@@ -433,7 +433,8 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                                   }
                                 }
                               : null,
-                          child: TextFieldNonEditable(
+                          child:Theme.of(context).brightness == Brightness.dark
+                          ? TextFieldNonEditable(
                             width: MediaQuery.of(context).size.width / 5.5,
                             focusNode: _focusNode,
                             controller: phonePrefixController,
@@ -443,7 +444,8 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                           ? AppColors.headingTextColor
                           : AppColors.appbarBoarder,
                             fillColor: isEdited
-                                ? AppColors.textInputField
+                                ?  AppColors.darkTextInput
+                          
                                 : Colors.transparent,
                             boarderColor: isEdited
                                 ? AppColors.transparent
@@ -455,7 +457,41 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                                 : Colors.transparent,
                             hintColor: isEdited
                                 ? AppColors.hintColor
-                                : AppColors.subheadColor,
+                                :  Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.profileDarkText
+                          : AppColors.subheadColor,
+                            hint: isEdited ? "+973 " : prefPhone,
+                            obscure: false,
+                            textInputType: TextInputType.name,
+                            textInputAction: TextInputAction.next,
+                            editable: false,
+                          ):TextFieldNonEditable(
+                            width: MediaQuery.of(context).size.width / 5.5,
+                            focusNode: _focusNode,
+                            controller: phonePrefixController,
+                            focusBorderColor: isEdited
+                                ? AppColors.focusTextBoarder
+                                : Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.headingTextColor
+                          : AppColors.appbarBoarder,
+                            fillColor: isEdited
+                                ? Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.darkTextInput
+                          : AppColors.textInputField
+                                : Colors.transparent,
+                            boarderColor: isEdited
+                                ? AppColors.transparent
+                                : Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.darkAppBarboarder
+                          : AppColors.appbarBoarder,
+                            color: isEdited
+                                ? AppColors.textInputField
+                                : Colors.transparent,
+                            hintColor: isEdited
+                                ? AppColors.hintColor
+                                :  Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.profileDarkText
+                          : AppColors.subheadColor,
                             hint: isEdited ? "+973 " : prefPhone,
                             obscure: false,
                             textInputType: TextInputType.name,
@@ -838,11 +874,15 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                   ? 70
                   : double.infinity,
               isLoading: isLoading,
-              text: "Update",
+              text: "Update Profile",
               onPressed:
                   passwordError & emailError ? () {} : loginButtonPressed,
-              buttonColor: AppColors.elevatedColor,
-              textColor: Colors.white,
+              buttonColor: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.darkEditColor
+                              : AppColors.elevatedColor,
+              textColor: Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.allHeadColor
+                              : Colors.white,
             );
           }),
         ),

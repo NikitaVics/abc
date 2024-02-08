@@ -45,6 +45,7 @@ import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/funky_overlay.dart';
 import 'package:tennis_court_booking_app/widgets/home_appbar.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:ui' as ui;
 
 class HomeScreen extends StatefulWidget {
@@ -259,7 +260,7 @@ class HomeScreenState extends State<HomeScreen>
                                       child: Row(
                                         children: [
                                           Text(
-                                            "Hello",
+                                        (AppLocalizations.of(context)!.hello),
                                             style: TextStyle(
                                               color: Theme.of(context)
                                                           .brightness ==

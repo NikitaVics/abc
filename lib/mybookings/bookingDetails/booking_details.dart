@@ -14,6 +14,7 @@ import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/conf
 import 'package:tennis_court_booking_app/bottomnavbar/bottom_navbar.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/mybookings/provider/upComing_provider.dart';
 import 'package:tennis_court_booking_app/provider/booking_response_provider.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
@@ -43,6 +44,7 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
     super.initState();
 
     _fetchBookingResponse();
+     _fetchUpcomingData();
   }
 
   void _fetchBookingResponse() async {
@@ -51,7 +53,14 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
         .read<BookResultShowProvider>()
         .fetchBookResult(tokens!, widget.id);
   }
+   void _fetchUpcomingData() async {
+    tokens = await SharePref.fetchAuthToken();
+    final upComingProvider =
+        Provider.of<UpcomingBookProvider>(context, listen: false);
+    upComingProvider.fetchupComingData(tokens!);
+  }
 
+bool isLoading = false;
   final List<String> selectedCourts = [];
   int? bookId;
 
@@ -91,7 +100,7 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
                     color: Theme.of(context).brightness == Brightness.dark
                         ? AppColors.darkAppBarboarder
                         : AppColors.appbarBoarder,
-                    width: 2.0,
+                    width: 1.0,
                   ))),
                   child: Column(
                     children: [
@@ -106,6 +115,10 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
                               },
                               icon: Image.asset(
                                 "assets/images/leftIcon.png",
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : AppColors.profileHead,
                                 //width: 18,
                                 height: 26,
                               ),
@@ -146,38 +159,91 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
   // body methods:--------------------------------------------------------------
   Widget _buildBody() {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      decoration: BoxDecoration(
-        color: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkThemeback
-            : AppColors.homeBack,
-      ),
-      child: Column(
-        children: [
-          Expanded(child: _buildRightSide()),
-          _buildSignInButton(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRightSide() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+    return AbsorbPointer(
+      absorbing: isLoading,
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkThemeback
+              : AppColors.homeBack,
+        ),
         child: Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Center(child: _buildBookingSlot()),
+          children: [
+            Expanded(child: _buildRightSide()),
+            _buildSignInButton(),
           ],
         ),
       ),
     );
   }
+
+  Widget _buildRightSide() {
+  return SingleChildScrollView(
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Stack(
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Center(child: _buildBookingSlot()),
+            ],
+          ),
+          if (isLoading)
+            Padding(
+              padding: const EdgeInsets.only(top:80),
+              child: Center(
+                child: Container(
+                  color: Colors.transparent,
+                  child: Center(
+                    child: AlertDialog(
+                     surfaceTintColor: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.hintColor
+                          : AppColors.homeBack,
+                      backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.darkTextInput: AppColors.primaryColor,
+                      title: Text(
+                        "Cancel Booking",
+                        style: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark ? AppColors.headingTextColor : AppColors.logoutColor,
+                          fontSize: 24,
+                          fontFamily: FontFamily.satoshi,
+                          fontWeight: FontWeight.w700,
+                          height: 32 / 24,
+                        ),
+                      ),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkEditColor
+                    : AppColors.dotColor,),
+                          SizedBox(height: 16),
+                          Text(
+                            "Please wait...Request processing, patience on the clock.",
+                            style: TextStyle(
+                              color: Theme.of(context).brightness == Brightness.dark ? AppColors.profileDarkText : Color(0xff49454F),
+                              fontSize: 12,
+                              fontFamily: FontFamily.poppins,
+                              fontWeight: FontWeight.w400,
+                              height: 20 / 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    ),
+  );
+}
 
   String convertTo24HourFormat(String time, String amPm) {
     List<String> parts = time.split(':');
@@ -209,7 +275,6 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
 
           if (bookingResponse != null) {
             final courtData = bookingResponse.result;
-            bookId = courtData.bookingId;
             DateTime date = DateTime.parse(courtData.bookingDate.toString());
 
             String formattedDate = DateFormat('MMM d').format(date);
@@ -241,306 +306,339 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
             List teamMemberUrl = courtData.teamMembers
                 .map((teamMembers) => teamMembers.imageUrl)
                 .toList();
-
-            return Center(
-              child: HalfCutContainer(
-                innerContainer: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 19, top: 19),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                courtData.tennisCourt.name,
-                                style: TextStyle(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? AppColors.headingTextColor
-                                      : Colors.black,
-                                  fontSize: 18,
-                                  fontFamily: FontFamily.satoshi,
-                                  fontWeight: FontWeight.w700,
-                                  height: 24 / 18,
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    "Booking ID",
-                                    style: TextStyle(
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? AppColors.headingTextColor
-                                          : Colors.black,
-                                      fontSize: 14,
-                                      fontFamily: FontFamily.satoshi,
-                                      fontWeight: FontWeight.w500,
-                                      height: 24 / 14,
-                                    ),
-                                  ),
-                                  Text(
-                                    " - ${courtData.bookingId}",
-                                    style: TextStyle(
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? AppColors.headingTextColor
-                                          : Colors.black,
-                                      fontSize: 14,
-                                      fontFamily: FontFamily.satoshi,
-                                      fontWeight: FontWeight.w400,
-                                      height: 24 / 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    "Date",
-                                    style: TextStyle(
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? AppColors.headingTextColor
-                                          : Colors.black,
-                                      fontSize: 14,
-                                      fontFamily: FontFamily.satoshi,
-                                      fontWeight: FontWeight.w500,
-                                      height: 24 / 14,
-                                    ),
-                                  ),
-                                  Text(
-                                    " - $formattedDate, $dayOfWeek",
-                                    style: TextStyle(
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? AppColors.headingTextColor
-                                          : Colors.black,
-                                      fontSize: 14,
-                                      fontFamily: FontFamily.satoshi,
-                                      fontWeight: FontWeight.w400,
-                                      height: 24 / 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    "Time",
-                                    style: TextStyle(
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? AppColors.headingTextColor
-                                          : Colors.black,
-                                      fontSize: 14,
-                                      fontFamily: FontFamily.satoshi,
-                                      fontWeight: FontWeight.w500,
-                                      height: 24 / 14,
-                                    ),
-                                  ),
-                                  Text(
-                                    " - $timePart - $results",
-                                    style: TextStyle(
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? AppColors.headingTextColor
-                                          : Colors.black,
-                                      fontSize: 14,
-                                      fontFamily: FontFamily.satoshi,
-                                      fontWeight: FontWeight.w400,
-                                      height: 24 / 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        Flexible(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                right: 19, top: 19, left: 25),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4)),
-                              height: 92,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(4),
-                                child: Image.network(
-                                  courtData.tennisCourt.courtImages[0],
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 10, left: 19, right: 19),
-                      child: Container(
-                        height: 145,
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(17.63),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.58),
-                          border: Border.all(
-                              color: const Color.fromRGBO(0, 0, 0, 0.1),
-                              width: 0.88),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Team',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 15.86,
-                                    fontFamily: FontFamily.satoshi,
-                                    fontWeight: FontWeight.w700,
-                                    height: 21.15 / 15.86,
-                                  ),
-                                ),
-                                SizedBox(width: 167.45),
-                                Text(
-                                  'Edit team',
-                                  style: TextStyle(
-                                    color: AppColors.dotColor,
-                                    fontSize: 12.34,
-                                    fontFamily: FontFamily.satoshi,
-                                    fontWeight: FontWeight.w700,
-                                    decoration: TextDecoration.underline,
-                                    decorationThickness: 2,
-                                    height: 21.15 / 12.34,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 18.51),
-
-                            // Use ListView.builder to dynamically generate team members
-
-                            Column(
+            bookId = courtData.bookingId;
+            return Stack(
+              children: [
+                HalfCutContainer(
+                  innerContainer: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 19, top: 19),
+                            child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                Text(
+                                  courtData.tennisCourt.name,
+                                  style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
+                                    fontSize: 18,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w700,
+                                    height: 24 / 18,
+                                  ),
+                                ),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 14.1,
-                                          backgroundImage:
-                                              NetworkImage(courtData.userImage),
-                                        ),
-                                        SizedBox(width: 10.58),
-                                        Text(
-                                          courtData.userName,
-                                          style: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 13.34,
-                                            fontFamily: FontFamily.satoshi,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                        SizedBox(height: 2.64),
-                                        Image.asset(
-                                          "assets/images/ticket.png",
-                                          height: 9,
-                                        ),
-                                        SizedBox(width: 2.64),
-                                      ],
+                                    Text(
+                                      "Booking ID",
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : Colors.black,
+                                        fontSize: 14,
+                                        fontFamily: FontFamily.satoshi,
+                                        fontWeight: FontWeight.w500,
+                                        height: 24 / 14,
+                                      ),
                                     ),
-                                    // Display one team member information
-                                    if (teamMember.isNotEmpty)
-                                      _buildTeamMemberRow(
-                                          teamMember[0], teamMemberUrl[0]),
+                                    Text(
+                                      " - ${courtData.bookingId}",
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : Colors.black,
+                                        fontSize: 14,
+                                        fontFamily: FontFamily.satoshi,
+                                        fontWeight: FontWeight.w400,
+                                        height: 24 / 14,
+                                      ),
+                                    ),
                                   ],
                                 ),
-                                const SizedBox(height: 10.58),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    // Display team member information
-                                    for (int i = 1; i < teamMember.length; i++)
-                                      _buildTeamMemberRow(
-                                          teamMember[i], teamMemberUrl[i]),
+                                    Text(
+                                      "Date",
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : Colors.black,
+                                        fontSize: 14,
+                                        fontFamily: FontFamily.satoshi,
+                                        fontWeight: FontWeight.w500,
+                                        height: 24 / 14,
+                                      ),
+                                    ),
+                                    Text(
+                                      " - $formattedDate, $dayOfWeek",
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : Colors.black,
+                                        fontSize: 14,
+                                        fontFamily: FontFamily.satoshi,
+                                        fontWeight: FontWeight.w400,
+                                        height: 24 / 14,
+                                      ),
+                                    ),
                                   ],
                                 ),
-                                // Add any additional UI elements for each team member
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Time",
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : Colors.black,
+                                        fontSize: 14,
+                                        fontFamily: FontFamily.satoshi,
+                                        fontWeight: FontWeight.w500,
+                                        height: 24 / 14,
+                                      ),
+                                    ),
+                                    Text(
+                                      " - $timePart - $results",
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : Colors.black,
+                                        fontSize: 14,
+                                        fontFamily: FontFamily.satoshi,
+                                        fontWeight: FontWeight.w400,
+                                        height: 24 / 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
-                            // ... (additional UI elements)
-                          ],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 19),
-                      child: const MySeparator(color: AppColors.appbarBoarder),
-                    ),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 35, left: 65, right: 65),
-                      child: Container(
-                        height: 190,
-                        child: QrImageView(
-                          data: courtData.bookingId.toString(),
-                          version: 1,
-                          size: 190,
-                          gapless: false,
-                          errorStateBuilder: (cxt, err) {
-                            return Container(
-                              child: Center(
-                                child: Text(
-                                  'Uh oh! Something went wrong...',
-                                  textAlign: TextAlign.center,
+                          ),
+                          Flexible(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  right: 19, top: 19, left: 25),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(4)),
+                                height: 92,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: Image.network(
+                                    courtData.tennisCourt.courtImages[0],
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
-                            );
-                          },
+                            ),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(top: 10, left: 19, right: 19),
+                        child: Container(
+                          height: 145,
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(17.63),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10.58),
+                            border: Border.all(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? const Color.fromRGBO(255, 255, 255, 0.10)
+                                    : const Color.fromRGBO(0, 0, 0, 0.1),
+                                width: 0.88),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Team',
+                                    style: TextStyle(
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black,
+                                      fontSize: 15.86,
+                                      fontFamily: FontFamily.satoshi,
+                                      fontWeight: FontWeight.w700,
+                                      height: 21.15 / 15.86,
+                                    ),
+                                  ),
+                                  SizedBox(width: 167.45),
+                                  Text(
+                                    'Edit team',
+                                    style: TextStyle(
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? AppColors.darkEditColor
+                                          : AppColors.dotColor,
+                                      decorationColor:
+                                          Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? AppColors.darkEditColor
+                                              : AppColors.dotColor,
+                                      fontSize: 12.34,
+                                      fontFamily: FontFamily.satoshi,
+                                      fontWeight: FontWeight.w700,
+                                      decoration: TextDecoration.underline,
+                                      decorationThickness: 2,
+                                      height: 21.15 / 12.34,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 18.51),
+
+                              // Use ListView.builder to dynamically generate team members
+
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 14.1,
+                                            backgroundImage: NetworkImage(
+                                                courtData.userImage),
+                                          ),
+                                          SizedBox(width: 10.58),
+                                          Text(
+                                            courtData.userName,
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.dark
+                                                  ? AppColors.profileDarkText
+                                                  : Colors.black,
+                                              fontSize: 13.34,
+                                              fontFamily: FontFamily.satoshi,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                          SizedBox(height: 2.64),
+                                          Image.asset(
+                                            "assets/images/ticket.png",
+                                            height: 9,
+                                          ),
+                                          SizedBox(width: 2.64),
+                                        ],
+                                      ),
+                                      // Display one team member information
+                                      if (teamMember.isNotEmpty)
+                                        _buildTeamMemberRow(
+                                            teamMember[0], teamMemberUrl[0]),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10.58),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      // Display team member information
+                                      for (int i = 1;
+                                          i < teamMember.length;
+                                          i++)
+                                        _buildTeamMemberRow(
+                                            teamMember[i], teamMemberUrl[i]),
+                                    ],
+                                  ),
+                                  // Add any additional UI elements for each team member
+                                ],
+                              ),
+                              // ... (additional UI elements)
+                            ],
+                          ),
                         ),
                       ),
-                    )
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.only(top: 17),
+                        child: MySeparator(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.darkAppBarboarder
+                                    : AppColors.appbarBoarder),
+                      ),
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(top: 35, left: 65, right: 65),
+                        child: Container(
+                          height: 190,
+                          child: QrImageView(
+                            foregroundColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.allHeadColor,
+                            data: courtData.bookingId.toString(),
+                            version: 1,
+                            size: 190,
+                            gapless: false,
+                            errorStateBuilder: (cxt, err) {
+                              return Container(
+                                child: Center(
+                                  child: Text(
+                                    'Uh oh! Something went wrong...',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
+               
+              ],
             );
           } else {
             return Padding(
-              padding: const EdgeInsets.only(
-                top: 50,
-              ),
+              padding: const EdgeInsets.only(top: 100),
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      height: 215,
-                      child: Image.asset(
-                        "assets/images/loadinggif.gif",
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                        height: 100,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.darkEditColor
+                                  : AppColors.dotColor,),
+                        )),
                     SizedBox(
                       height: 5,
                     ),
@@ -578,19 +676,31 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        CircleAvatar(
+       memberImageUrl.isNotEmpty? CircleAvatar(
           radius: 14.1,
-          backgroundImage: NetworkImage(
-            memberImageUrl.isNotEmpty
-                ? memberImageUrl
-                : "assets/images/Profile1.png",
-          ),
+          backgroundImage:  NetworkImage(
+            memberImageUrl
+              
+          )  
+        ): CircleAvatar(
+          radius: 14.1,
+          backgroundImage: Theme.of(context).brightness == Brightness.dark
+            ? AssetImage(
+                "assets/images/darkavat.png",
+             
+              )
+            :AssetImage(
+                "assets/images/userTeam.png",
+               
+              )
         ),
         SizedBox(width: 10.58),
         Text(
           memberName.isNotEmpty ? memberName : "",
-          style: const TextStyle(
-            color: Colors.black,
+          style: TextStyle(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.profileDarkText
+                : Colors.black,
             fontSize: 13.34,
             fontFamily: FontFamily.satoshi,
             fontWeight: FontWeight.w400,
@@ -602,7 +712,7 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
     );
   }
 
-  Widget _buildSignInButton() {
+Widget _buildSignInButton() {
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
       child: Padding(
@@ -617,18 +727,134 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
             isLoading: false,
             text: "Cancel Booking",
             onPressed: () async {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const BottomNavBar(initial: 0)));
-              await Api.deleteBooking(
-                tokens!,
-                bookId!,
+              showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  surfaceTintColor:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.hintColor
+                          : AppColors.homeBack,
+                  backgroundColor:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.darkThemeback
+                          : AppColors.homeBack,
+                  title: Text(
+                    "Cancel Booking",
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.headingTextColor
+                          : AppColors.logoutColor,
+                      fontSize: 24,
+                      fontFamily: FontFamily.satoshi,
+                      fontWeight: FontWeight.w700,
+                      height: 32 / 24,
+                    ),
+                  ),
+                  content:isLoading?Text(
+                    "Keep Patience..Caneclling....",
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.profileDarkText
+                          : Color(0xff49454F),
+                      fontSize: 12,
+                      fontFamily: FontFamily.poppins,
+                      fontWeight: FontWeight.w400,
+                      height: 20 / 12,
+                    ),
+                  ): Text(
+                    "You are attempting to cancel your recent booking.",
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.profileDarkText
+                          : Color(0xff49454F),
+                      fontSize: 12,
+                      fontFamily: FontFamily.poppins,
+                      fontWeight: FontWeight.w400,
+                      height: 20 / 12,
+                    ),
+                  ),
+                  actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.of(ctx).pop();
+          },
+          child: Container(
+            color: Colors.transparent,
+            padding: const EdgeInsets.all(12),
+            child: Text(
+              "Cancel",
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.hoverColor
+                    : AppColors.subheadColor,
+                fontSize: 14,
+                fontFamily: FontFamily.roboto,
+                fontWeight: FontWeight.w500,
+                height: 20 / 14,
+              ),
+            ),
+          ),
+        ),
+        TextButton(
+          onPressed: () async {
+        
+                  setState(() {
+                    isLoading = true;
+                  });
+                   Navigator.of(ctx).pop();
+                  await Api.deleteBooking(
+                    tokens!,
+                    bookId!,
+                  );
+                  _fetchUpcomingData();
+                
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const BottomNavBar(initial: 1),
+                    ),
+                  );
+                    setState(() {
+                    isLoading = false;
+                  });
+                 
+                },
+          child: Container(
+            color: Colors.transparent,
+            padding: const EdgeInsets.all(12),
+            child: Text(
+              "Confirm",
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkEditColor
+                    : AppColors.dotColor,
+                fontSize: 14,
+                fontFamily: FontFamily.roboto,
+                fontWeight: FontWeight.w500,
+                height: 20 / 14,
+              ),
+            ),
+          ),
+        ),
+      ],
+                ),
               );
-             _fetchBookingResponse();
+
+              /* Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const BottomNavBar(initial: 0)));
+              await Api.deleteBooking(
+                tokens!,bookId!,
+              );*/
             },
-            buttonColor: Colors.white,
-            textColor: AppColors.allHeadColor,
+            buttonColor: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkEditColor
+                : AppColors.dotColor,
+            textColor: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.allHeadColor
+                : AppColors.headingTextColor,
           ))),
     );
   }
@@ -686,8 +912,10 @@ class HalfCutContainer extends StatelessWidget {
       child: Stack(children: [
         Container(
           height: 560,
-          decoration: const BoxDecoration(
-            color: Colors.white,
+          decoration:  BoxDecoration(
+            color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkTextInput
+                  : Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(12)),
             boxShadow: [
               BoxShadow(

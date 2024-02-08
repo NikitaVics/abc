@@ -105,24 +105,72 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
 
   // body methods:--------------------------------------------------------------
   Widget _buildBody() {
-    return Stack(
-      children: [
-        Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: BoxDecoration(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.darkThemeback
-                  : const Color(0xFF259445)),
-          child: Column(
-            children: [
-              Expanded(child: _buildRightSide()),
-              _buildSignInButton(),
-            ],
+    return AbsorbPointer(
+      absorbing: isLoading,
+      child: Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkThemeback
+                    : const Color(0xFF259445)),
+            child: Column(
+              children: [
+                Expanded(child: _buildRightSide()),
+                _buildSignInButton(),
+              ],
+            ),
           ),
-        ),
-        
-      ],
+           if (isLoading)
+            Padding(
+              padding: const EdgeInsets.only(top: 200),
+              child: Center(
+                child: Container(
+                  color: Colors.transparent,
+                  child: Center(
+                    child: AlertDialog(
+                     surfaceTintColor: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.hintColor
+                          : AppColors.disableButtonColor,
+                      backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.darkTextInput: AppColors.primaryColor,
+                      title: Text(
+                        "Cancel Booking",
+                        style: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark ? AppColors.headingTextColor : AppColors.logoutColor,
+                          fontSize: 24,
+                          fontFamily: FontFamily.satoshi,
+                          fontWeight: FontWeight.w700,
+                          height: 32 / 24,
+                        ),
+                      ),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircularProgressIndicator(color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkEditColor
+                    : AppColors.dotColor,),
+                          SizedBox(height: 16),
+                          Text(
+                            "Please wait...Request processing, patience on the clock.",
+                            style: TextStyle(
+                              color: Theme.of(context).brightness == Brightness.dark ? AppColors.profileDarkText : Color(0xff49454F),
+                              fontSize: 12,
+                              fontFamily: FontFamily.poppins,
+                              fontWeight: FontWeight.w400,
+                              height: 20 / 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -713,18 +761,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                       height: 32 / 24,
                     ),
                   ),
-                  content:isLoading?Text(
-                    "Keep Patience..Caneclling....",
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.profileDarkText
-                          : Color(0xff49454F),
-                      fontSize: 12,
-                      fontFamily: FontFamily.poppins,
-                      fontWeight: FontWeight.w400,
-                      height: 20 / 12,
-                    ),
-                  ): Text(
+                  content: Text(
                     "You are attempting to cancel your recent booking.",
                     style: TextStyle(
                       color: Theme.of(context).brightness == Brightness.dark
@@ -760,7 +797,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
         ),
         TextButton(
           onPressed: () async {
-        
+        Navigator.of(ctx).pop();
                   setState(() {
                     isLoading = true;
                   });
@@ -779,7 +816,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                     setState(() {
                     isLoading = false;
                   });
-                  Navigator.of(ctx).pop();
+                  
                 },
           child: Container(
             color: Colors.transparent,

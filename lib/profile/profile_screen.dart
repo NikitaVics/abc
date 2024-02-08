@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/language/provider/language_change_controller.dart';
 import 'package:tennis_court_booking_app/notifications/notification_screen.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
 
@@ -233,6 +234,7 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildProfilePerfomence() {
     final themeNotifier = context.watch<ThemeModeNotifier>();
+    final languageNotifier = context.watch<LanguageChangeController>();
     final textScaleFactor = MediaQuery.of(context).textScaleFactor;
     return Padding(
         padding: const EdgeInsets.only(top: 20),
@@ -387,12 +389,12 @@ class ProfileScreenState extends State<ProfileScreen> {
                         width: 17,
                         child: GestureDetector(
                             onTap: () async {
-                               Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MyTeamsScreen(
-                                    pageName: "My Team",
-                                  )));
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => MyTeamsScreen(
+                                            pageName: "My Team",
+                                          )));
                             },
                             child: Image.asset(
                               "assets/images/Group3.png",
@@ -406,12 +408,12 @@ class ProfileScreenState extends State<ProfileScreen> {
                       const SizedBox(width: 25),
                       GestureDetector(
                         onTap: () async {
-                            Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MyTeamsScreen(
-                                    pageName: "My Team",
-                                  )));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MyTeamsScreen(
+                                        pageName: "My Team",
+                                      )));
                         },
                         child: Text(
                           "My Team",
@@ -472,10 +474,10 @@ class ProfileScreenState extends State<ProfileScreen> {
                           child: Image.asset(
                             "assets/images/Notification3.png",
                             height: 15,
-                            color: Theme.of(context).brightness ==
-                                    Brightness.dark
-                                ? AppColors.profileDarkText
-                                : AppColors.subheadColor,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.profileDarkText
+                                    : AppColors.subheadColor,
                           ),
                         ),
                         const SizedBox(width: 25),
@@ -566,22 +568,20 @@ class ProfileScreenState extends State<ProfileScreen> {
                             child: Transform.scale(
                               scale: 0.6,
                               child: SizedBox(
-                                  height: 20,
-                                  child:
-
-                                  CupertinoSwitch(
-                                  trackColor: AppColors.disableSwitch,
-                                  thumbColor: Colors.white,
-                                  activeColor: AppColors.confirmValid,
-                                  value: state,
-                                  onChanged: (value) {
-                                    state = value;
-                                    setState(
-                                      () {},
-                                    );
-                                  },
-                                ),
-                                  ),
+                                height: 20,
+                                child: CupertinoSwitch(
+  trackColor: AppColors.disableSwitch,
+  thumbColor: Colors.white,
+  activeColor: AppColors.confirmValid,
+  value: languageNotifier.appLocale == Locale("en"),
+  onChanged: (value) {
+    setState(() {
+      final newLocale = value ? Locale("en") : Locale("ar");
+      languageNotifier.changeLanguage(newLocale);
+    });
+  },
+),
+                              ),
                             )),
                       ),
                     ],
