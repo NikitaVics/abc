@@ -217,7 +217,7 @@ class _RegisterFormState extends State<RegisterForm> {
   Widget _buildUserName() {
     return TextFieldWidget(
       read: false,
-      hint: 'User Name',
+      hint: 'Full Name',
       inputType: TextInputType.name,
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint

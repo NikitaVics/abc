@@ -23,6 +23,7 @@ import 'package:tennis_court_booking_app/bottomnavbar/bottom_navbar.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/constants/shimmer.dart';
+import 'package:tennis_court_booking_app/language/provider/language_change_controller.dart';
 import 'package:tennis_court_booking_app/model/courtInfo/court_info.dart';
 import 'package:tennis_court_booking_app/model/upComingBooking/upcoming_booking_model.dart';
 import 'package:tennis_court_booking_app/mybookings/bookingDetails/booking_details.dart';
@@ -140,6 +141,7 @@ class HomeScreenState extends State<HomeScreen>
 //Home
   @override
   Widget build(BuildContext context) {
+    final languageNotifier = context.watch<LanguageChangeController>();
     return Consumer2<CheckStatusProvider, ProfileProvider>(
       builder: (context, checkStatusProvider, profileProvider, child) {
         if (checkStatusProvider.checkStatus == null) {
@@ -217,8 +219,11 @@ class HomeScreenState extends State<HomeScreen>
                                       child: SizedBox(
                                         height: 48,
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 24),
+                                          padding: languageNotifier.appLocale ==
+                                                  Locale("en")
+                                              ? const EdgeInsets.only(left: 24)
+                                              : const EdgeInsets.only(
+                                                  right: 24),
                                           child: isDeleting
                                               ? SilentErrorImage(
                                                   width: 48.0,
@@ -260,7 +265,8 @@ class HomeScreenState extends State<HomeScreen>
                                       child: Row(
                                         children: [
                                           Text(
-                                        (AppLocalizations.of(context)!.hello),
+                                            (AppLocalizations.of(context)!
+                                                .hello),
                                             style: TextStyle(
                                               color: Theme.of(context)
                                                           .brightness ==
@@ -346,7 +352,10 @@ class HomeScreenState extends State<HomeScreen>
                                             ),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.only(right: 24),
+                                      padding: languageNotifier.appLocale ==
+                                              Locale("en")
+                                          ? const EdgeInsets.only(right: 24)
+                                          : const EdgeInsets.only(left: 24),
                                       child: Align(
                                         alignment: Alignment.centerRight,
                                         child: GestureDetector(
@@ -384,8 +393,10 @@ class HomeScreenState extends State<HomeScreen>
   Widget changeImage() {
     return Container(
       height: 220,
-      decoration: const BoxDecoration(
-        color: Color(0xFFf8f8f8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.darkThemeback
+            : Color(0xFFf8f8f8),
         boxShadow: [
           BoxShadow(
             color: Color.fromRGBO(0, 0, 0, 0.02),
@@ -446,7 +457,9 @@ class HomeScreenState extends State<HomeScreen>
                   child: Container(
                     height: 133,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFEFEFE),
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? AppColors.darkTextInput
+                          : Color(0xFFFEFEFE),
                       boxShadow: [
                         const BoxShadow(
                           color: Color.fromRGBO(0, 0, 0, 0.02),
@@ -487,7 +500,9 @@ class HomeScreenState extends State<HomeScreen>
                   child: Container(
                       height: 133,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFEFEFE),
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkTextInput
+                            : Color(0xFFFEFEFE),
                         boxShadow: [
                           BoxShadow(
                             color: Color.fromRGBO(0, 0, 0, 0.02),
@@ -661,6 +676,7 @@ class HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildLoginText() {
+    final languageNotifier = context.watch<LanguageChangeController>();
     return Padding(
       padding: const EdgeInsets.only(top: 40),
       child: Stack(children: [
@@ -670,19 +686,20 @@ class HomeScreenState extends State<HomeScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Book your ",
+                (AppLocalizations.of(context)!.bookYour),
                 style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.booklight
                       : AppColors.allHeadColor,
-                  fontSize: 32,
+                  fontSize:
+                      languageNotifier.appLocale == Locale("en") ? 32 : 25,
                   fontFamily: FontFamily.satoshi,
                   fontWeight: FontWeight.w700,
                   height: 40 / 32,
                 ),
               ),
               Text(
-                "slot today ! ",
+                (AppLocalizations.of(context)!.slotToday),
                 style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.booklight
@@ -700,53 +717,60 @@ class HomeScreenState extends State<HomeScreen>
                   ? GestureDetector(
                       onTap: () async {
                         result = await showDatePicker(
-                          
                           context: context,
                           initialDate: dateTime ?? DateTime.now(),
                           firstDate: DateTime.now(),
                           lastDate: DateTime(2101),
-                          helpText: "Select Date",
+                          locale: languageNotifier.appLocale,
+                          helpText: (AppLocalizations.of(context)!.selectDate),
                           builder: (BuildContext context, Widget? child) {
                             return Theme(
-                              data:Theme.of(context).brightness == Brightness.dark
-                      ? ThemeData.dark().copyWith(
-                                // Customize the color scheme here
-                                colorScheme: const ColorScheme.dark(
-                                  primary: AppColors.darkEditColor, // Change primary color
-                                  onPrimary:AppColors.darkThemeback, // Change text color on primary
-                                  surface: AppColors.darkThemeback, // Change surface color
-                                  onSurface: AppColors.darkSubHead,
+                              data: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? ThemeData.dark().copyWith(
+                                      // Customize the color scheme here
+                                      colorScheme: const ColorScheme.dark(
+                                        primary: AppColors
+                                            .darkEditColor, // Change primary color
+                                        onPrimary: AppColors
+                                            .darkThemeback, // Change text color on primary
+                                        surface: AppColors
+                                            .darkThemeback, // Change surface color
+                                        onSurface: AppColors.darkSubHead,
 
-                                  // Change text color on surface
-                                ),
-                               
-                                textButtonTheme: TextButtonThemeData(
-                                  style: TextButton.styleFrom(
-                                    foregroundColor:
-                                        AppColors.darkEditColor, // button text color
-                                  ),
-                                ),
-                                // You can customize more properties here if needed
-                              ):ThemeData.light().copyWith(
-                                // Customize the color scheme here
-                                colorScheme: const ColorScheme.light(
-                                  primary: AppColors.dotColor, // Change primary color
-                                  onPrimary: Colors
-                                      .white, // Change text color on primary
-                                  surface: Colors.white, // Change surface color
-                                  onSurface: AppColors.allHeadColor,
+                                        // Change text color on surface
+                                      ),
 
-                                  // Change text color on surface
-                                ),
-                                selectedRowColor: AppColors.dotColor,
-                                textButtonTheme: TextButtonThemeData(
-                                  style: TextButton.styleFrom(
-                                    foregroundColor:
-                                        AppColors.dotColor, // button text color
-                                  ),
-                                ),
-                                // You can customize more properties here if needed
-                              ),
+                                      textButtonTheme: TextButtonThemeData(
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: AppColors
+                                              .darkEditColor, // button text color
+                                        ),
+                                      ),
+                                      // You can customize more properties here if needed
+                                    )
+                                  : ThemeData.light().copyWith(
+                                      // Customize the color scheme here
+                                      colorScheme: const ColorScheme.light(
+                                        primary: AppColors
+                                            .dotColor, // Change primary color
+                                        onPrimary: Colors
+                                            .white, // Change text color on primary
+                                        surface: Colors
+                                            .white, // Change surface color
+                                        onSurface: AppColors.allHeadColor,
+
+                                        // Change text color on surface
+                                      ),
+                                      selectedRowColor: AppColors.dotColor,
+                                      textButtonTheme: TextButtonThemeData(
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: AppColors
+                                              .dotColor, // button text color
+                                        ),
+                                      ),
+                                      // You can customize more properties here if needed
+                                    ),
                               child: child!,
                             );
                           },
@@ -775,7 +799,11 @@ class HomeScreenState extends State<HomeScreen>
                           ),
                           results != null
                               ? Text(
-                                  DateFormat('dd/MM/yyyy').format(results!),
+                                  languageNotifier.appLocale == Locale("en")
+                                      ? DateFormat('dd/MM/yyyy', 'en')
+                                          .format(results!)
+                                      : DateFormat('dd/MM/yyyy', 'ar')
+                                          .format(results!),
                                   style: TextStyle(
                                     color: Theme.of(context).brightness ==
                                             Brightness.dark
@@ -788,7 +816,7 @@ class HomeScreenState extends State<HomeScreen>
                                   ),
                                 )
                               : Text(
-                                  "Select Date",
+                                  (AppLocalizations.of(context)!.selectDate),
                                   style: TextStyle(
                                     color: Theme.of(context).brightness ==
                                             Brightness.dark
@@ -828,33 +856,19 @@ class HomeScreenState extends State<HomeScreen>
                           SizedBox(
                             width: 21,
                           ),
-                          results != null
-                              ? Text(
-                                  DateFormat('dd/MM/yyyy').format(results!),
-                                  style: TextStyle(
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? AppColors.darkSubHead
-                                        : AppColors.subheadColor,
-                                    fontSize: 14,
-                                    fontFamily: FontFamily.satoshi,
-                                    fontWeight: FontWeight.w700,
-                                    height: 24 / 14,
-                                  ),
-                                )
-                              : Text(
-                                  "Select Date",
-                                  style: TextStyle(
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? AppColors.darkSubHead
-                                        : AppColors.subheadColor,
-                                    fontSize: 14,
-                                    fontFamily: FontFamily.satoshi,
-                                    fontWeight: FontWeight.w700,
-                                    height: 24 / 14,
-                                  ),
-                                ),
+                          Text(
+                            (AppLocalizations.of(context)!.selectDate),
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.darkSubHead
+                                  : AppColors.subheadColor,
+                              fontSize: 14,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w700,
+                              height: 24 / 14,
+                            ),
+                          ),
                           const SizedBox(width: 8),
                           Image.asset(
                             "assets/images/calender.png",
@@ -866,12 +880,19 @@ class HomeScreenState extends State<HomeScreen>
             ],
           ),
         ),
-        Align(
-            alignment: Alignment.topRight,
-            child: Image.asset(
-              "assets/images/homeImage.png",
-              height: 171,
-            )),
+        languageNotifier.appLocale == Locale("en")
+            ? Align(
+                alignment: Alignment.topRight,
+                child: Image.asset(
+                  "assets/images/homeImage.png",
+                  height: 171,
+                ))
+            : Align(
+                alignment: Alignment.topLeft,
+                child: Image.asset(
+                  "assets/images/arabImage1.png",
+                  height: 171,
+                )),
       ]),
     );
   }
@@ -892,7 +913,7 @@ class HomeScreenState extends State<HomeScreen>
                               ? 70
                               : double.infinity,
                           isLoading: false,
-                          text: "Start Booking",
+                          text: (AppLocalizations.of(context)!.startBooking),
                           onPressed: () async {
                             final newResult = await Navigator.push(
                               context,
@@ -923,7 +944,7 @@ class HomeScreenState extends State<HomeScreen>
                               ? 70
                               : double.infinity,
                           isLoading: false,
-                          text: "Start Booking",
+                          text: (AppLocalizations.of(context)!.startBooking),
                           onPressed: () async {},
                           buttonColor: AppColors.buttonwithvalue,
                           textColor: AppColors.buttonmid,
@@ -935,7 +956,7 @@ class HomeScreenState extends State<HomeScreen>
                           ? 70
                           : double.infinity,
                       isLoading: false,
-                      text: "Start Booking",
+                      text: (AppLocalizations.of(context)!.startBooking),
                       onPressed: () async {
                         showAlertDialog(context);
                       },
@@ -1124,6 +1145,7 @@ class HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildSlotshowText() {
+    final languageNotifier = context.watch<LanguageChangeController>();
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
       child: Padding(
@@ -1133,7 +1155,7 @@ class HomeScreenState extends State<HomeScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Our courts",
+                (AppLocalizations.of(context)!.ourCourts),
                 style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.headingTextColor
@@ -1154,21 +1176,27 @@ class HomeScreenState extends State<HomeScreen>
                       });
                     },
                     child: Text(
-                      "Junior",
+                      (AppLocalizations.of(context)!.junior),
                       style: TextStyle(
                         decoration: juniorColor
                             ? TextDecoration.underline
                             : TextDecoration.none,
+                        decorationColor: AppColors.dotColor,
                         decorationThickness: 3.0,
                         color: juniorColor
                             ? AppColors.dotColor
                             : Theme.of(context).brightness == Brightness.dark
                                 ? AppColors.darkSubHead
                                 : Color.fromRGBO(0, 0, 0, 0.50),
-                        fontSize: 12,
+                        fontSize: languageNotifier.appLocale == Locale("en")
+                            ? 12
+                            : 18,
                         fontFamily: FontFamily.satoshi,
                         fontWeight: FontWeight.w700,
-                        height: 24 / 12,
+                        height: 24 /
+                            (languageNotifier.appLocale == Locale("en")
+                                ? 12
+                                : 18),
                       ),
                     ),
                   ),
@@ -1183,7 +1211,7 @@ class HomeScreenState extends State<HomeScreen>
                       });
                     },
                     child: Text(
-                      "Senior",
+                      (AppLocalizations.of(context)!.senior),
                       style: TextStyle(
                         decoration: seniorColor
                             ? TextDecoration.underline
@@ -1200,10 +1228,15 @@ class HomeScreenState extends State<HomeScreen>
                             : Theme.of(context).brightness == Brightness.dark
                                 ? AppColors.darkSubHead
                                 : Color.fromRGBO(0, 0, 0, 0.50),
-                        fontSize: 12,
+                        fontSize: languageNotifier.appLocale == Locale("en")
+                            ? 12
+                            : 18,
                         fontFamily: FontFamily.satoshi,
                         fontWeight: FontWeight.w700,
-                        height: 24 / 12,
+                        height: 24 /
+                            (languageNotifier.appLocale == Locale("en")
+                                ? 12
+                                : 18),
                       ),
                     ),
                   ),
@@ -1215,6 +1248,7 @@ class HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildShowCourt(CourtList courtList) {
+    final languageNotifier = context.watch<LanguageChangeController>();
     final List<Court> filteredCourts = (juniorColor || seniorColor)
         ? (juniorColor
             ? courtList.result
@@ -1238,6 +1272,9 @@ class HomeScreenState extends State<HomeScreen>
           String endTime = DateFormat('h a').format(
             DateFormat('HH:mm:ss').parse(court.endTime),
           );
+        
+          String timeRange = '$endTime - $startTime';
+            print(timeRange);
           return Padding(
             padding: const EdgeInsets.only(right: 20),
             child: MediaQuery(
@@ -1330,46 +1367,117 @@ class HomeScreenState extends State<HomeScreen>
                             children: [
                               Column(
                                 children: [
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      court.courtName,
-                                      style: TextStyle(
-                                        color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? AppColors.booklight
-                                            : AppColors.allHeadColor,
-                                        fontSize: 16,
-                                        fontFamily: FontFamily.satoshi,
-                                        fontWeight: FontWeight.w500,
-                                        height: 24 / 16,
-                                      ),
-                                    ),
-                                  ),
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      "${startTime} - ${endTime}",
-                                      style: TextStyle(
-                                        color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? AppColors.darkSubHead
-                                            : AppColors.hintColor,
-                                        fontSize: 12,
-                                        fontFamily: FontFamily.satoshi,
-                                        fontWeight: FontWeight.w400,
-                                        height: 16 / 12,
-                                      ),
-                                    ),
-                                  ),
+                                  languageNotifier.appLocale == Locale("en")
+                                      ? Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            court.courtName,
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.dark
+                                                  ? AppColors.booklight
+                                                  : AppColors.allHeadColor,
+                                              fontSize: 16,
+                                              fontFamily: FontFamily.satoshi,
+                                              fontWeight: FontWeight.w500,
+                                              height: 24 / 16,
+                                            ),
+                                          ),
+                                        )
+                                      : Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Text(
+                                            court.courtName,
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.dark
+                                                  ? AppColors.booklight
+                                                  : AppColors.allHeadColor,
+                                              fontSize: 16,
+                                              fontFamily: FontFamily.satoshi,
+                                              fontWeight: FontWeight.w500,
+                                              height: 24 / 16,
+                                            ),
+                                          ),
+                                        ),
+                                  languageNotifier.appLocale == Locale("en")
+                                      ? Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            "${startTime} - ${endTime}",
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                          .brightness ==
+                                                      Brightness.dark
+                                                  ? AppColors.darkSubHead
+                                                  : AppColors.hintColor,
+                                              fontSize: 12,
+                                              fontFamily: FontFamily.satoshi,
+                                              fontWeight: FontWeight.w400,
+                                              height: 16 / 12,
+                                            ),
+                                          ),
+                                        )
+                                      : Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "${startTime} \u2013 ",
+                                                                                       
+                                                style: TextStyle(
+                                                  color: Theme.of(context)
+                                                              .brightness ==
+                                                          Brightness.dark
+                                                      ? AppColors.darkSubHead
+                                                      : AppColors.hintColor,
+                                                  fontSize: 12,
+                                                  fontFamily: FontFamily.satoshi,
+                                                  fontWeight: FontWeight.w400,
+                                                  height: 16 / 12,
+                                                ),
+                                                 
+                                              ),
+                                                Text(
+                                                "${endTime}",
+                                                                                       
+                                                style: TextStyle(
+                                                  color: Theme.of(context)
+                                                              .brightness ==
+                                                          Brightness.dark
+                                                      ? AppColors.darkSubHead
+                                                      : AppColors.hintColor,
+                                                  fontSize: 12,
+                                                  fontFamily: FontFamily.satoshi,
+                                                  fontWeight: FontWeight.w400,
+                                                  height: 16 / 12,
+                                                ),
+                                                 
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                 ],
                               ),
                               Padding(
                                 padding: EdgeInsets.only(top: 4),
-                                child: Align(
+                                child:    languageNotifier.appLocale == Locale("en")?
+                                Align(
                                   alignment: Alignment.centerRight,
                                   child: Image.asset(
                                     "assets/images/Right.png",
+                                    height: 24,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.headingTextColor
+                                        : Colors.black,
+                                  ),
+                                ): Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Image.asset(
+                                    "assets/images/rightarabic.png",
                                     height: 24,
                                     color: Theme.of(context).brightness ==
                                             Brightness.dark
@@ -1570,9 +1678,9 @@ class HomeScreenState extends State<HomeScreen>
                                 "${month}".toUpperCase(),
                                 style: TextStyle(
                                   color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.profileDarkText
-                                    :Colors.black.withOpacity(0.5),
+                                          Brightness.dark
+                                      ? AppColors.profileDarkText
+                                      : Colors.black.withOpacity(0.5),
                                   fontSize: 10,
                                   fontFamily: FontFamily.roboto,
                                   fontWeight: FontWeight.w400,
@@ -1582,10 +1690,10 @@ class HomeScreenState extends State<HomeScreen>
                               Text(
                                 " ${day}",
                                 style: TextStyle(
-                                  color:  Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.profileDarkText
-                                    :Colors.black.withOpacity(0.5),
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.profileDarkText
+                                      : Colors.black.withOpacity(0.5),
                                   fontSize: 10,
                                   fontFamily: FontFamily.roboto,
                                   fontWeight: FontWeight.w400,
@@ -1595,10 +1703,10 @@ class HomeScreenState extends State<HomeScreen>
                               Text(
                                 " ${timePart} ${dateTime.hour < 12 ? 'am' : 'pm'}",
                                 style: TextStyle(
-                                  color:  Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.profileDarkText
-                                    :Colors.black.withOpacity(0.5),
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.profileDarkText
+                                      : Colors.black.withOpacity(0.5),
                                   fontSize: 10,
                                   fontFamily: FontFamily.roboto,
                                   fontWeight: FontWeight.w400,
@@ -1620,10 +1728,10 @@ class HomeScreenState extends State<HomeScreen>
                               Image.asset(
                                 "assets/images/Group3.png",
                                 height: 12,
-                                color:  Theme.of(context).brightness ==
+                                color: Theme.of(context).brightness ==
                                         Brightness.dark
                                     ? AppColors.profileDarkText
-                                    :Colors.black.withOpacity(0.5),
+                                    : Colors.black.withOpacity(0.5),
                               ),
                               SizedBox(
                                 width: 7,
@@ -1631,10 +1739,10 @@ class HomeScreenState extends State<HomeScreen>
                               Text(
                                 " Team Members",
                                 style: TextStyle(
-                                  color:  Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.profileDarkText
-                                    :Colors.black.withOpacity(0.5),
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.profileDarkText
+                                      : Colors.black.withOpacity(0.5),
                                   fontSize: 10,
                                   fontFamily: FontFamily.roboto,
                                   fontWeight: FontWeight.w400,
@@ -2066,7 +2174,9 @@ class HomeScreenState extends State<HomeScreen>
     double containerHeight = MediaQuery.of(context).size.height / 1.5;
 
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkThemeback
+          : AppColors.homeBack,
       child: Consumer<CourtInfoProvider>(
         builder: (context, provider, child) {
           final courtInfo = provider.courtinfo;
@@ -2096,17 +2206,60 @@ class HomeScreenState extends State<HomeScreen>
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          bottom: 15, top: 40, left: 24, right: 24),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            padding: EdgeInsets.zero,
+                            onPressed: () {
+                              Navigator.pop(context, null);
+                            },
+                            icon: Image.asset(
+                              "assets/images/leftIcon.png",
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.headingTextColor
+                                  : AppColors.profileHead,
+                              //width: 18,
+                              height: 26,
+                            ),
+                          ),
+                          const Spacer(
+                            flex: 1,
+                          ),
+                          Text(
+                            courtData.courtName,
+                            style: TextStyle(
+                              decoration: TextDecoration.none,
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.headingTextColor
+                                  : AppColors.profileHead,
+                              fontSize: 20,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w700,
+                              height: 32 / 20,
+                            ),
+                          ),
+                          const Spacer(flex: 2)
+                        ],
+                      ),
+                    ),
                     SizedBox(
                         height: 330,
                         child: MyHomePage(imageUrls: imageUrls, height: 330)),
                     Padding(
-                      padding: const EdgeInsets.only(left: 24, right: 24),
+                      padding:
+                          const EdgeInsets.only(left: 24, right: 24, top: 12),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             courtData.courtName,
                             style: TextStyle(
+                              decoration: TextDecoration.none,
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
                                   ? AppColors.booklight
@@ -2120,9 +2273,10 @@ class HomeScreenState extends State<HomeScreen>
                           Text(
                             "${startTime} - ${endTime}",
                             style: TextStyle(
+                              decoration: TextDecoration.none,
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
-                                  ? AppColors.darkSubHead
+                                  ? Color(0xff2CC36B)
                                   : AppColors.confirmValid,
                               fontSize: 12,
                               fontFamily: FontFamily.satoshi,
@@ -2139,8 +2293,9 @@ class HomeScreenState extends State<HomeScreen>
                       child: Text(
                         "Lorem ipsum dolor sit amet consectetur. Sed mauris arcu arcu placerat varius facilisis nibh volutpat. Leo egestas massa cras diam venenatis tincidunt. Diam fringilla lorem.",
                         style: TextStyle(
+                          decoration: TextDecoration.none,
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.darkSubHead
+                              ? AppColors.profileDarkText
                               : AppColors.subheadColor,
                           fontSize: 14,
                           fontFamily: FontFamily.satoshi,
@@ -2149,10 +2304,12 @@ class HomeScreenState extends State<HomeScreen>
                         ),
                       ),
                     ),
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.only(left: 24, right: 24, top: 19.2),
                       child: Divider(
-                        color: AppColors.appbarBoarder,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkAppBarboarder
+                            : AppColors.appbarBoarder,
                         thickness: 1,
                       ),
                     ),
@@ -2161,8 +2318,9 @@ class HomeScreenState extends State<HomeScreen>
                       child: Text(
                         "Available facilities",
                         style: TextStyle(
+                          decoration: TextDecoration.none,
                           color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.darkSubHead
+                              ? AppColors.headingTextColor
                               : AppColors.subheadColor,
                           fontSize: 16,
                           fontFamily: FontFamily.satoshi,
@@ -2186,6 +2344,10 @@ class HomeScreenState extends State<HomeScreen>
                                   children: [
                                     Image.asset(
                                       "assets/images/parking.png",
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? AppColors.profileDarkText
+                                          : AppColors.allHeadColor,
                                       height: 24,
                                       width: 24,
                                     ),
@@ -2195,9 +2357,10 @@ class HomeScreenState extends State<HomeScreen>
                                     Text(
                                       facility.facilityName,
                                       style: TextStyle(
+                                        decoration: TextDecoration.none,
                                         color: Theme.of(context).brightness ==
                                                 Brightness.dark
-                                            ? AppColors.darkSubHead
+                                            ? AppColors.profileDarkText
                                             : AppColors.allHeadColor,
                                         fontSize: 12,
                                         fontFamily: FontFamily.satoshi,
@@ -2335,7 +2498,7 @@ class _MyHomePageState extends State<MyHomePage> {
       width: screenWidth,
       child: ImageSlideshow(
         height: widget.height,
-        indicatorColor: Colors.blue,
+        indicatorColor: AppColors.dotColor,
         onPageChanged: (value) {
           debugPrint('Page changed: $value');
         },

@@ -146,7 +146,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                 color: Theme.of(context).brightness == Brightness.dark
                     ? AppColors.darkAppBarboarder
                     : AppColors.appbarBoarder,
-                width: 2.0,
+                width: 1.0,
               ))),
               child: Column(
                 children: [
@@ -161,6 +161,10 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                           },
                           icon: Image.asset(
                             "assets/images/leftIcon.png",
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.profileHead,
                             //width: 18,
                             height: 26,
                           ),
@@ -187,9 +191,9 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
               ),
             ),
           ),
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkTextInput
-              : Colors.white,
+          backgroundColor:Theme.of(context).brightness == Brightness.dark
+            ? AppColors.darkThemeback
+            : AppColors.lightThemeback,
           elevation: 0,
         ),
         body: _buildBody(),
@@ -395,14 +399,18 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isFirstButtonSelected
                         ? AppColors.elevatedColor
-                        : Colors.white,
+                        : Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkThemeback
+          : AppColors.homeBack,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
                         side: BorderSide(
                             color: isFirstButtonSelected
                                 ? Colors.transparent
-                                : AppColors.bookingInvalid)),
+                                : Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkAppBarboarder
+          : AppColors.appbarBoarder,)),
                   ),
                   child: Text(
                     'My Friends',
@@ -410,7 +418,9 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                     style: TextStyle(
                       color: isFirstButtonSelected
                           ? Colors.white
-                          : AppColors.bookingInvalid,
+                          : Theme.of(context).brightness == Brightness.dark
+          ? AppColors.hintColor
+          : AppColors.bookingInvalid,
                       fontSize: 12,
                       fontFamily: FontFamily.satoshi,
                       fontWeight: FontWeight.w700,
@@ -435,21 +445,27 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isSecondButtonSelected
                         ? AppColors.elevatedColor
-                        : Colors.white,
+                        :  Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkThemeback
+          : AppColors.homeBack,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
                         side: BorderSide(
                             color: isSecondButtonSelected
                                 ? Colors.transparent
-                                : AppColors.bookingInvalid)),
+                                : Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkAppBarboarder
+          : AppColors.appbarBoarder,)),
                   ),
                   child: Text('Requests',
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: isSecondButtonSelected
+                        color:  isSecondButtonSelected
                             ? Colors.white
-                            : AppColors.bookingInvalid,
+                            : Theme.of(context).brightness == Brightness.dark
+          ? AppColors.hintColor
+          : AppColors.bookingInvalid,
                         fontSize: 12,
                         fontFamily: FontFamily.satoshi,
                         fontWeight: FontWeight.w700,

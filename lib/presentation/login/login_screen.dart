@@ -225,7 +225,7 @@ class LoginScreenState extends State<LoginScreen> {
   Widget _buildUserIdField() {
     return TextFieldWidget(
       read:isLoading?true: false,
-      hint: 'E-Mail/UserName',
+      hint: 'E-Mail',
       inputType: TextInputType.emailAddress,
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint

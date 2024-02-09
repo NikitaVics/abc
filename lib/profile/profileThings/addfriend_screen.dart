@@ -99,7 +99,7 @@ class AddFriendScreenState extends State<AddFriendScreen> {
                 color: Theme.of(context).brightness == Brightness.dark
                     ? AppColors.darkAppBarboarder
                     : AppColors.appbarBoarder,
-                width: 2.0,
+                width: 1.0,
               ))),
               child: Column(
                 children: [
@@ -114,6 +114,10 @@ class AddFriendScreenState extends State<AddFriendScreen> {
                           },
                           icon: Image.asset(
                             "assets/images/leftIcon.png",
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.profileHead,
                             //width: 18,
                             height: 26,
                           ),
@@ -141,8 +145,8 @@ class AddFriendScreenState extends State<AddFriendScreen> {
             ),
           ),
           backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkTextInput
-              : Colors.white,
+            ? AppColors.darkThemeback
+            : AppColors.lightThemeback,
           elevation: 0,
         ),
         body: _buildBody(),
@@ -227,7 +231,9 @@ class AddFriendScreenState extends State<AddFriendScreen> {
           data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
           child: Container(
             decoration: BoxDecoration(
-              color: AppColors.textInputField,
+              color: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.darkTextInput
+            : AppColors.textInputField,
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Padding(

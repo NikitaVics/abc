@@ -2,8 +2,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tennis_court_booking_app/bottomnavbar/bottom_navbar.dart';
 import 'package:tennis_court_booking_app/constants/strings.dart';
 import 'package:tennis_court_booking_app/onboarding/onboarding_screen.dart';
+import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -13,38 +16,34 @@ class SplashScreen extends StatefulWidget {
 }
 
 class SplashScreenState extends State<SplashScreen> {
-  //SharedPreferences? pref;
+  SharedPreferences? pref;
 
   autoLogin() async {
-    Timer(const Duration(seconds: 3), () {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (BuildContext context) => const OnboardingScreen()),
-          (Route route) => false,
-        );
-      });
-   /* pref = await SharedPreferences.getInstance();
-    String token = await fetchAuthToken();
+   
+  
+    String token = await SharePref.fetchAuthToken();
     print(token);
     if (token.isNotEmpty) {
-      await Api.fetchDashboardData(token);
+    
       // ignore: use_build_context_synchronously
       Timer(const Duration(seconds: 3), () {
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (BuildContext context) => const Navbar()),
+          MaterialPageRoute(builder: (BuildContext context) => const BottomNavBar(
+                                  initial: 0,
+                                )),
           (Route route) => false,
         );
       });
     } else {
       print(token);
       // ignore: use_build_context_synchronously
-      Timer(const Duration(seconds: 3), () {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const SplashScreenThree(),
-          ),
+       Timer(const Duration(seconds: 3), () {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (BuildContext context) => const OnboardingScreen()),
+          (Route route) => false,
         );
       });
-    }*/
+    }
   }
 
   @override

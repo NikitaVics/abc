@@ -1,3 +1,82 @@
 {
-    "hello":"Hello"
+    "skip":"SKIP",
+    "welToBehApp":"Welcome to Behrain tennis club",
+    "letStarted":"Discover the convenience of managing your membership and court bookings online. Let's get started!",
+    "next":"Next",
+    "bookCourts":"Book Courts with Ease",
+    "enjoyThe":"Enjoy the convenience of booking courts online, ensuring efficient utilization.",
+    "easyRegRen":"Easy Registration and Renewal",
+    "joinRenew":"Join, renew, or manage your membership seamlessly. Say goodbye to paperwork!",
+    "login":"Login",
+    "registerNow":"Register Now",
+    "ifYouNeed":"If You Need Any Support",
+    "clickHere":"Click Here",
+    "emailUser":"E-mail/Username",
+    "password":"Password",
+    "forgotPass":"Forgot Password?",
+    "loginWithOtp":"Login With OTP",
+    "notAMem":"Not a member?",
+    "registerAsMem":"Register as Member",
+    "email":"E-Mail",
+    "alreadyAMem":"Already a member?",
+
+
+    "home":"Home",
+    "hello":"Hello",
+    "bookYour":"Book your",
+    "slotToday":"slot today!",
+    "selectDate":"Select Date",
+    "startBooking":"Start Booking",
+    "ourCourts":"Our courts",
+    "junior":"Junior",
+    "senior":"Senior",
+    "recentBookings":"Recent Bookings",
+    "seeAll":"See all",
+    "teamMem":"Team Members",
+
+    "bookings":"Bookings",
+    "myBookings":"My Bookings",
+    "upCommingBooking":"Up Comming Booking",
+    "previousBooking":"Previous Booking",
+    "bookingId":"Booking Id",
+    "team":"Team",
+
+    "clubInfo":"Club Info",
+    "announcement":"Announcement",
+    "courtMaintainance":"Court Maintenance",
+    "generalAnnouncement":"General Announcement",
+    
+
+    "accounts":"Accounts",
+
+    "myProfile":"My Profile",
+    "editProfile":"Edit Profile",
+    "totalNoBooking":"Total Number of Bookings",
+    "cancelledBooking":"Cancelled Bookings",
+    "discard":"Discard",
+    "updateProfile":"Update Profile",
+
+    "membership":"Membership",
+    "myTeam":"My Team",
+
+    "notification":"Notifications",
+    "language":"Language-English",
+    "lightMode":"Light Mode",
+
+    "rateUS":"Rate Us",
+
+    "logOut":"Log Out"
+
+
+
+
+
+
+
+
+
+
+    
+
+
 }

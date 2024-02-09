@@ -162,7 +162,7 @@ class SignInProvider with ChangeNotifier {
   Future loginApi(String email, String password, String deviceToken) async {
     updateLoginLoader(true);
     var body = {
-      'userNameOrEmail': email,
+      'email': email,
       'password': password,
       'deviceToken': deviceToken
     };

@@ -1,3 +1,70 @@
 {
-    "hello":"مرحبًا"
+    "skip":"يتخطى",
+    "welToBehApp":"مرحبا بكم في نادي البحرين للتنس",
+    "letStarted":"اكتشف سهولة إدارة عضويتك وحجوزات المحكمة عبر الإنترنت. هيا بنا نبدأ!",
+    "next":"التالي",
+    "bookCourts":"حجز المحاكم بكل سهولة",
+    "enjoyThe":"استمتع بسهولة حجز المحاكم عبر الإنترنت، مما يضمن الاستخدام الفعال.",
+    "easyRegRen":"سهولة التسجيل والتجديد",
+    "joinRenew":"انضم إلى عضويتك أو جددها أو قم بإدارتها بسلاسة. قل وداعًا للأعمال الورقية!",
+    "login":"تسجيل الدخول",
+    "registerNow":"سجل الان",
+    "ifYouNeed":"إذا كنت بحاجة إلى أي دعم",
+    "clickHere":"انقر هنا",
+    "emailUser":"البريد الإلكتروني/اسم المستخدم",
+    "password":"كلمة المرور",
+    "forgotPass":"هل نسيت كلمة السر؟",
+    "loginWithOtp":"تسجيل الدخول باستخدام OTP",
+    "notAMem":"ليس عضوا؟",
+    "registerAsMem":"سجل كعضو",
+    "email":"بريد إلكتروني",
+    "alreadyAMem":"عضوا فعلا",
+
+    "home":"بيت",
+    "hello":"مرحبًا",
+    "bookYour":"احجز الخاص بك",
+    "slotToday":"فتحة اليوم!",
+    "selectDate":"حدد تاريخ",
+    "startBooking":"ابدأ الحجز",
+    "ourCourts":"محاكمنا",
+    "junior":"مبتدئ",
+    "senior":"كبير",
+    "recentBookings":"الحجوزات الأخيرة",
+    "seeAll":"اظهار الكل",
+    "teamMem":"أعضاء الفريق",
+
+    "bookings":"الحجوزات",
+    "myBookings":"حجوزاتي",
+    "upCommingBooking":"الحجز القادم",
+    "previousBooking":"الحجز السابق",
+    "bookingId":"معرف الحجز",
+    "team":"فريق",
+
+    "clubInfo":"معلومات النادي",
+    "announcement":"إعلان",
+    "courtMaintainance":"صيانة المحكمة",
+    "generalAnnouncement":"إعلان عام",
+    
+
+    "accounts":"حسابات",
+
+    "myProfile":"ملفي",
+    "editProfile":"تعديل الملف الشخصي",
+    "totalNoBooking":"إجمالي عدد الحجوزات",
+    "cancelledBooking":"الحجوزات الملغاة",
+    "discard":"ينبذ",
+    "updateProfile":"تحديث الملف",
+
+    "membership":"عضوية",
+    "myTeam":"فريقي",
+
+    "notification":"إشعارات",
+    "language":"إشعارات",
+    "lightMode":"وضع الضوء",
+
+    "rateUS":"قيمنا",
+
+    "logOut":"تسجيل خروج"
+
+
 }

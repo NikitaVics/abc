@@ -120,7 +120,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                 color: Theme.of(context).brightness == Brightness.dark
                     ? AppColors.darkAppBarboarder
                     : AppColors.appbarBoarder,
-                width: 2.0,
+                width: 1.0,
               ))),
               child: Column(
                 children: [
@@ -135,6 +135,10 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                             },
                             icon: Image.asset(
                               "assets/images/leftIcon.png",
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.headingTextColor
+                                  : AppColors.allHeadColor,
                               //width: 18,
                               height: 26,
                             ),

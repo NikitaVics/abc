@@ -26,6 +26,7 @@ import 'package:getwidget/getwidget.dart';
 import 'package:tennis_court_booking_app/theme/theme_manager.dart';
 import 'package:tennis_court_booking_app/widgets/animated_toast.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
+import 'package:tennis_court_booking_app/widgets/genderField.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_noneditable.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
 
@@ -133,7 +134,6 @@ class MyProfileScreenState extends State<MyProfileScreen> {
     final myProfileProv =
         Provider.of<MyProfileProvider>(context, listen: false);
     myProfileProv.fetchProfile(token);
-   
 
     print(name);
   }
@@ -175,7 +175,8 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                           },
                           icon: Image.asset(
                             "assets/images/leftIcon.png",
-                            color:  Theme.of(context).brightness == Brightness.dark
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
                                     ? AppColors.headingTextColor
                                     : AppColors.profileHead,
                             //width: 18,
@@ -206,8 +207,8 @@ class MyProfileScreenState extends State<MyProfileScreen> {
             ),
           ),
           backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkThemeback
-            : AppColors.lightThemeback,
+              ? AppColors.darkThemeback
+              : AppColors.lightThemeback,
           elevation: 0,
         ),
         body: _buildBody(),
@@ -258,17 +259,20 @@ class MyProfileScreenState extends State<MyProfileScreen> {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Consumer2<ProfileProvider, MyProfileProvider
-           >(
+        child: Consumer2<ProfileProvider, MyProfileProvider>(
           builder: (context, provider, providers, child) {
             if (provider.profileModel == null) {
               return Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.darkEditColor
+                      : AppColors.dotColor,
+                ),
               );
             } else {
               final profileData = provider.profileModel!;
               final myprofileData = providers.myProfile;
-            
+
               imageUrl = profileData.result.imageUrl;
               name = profileData.result.name ?? "";
               phoneNum = myprofileData?.result.phoneNumber ?? "";
@@ -278,7 +282,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
               cancelBook =
                   myprofileData?.result.totalCancelledBookings.toString() ??
                       "0";
-             
+
               return Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -374,9 +378,9 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                       style: TextStyle(
                         color: isEdited
                             ? AppColors.errorColor
-                            :Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.darkEditColor
-                          : AppColors.dotColor,
+                            : Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.darkEditColor
+                                : AppColors.dotColor,
                         fontSize: 14,
                         fontFamily: FontFamily.satoshi,
                         fontWeight: FontWeight.w400,
@@ -395,7 +399,9 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   }
 
   Widget _buildProfilePerfomence() {
-    Color borderColor = AppColors.appbarBoarder;
+    Color borderColor = Theme.of(context).brightness == Brightness.dark
+        ? AppColors.darkAppBarboarder
+        : AppColors.appbarBoarder;
     final themeNotifier = context.watch<ThemeModeNotifier>();
     return Padding(
         padding: const EdgeInsets.only(top: 20),
@@ -413,10 +419,141 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                     const SizedBox(
                       height: 30,
                     ),
-                   
                     Row(
                       children: [
-                        InkWell(
+                        isEdited
+                            ? Expanded(
+                                flex: 1,
+                                child: GenderTextFieldWidget(
+                                  read: false,
+                                  hint: '+ ',
+                                  inputType: TextInputType.none,
+                                  focusNode: _focusNode,
+                                  hintColor: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.darkhint
+                                      : AppColors.hintColor,
+                                  // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
+                                  textController: phonePrefixController,
+                                  inputAction: TextInputAction.next,
+                                  errorBorderColor: AppColors
+                                      .errorColor, // Border color for validation error
+
+                                  focusBorderColor: AppColors.focusTextBoarder,
+                                  autoFocus: false,
+                                  onSuffixIconPressed: () async {
+                                    FocusScope.of(context)
+                                        .requestFocus(_focusNode);
+                                    showCountryPicker(
+                                      context: context,
+                                      showPhoneCode: true,
+                                      onSelect: (Country country) {
+                                        phonePrefixController.text =
+                                            "+ ${country.phoneCode}";
+                                        setState(() {});
+                                      },
+                                    );
+                                  },
+                                  onChanged: (value) {
+                                    // Trigger validation on text change
+                                  },
+                                  errorText: " ",
+                                  isIcon: true,
+                                ),
+                              )
+                            : Expanded(
+                                flex: 1,
+                                child: Container(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 12,
+                                        right: 12,
+                                        top: 20,
+                                        bottom: 20),
+                                    child: Text(
+                                      prefPhone,
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : AppColors.subheadColor,
+                                        fontSize: 16,
+                                        fontFamily: FontFamily.satoshi,
+                                        fontWeight: FontWeight.w400,
+                                        height: 24 / 16,
+                                      ),
+                                    ),
+                                  ),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.darkAppBarboarder
+                                            : AppColors.appbarBoarder,
+                                      )),
+                                ),
+                              ),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        isEdited
+                            ? Expanded(
+                                flex: 2,
+                                child: TextFieldWidget(
+                                  read: false,
+                                  hint: 'Phone No.',
+                                  inputType: TextInputType.phone,
+                                  hintColor: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.darkhint
+                                      : AppColors.hintColor,
+                                  // iconColor: _themeStore.darkMode ? Colors.white70 : Colors.black54,
+                                  textController: phoneController,
+                                  inputAction: TextInputAction.next,
+                                  errorBorderColor: AppColors.textInputField,
+                                  focusBorderColor: AppColors.focusTextBoarder,
+                                  autoFocus: false,
+                                  onChanged: (value) {
+                                    setState(() {});
+                                  },
+                                  errorText: " ",
+                                ))
+                            : Expanded(
+                                flex: 2,
+                                child: Container(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 12,
+                                        right: 12,
+                                        top: 20,
+                                        bottom: 20),
+                                    child: Text(
+                                      phoneNum,
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : AppColors.subheadColor,
+                                        fontSize: 16,
+                                        fontFamily: FontFamily.satoshi,
+                                        fontWeight: FontWeight.w400,
+                                        height: 24 / 16,
+                                      ),
+                                    ),
+                                  ),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.darkAppBarboarder
+                                            : AppColors.appbarBoarder,
+                                      )),
+                                ),
+                              ),
+
+                        /* InkWell(
                           onTap: isEdited == true
                               ? () {
                                   if (isEdited == true) {
@@ -525,7 +662,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                             textInputAction: TextInputAction.next,
                             editable: isEdited,
                           ),
-                        ),
+                        ),*/
                       ],
                     ),
                     const SizedBox(
@@ -533,18 +670,33 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                     ),
                     isEdited
                         ? const SizedBox()
-                        : TextFieldNonEditable(
-                            width: MediaQuery.of(context).size.width,
-                            controller: genderController,
-                            focusBorderColor: AppColors.focusTextBoarder,
-                            fillColor: Colors.transparent,
-                            boarderColor: AppColors.appbarBoarder,
-                            color: Colors.transparent,
-                            hintColor: AppColors.subheadColor,
-                            hint: gen,
-                            obscure: false,
-                            textInputType: TextInputType.text,
-                            editable: false,
+                        : Container(
+                            width: double.infinity,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 12, right: 12, top: 20, bottom: 20),
+                              child: Text(
+                                gen,
+                                style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.profileDarkText
+                                      : AppColors.subheadColor,
+                                  fontSize: 16,
+                                  fontFamily: FontFamily.satoshi,
+                                  fontWeight: FontWeight.w400,
+                                  height: 24 / 16,
+                                ),
+                              ),
+                            ),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.darkAppBarboarder
+                                      : AppColors.appbarBoarder,
+                                )),
                           ),
                     const SizedBox(
                       height: 20,
@@ -578,7 +730,10 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                                   const EdgeInsets.symmetric(horizontal: 12),
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
-                                  color: AppColors.textInputField,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.darkTextInput
+                                      : AppColors.textInputField,
                                   border: Border.all(
                                       color: isSelected == true
                                           ? AppColors.focusTextBoarder
@@ -588,10 +743,13 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text(
+                                  Text(
                                     "Change Password",
                                     style: TextStyle(
-                                      color: AppColors.subheadColor,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? AppColors.profileDarkText
+                                          : AppColors.subheadColor,
                                       fontSize: 16,
                                       fontFamily: FontFamily.satoshi,
                                       fontWeight: FontWeight.w400,
@@ -603,6 +761,10 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                                     onPressed: () {},
                                     icon: Image.asset(
                                       "assets/images/Right.png",
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? AppColors.profileDarkText
+                                          : AppColors.subheadColor,
                                       //width: 18,
                                       height: 24,
                                     ),
@@ -634,7 +796,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
           child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                color: Colors.pink,
+                color: Colors.transparent,
               ),
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
@@ -690,8 +852,12 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                   child: Container(
                     height: 104,
                     decoration: BoxDecoration(
-                        color: AppColors.bookingShowColor,
-                        border: Border.all(color: AppColors.confirmValid),
+                        color: Colors.transparent,
+                        border: Border.all(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Color(0xff2CC36B)
+                                    : AppColors.confirmValid),
                         borderRadius: BorderRadius.circular(8)),
                     child: Padding(
                       padding: const EdgeInsets.only(
@@ -704,7 +870,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
-                                  ? AppColors.confirmValid
+                                  ? Color(0xff2CC36B)
                                   : AppColors.confirmValid,
                               fontSize: 32,
                               fontFamily: FontFamily.satoshi,
@@ -719,7 +885,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                               style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark
-                                    ? AppColors.totalbookingColor
+                                    ? Color(0xff4CBC7B)
                                     : AppColors.totalbookingColor,
                                 fontSize: 12,
                                 fontFamily: FontFamily.satoshi,
@@ -735,7 +901,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                               style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark
-                                    ? AppColors.totalbookingColor
+                                    ? Color(0xff4CBC7B)
                                     : AppColors.totalbookingColor,
                                 fontSize: 12,
                                 fontFamily: FontFamily.satoshi,
@@ -756,8 +922,12 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                   child: Container(
                     height: 104,
                     decoration: BoxDecoration(
-                        color: AppColors.cancelBack,
-                        border: Border.all(color: AppColors.errorColor),
+                        color: Colors.transparent,
+                        border: Border.all(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Color(0xffEE6E6E)
+                                    : AppColors.errorColor),
                         borderRadius: BorderRadius.circular(8)),
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
@@ -769,7 +939,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
-                                  ? AppColors.errorColor
+                                  ? Color(0xffEE6E6E)
                                   : AppColors.errorColor,
                               fontSize: 32,
                               fontFamily: FontFamily.satoshi,
@@ -784,7 +954,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                               style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark
-                                    ? AppColors.cancelBooking
+                                    ? Color(0xffEE7474)
                                     : AppColors.cancelBooking,
                                 fontSize: 12,
                                 fontFamily: FontFamily.satoshi,
@@ -800,7 +970,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                               style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark
-                                    ? AppColors.cancelBooking
+                                    ? Color(0xffEE7474)
                                     : AppColors.cancelBooking,
                                 fontSize: 12,
                                 fontFamily: FontFamily.satoshi,
@@ -848,6 +1018,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                       imageFile?.path ?? null)
                   .then((val) {
                 if (val != null && val["statusCode"] == 200) {
+                  profile();
                   setState(() {
                     isEdited = false;
                     isLoading = false;
@@ -878,11 +1049,11 @@ class MyProfileScreenState extends State<MyProfileScreen> {
               onPressed:
                   passwordError & emailError ? () {} : loginButtonPressed,
               buttonColor: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.darkEditColor
-                              : AppColors.elevatedColor,
+                  ? AppColors.darkEditColor
+                  : AppColors.elevatedColor,
               textColor: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.allHeadColor
-                              : Colors.white,
+                  ? AppColors.allHeadColor
+                  : Colors.white,
             );
           }),
         ),
@@ -896,6 +1067,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   @override
   void dispose() {
     // Clean up the controller when the Widget is removed from the Widget tree
+    _focusNode.dispose();
 
     _passwordFocusNode.dispose();
     super.dispose();
