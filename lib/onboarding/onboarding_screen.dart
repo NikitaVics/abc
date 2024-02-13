@@ -99,10 +99,10 @@ class OnboardingScreenState extends State<OnboardingScreen> {
           if (_currentPage == OnboardingData.onboardingData.length - 1)
             Positioned(
               bottom: 24,
-              left: 0,
-              right: 0,
+              left: 14,
+              right:24,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   TextButton( onPressed: () {
                       Navigator.of(context).push(
@@ -112,21 +112,30 @@ class OnboardingScreenState extends State<OnboardingScreen> {
                       );
                     },
                   child:Container(
-                    color: Colors.transparent,
-                    child: Text("Login",
-                     style: TextStyle(
-            color:AppColors.loginButtonColor,
-            fontSize: 14,
-            fontFamily: FontFamily.satoshi,
-            fontWeight: FontWeight.w700,
-            height: 24 / 14,
-          ),
+                    height: 60,
+                    width: 154,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(6),
+                        color: AppColors.homeBack,
+                   border: Border.all(color: AppColors.dotColor)
+                    ),
+                  
+                    child: Center(
+                      child: Text("Login",
+                       style: TextStyle(
+                                  color:AppColors.loginButtonColor,
+                                  fontSize: 14,
+                                  fontFamily: FontFamily.satoshi,
+                                  fontWeight: FontWeight.w700,
+                                  height: 24 / 14,
+                                ),
+                      ),
                     ),
                   )),
                   
                   CustomElevatedButton(
-                    height: 60,
-                    width: 153,
+                    height:60 ,
+                    width:170,
                     text: 'Register Now',
                     isLoading: false,
                     onPressed: () {

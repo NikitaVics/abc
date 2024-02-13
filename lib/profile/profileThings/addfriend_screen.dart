@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/api/api.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/language/provider/language_change_controller.dart';
 import 'package:tennis_court_booking_app/profile/model/search_model.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/myprofile_provider.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/profile_provider.dart';
@@ -15,6 +16,7 @@ import 'package:tennis_court_booking_app/profile/profileprovider/search_provider
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/theme/theme_manager.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddFriendScreen extends StatefulWidget {
   final String pageName;
@@ -81,6 +83,7 @@ class AddFriendScreenState extends State<AddFriendScreen> {
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
+      final languageNotifier = context.watch<LanguageChangeController>();
       return Scaffold(
         backgroundColor: Theme.of(context).brightness == Brightness.dark
             ? AppColors.darkThemeback
@@ -112,19 +115,32 @@ class AddFriendScreenState extends State<AddFriendScreen> {
                           onPressed: () {
                             Navigator.pop(context, null);
                           },
-                          icon: Image.asset(
-                            "assets/images/leftIcon.png",
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? AppColors.headingTextColor
-                                    : AppColors.profileHead,
-                            //width: 18,
-                            height: 26,
-                          ),
+                          icon: languageNotifier.appLocale == Locale("ar")
+                              ? Transform.flip(
+                                  flipX: true,
+                                  child: Image.asset(
+                                    "assets/images/leftIcon.png",
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.headingTextColor
+                                        : AppColors.profileHead,
+                                    //width: 18,
+                                    height: 26,
+                                  ),
+                                )
+                              : Image.asset(
+                                  "assets/images/leftIcon.png",
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : AppColors.profileHead,
+                                  //width: 18,
+                                  height: 26,
+                                ),
                         ),
                         const Spacer(),
                         Text(
-                          widget.pageName,
+                         (AppLocalizations.of(context)!.addFrined),
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -198,7 +214,7 @@ class AddFriendScreenState extends State<AddFriendScreen> {
                   return Center(
                     child: Padding(
                       padding: const EdgeInsets.only(top: 100),
-                      child: Text("No recent searches"),
+                      child: Text( (AppLocalizations.of(context)!.noRecentSearch)),
                     ),
                   );
                 } else {
@@ -255,8 +271,8 @@ class AddFriendScreenState extends State<AddFriendScreen> {
                         // Call the search function whenever the text changes
                         profile();
                       },
-                      decoration: const InputDecoration(
-                        hintText: 'Search friends',
+                      decoration:  InputDecoration(
+                        hintText:  (AppLocalizations.of(context)!.searchFriend),
                         hintStyle: TextStyle(
                           color: AppColors.hintColor,
                           fontSize: 14,
@@ -327,14 +343,14 @@ class AddFriendScreenState extends State<AddFriendScreen> {
                               border: Border.all(
                                   color: AppColors.requestedfriend, width: 1),
                             ),
-                            child: const Padding(
+                            child:  Padding(
                               padding: EdgeInsets.only(left: 12, right: 12),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
-                                    'Requested',
+                                    (AppLocalizations.of(context)!.requested),
                                     style: TextStyle(
                                       color: AppColors.requestedfriend,
                                       fontSize: 12,
@@ -362,14 +378,14 @@ class AddFriendScreenState extends State<AddFriendScreen> {
                               border: Border.all(
                                   color: AppColors.confirmValid, width: 1),
                             ),
-                            child: const Padding(
+                            child:  Padding(
                               padding: EdgeInsets.only(left: 12, right: 12),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
-                                    'ADD FRIEND',
+                                     (AppLocalizations.of(context)!.addFrined),
                                     style: TextStyle(
                                       color: AppColors.confirmValid,
                                       fontSize: 12,

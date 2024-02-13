@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/announcement/announcement_screen.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/language/provider/language_change_controller.dart';
 import 'package:tennis_court_booking_app/mybookings/my_bookings.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_screen.dart';
 import 'package:tennis_court_booking_app/profile/profile_screen.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BottomNavBar extends StatefulWidget {
   final int initial;
@@ -44,6 +48,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   @override
   Widget build(BuildContext context) {
+    final languageNotifier = context.watch<LanguageChangeController>();
     return SafeArea(
       top: false,
       child: Scaffold(
@@ -73,12 +78,13 @@ class _BottomNavBarState extends State<BottomNavBar> {
                           ? AppColors.navIconColor
                           : AppColors.disableNavIconColor,
                     ),
-                    NavBarLavel: "Home",
+                    NavBarLavel: (AppLocalizations.of(context)!.home),
+                    
                     NavIconColor: _selectedIndex == 0
                         ? AppColors.navIconColor
                         : AppColors.disableNavIconColor,
                   ),
-                  label: 'Home',
+                  label:  "",
                 ),
                 BottomNavigationBarItem(
                   icon: NavBarItem(
@@ -90,7 +96,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                           ? AppColors.navIconColor
                           : AppColors.disableNavIconColor,
                     ),
-                    NavBarLavel: "Bookings",
+                    NavBarLavel:  (AppLocalizations.of(context)!.bookings),
                     NavIconColor: _selectedIndex == 1
                         ? AppColors.navIconColor
                         : AppColors.disableNavIconColor,
@@ -107,7 +113,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                           ? AppColors.navIconColor
                           : AppColors.disableNavIconColor,
                     ),
-                    NavBarLavel: "Club Infos",
+                    NavBarLavel:  (AppLocalizations.of(context)!.clubInfo),
                     NavIconColor: _selectedIndex == 2
                         ? AppColors.navIconColor
                         : AppColors.disableNavIconColor,
@@ -124,7 +130,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                           ? AppColors.navIconColor
                           : AppColors.disableNavIconColor,
                     ),
-                    NavBarLavel: "Accounts",
+                    NavBarLavel: (AppLocalizations.of(context)!.accounts),
                     NavIconColor: _selectedIndex == 3
                         ? AppColors.navIconColor
                         : AppColors.disableNavIconColor,

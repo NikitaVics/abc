@@ -9,6 +9,7 @@ import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/conf
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/constants/shimmer.dart';
+import 'package:tennis_court_booking_app/language/provider/language_change_controller.dart';
 import 'package:tennis_court_booking_app/model/upComingBooking/upcoming_booking_model.dart';
 import 'package:tennis_court_booking_app/mybookings/bookingDetails/booking_details.dart';
 import 'package:tennis_court_booking_app/mybookings/provider/previous_booking_provider.dart';
@@ -28,6 +29,7 @@ import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/funky_overlay.dart';
 import 'package:tennis_court_booking_app/widgets/home_appbar.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MyBookingScreen extends StatefulWidget {
   const MyBookingScreen({super.key});
@@ -108,7 +110,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                     height: 20,
                   ),
                   Text(
-                    "My Bookings",
+                 (AppLocalizations.of(context)!.myBookings),
                     style: TextStyle(
                       color: Theme.of(context).brightness == Brightness.dark
                           ? AppColors.headingTextColor
@@ -431,7 +433,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
           : AppColors.appbarBoarder,)),
                   ),
                   child: Text(
-                    'Up comming Booking',
+                   (AppLocalizations.of(context)!.upCommingBooking),
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: isFirstButtonSelected
@@ -477,7 +479,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
           ? AppColors.darkAppBarboarder
           : AppColors.appbarBoarder,)),
                   ),
-                  child: Text('Previous Booking',
+                  child: Text((AppLocalizations.of(context)!.previousBooking),
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: isSecondButtonSelected
@@ -517,6 +519,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
   }
 
   Widget _buildupComingbooking(int index, int itemCount, Booking? booking) {
+     final languageNotifier = context.watch<LanguageChangeController>();
     DateTime date = DateTime.parse(booking?.bookingDate.toString() ?? "");
 
     String formattedDate = DateFormat('MMM d').format(date);
@@ -556,14 +559,25 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                                       Brightness.dark?
               ClipRRect(
                 borderRadius: BorderRadius.circular(12.0),
-                child: Image.asset(
+                child:  languageNotifier.appLocale == Locale("en")
+                                ?Image.asset(
                   "assets/images/DarkShape.png",
-                ),
+                ):Transform.flip(
+                  flipX: true,
+                  child: Image.asset(
+                  "assets/images/DarkShape.png",
+                ),),
               ): ClipRRect(
                 borderRadius: BorderRadius.circular(12.0),
-                child: Image.asset(
+                child:languageNotifier.appLocale == Locale("en")
+                                ? Image.asset(
+                  "assets/images/Shape.png",
+                ):Transform.flip(
+                  flipX: true,
+                  child: Image.asset(
                   "assets/images/Shape.png",
                 ),
+              )
               ),
               Positioned(
                 top: 8,
@@ -607,7 +621,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                       Row(
                         children: [
                           Text(
-                            "Booking ID -",
+                              (AppLocalizations.of(context)!.bookingId),
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
@@ -620,7 +634,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                             ),
                           ),
                           Text(
-                            " ${booking?.bookingId ?? ""}",
+                            " - ${booking?.bookingId ?? ""}",
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
@@ -638,7 +652,72 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                   ),
                 ),
               ),
+              languageNotifier.appLocale == Locale("ar")?
               Positioned(
+                top: 80,
+                bottom: 15,
+                right: 14,
+                child: Row(
+                  children: [
+                    Text(
+                      "${(AppLocalizations.of(context)!.team)} -",
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkTextInput
+                            : Colors.white,
+                        fontSize: 14,
+                        fontFamily: FontFamily.satoshi,
+                        fontWeight: FontWeight.w400,
+                        height: 24 / 14,
+                      ),
+                    ),
+                    SizedBox(width: 8), // Adjust the spacing
+                    SizedBox(
+                      width: 200,
+                      height: 250,
+                      child:
+                       Stack(
+                        children: [
+                          
+                          Positioned(
+                              right: 0,
+                              top: 0,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(110.0),
+                                child: SilentErrorImage(
+                                  width: 25.44,
+                                  height: 25.44,
+                                  imageUrl: booking?.userImage ??
+                                      'assets/images/ProfileImage.png',
+                                ),
+                              )),
+                          ...List.generate(
+                            booking?.teamMembers.length ??
+                                0, // Ensure the list has three items
+                            (index) {
+                              TeamMember teamMember =
+                                  booking!.teamMembers[index];
+                              double leftPad = (20 * (index + 1)).toDouble();
+                              return Positioned(
+                               right: leftPad,
+                                top: 0,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(150.0),
+                                  child: SilentErrorImage(
+                                    width: 25.44,
+                                    height: 25.44,
+                                    imageUrl: teamMember.imageUrl,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      )
+                    ),
+                  ],
+                ),
+              ):Positioned(
                 top: 80,
                 bottom: 15,
                 left: 14,
@@ -660,8 +739,10 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                     SizedBox(
                       width: 200,
                       height: 250,
-                      child: Stack(
+                      child: 
+                       Stack(
                         children: [
+                          
                           Positioned(
                               left: 0,
                               top: 0,
@@ -701,10 +782,61 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                   ],
                 ),
               ),
+              languageNotifier.appLocale == Locale("ar")?
               Positioned(
                 top: 37.5,
-                //left: 230,
-                right: 15,
+                left:15,
+              //  right:languageNotifier.appLocale == Locale("ar")?0:15,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          "${month}".toUpperCase(),
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : AppColors.allHeadColor,
+                            fontSize: 24,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w700,
+                            height: 32 / 24,
+                          ),
+                        ),
+                        Text(
+                          " ${day}",
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.elevatedColor
+                                    : AppColors.elevatedColor,
+                            fontSize: 24,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w700,
+                            height: 32 / 24,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      "$timePart - $results",
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : AppColors.subheadColor,
+                        fontSize: 12,
+                        fontFamily: FontFamily.satoshi,
+                        fontWeight: FontWeight.w400,
+                        height: 16 / 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ):Positioned(
+                top: 37.5,
+                
+                right:15,
                 child: Column(
                   children: [
                     Row(

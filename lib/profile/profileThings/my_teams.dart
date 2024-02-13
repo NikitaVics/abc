@@ -16,6 +16,7 @@ import 'package:tennis_court_booking_app/api/api.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/constants/shimmer.dart';
+import 'package:tennis_court_booking_app/language/provider/language_change_controller.dart';
 import 'package:tennis_court_booking_app/model/friendShow/friend_show_model.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
 
@@ -36,8 +37,7 @@ import 'package:getwidget/getwidget.dart';
 import 'package:tennis_court_booking_app/theme/theme_manager.dart';
 import 'package:tennis_court_booking_app/widgets/animated_toast.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
-import 'package:tennis_court_booking_app/widgets/textfield_noneditable.dart';
-import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MyTeamsScreen extends StatefulWidget {
   final String pageName;
@@ -65,7 +65,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
   String? imageUrl;
   bool state = false;
   bool lightState = true;
-  String time="";
+  String time = "";
   //SignInProvider? provider;
 
   @override
@@ -99,7 +99,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
         Provider.of<MyProfileProvider>(context, listen: false);
     myProfileProv.fetchProfile(token);
     print(name);
-     final myTimeProv =
+    final myTimeProv =
         Provider.of<ProfileCreateProvider>(context, listen: false);
     myTimeProv.fetchtime(token);
   }
@@ -128,6 +128,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
+      final languageNotifier = context.watch<LanguageChangeController>();
       return Scaffold(
         backgroundColor: Theme.of(context).brightness == Brightness.dark
             ? AppColors.darkThemeback
@@ -159,19 +160,32 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                           onPressed: () {
                             Navigator.pop(context, null);
                           },
-                          icon: Image.asset(
-                            "assets/images/leftIcon.png",
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? AppColors.headingTextColor
-                                    : AppColors.profileHead,
-                            //width: 18,
-                            height: 26,
-                          ),
+                          icon: languageNotifier.appLocale == Locale("ar")
+                              ? Transform.flip(
+                                  flipX: true,
+                                  child: Image.asset(
+                                    "assets/images/leftIcon.png",
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.headingTextColor
+                                        : AppColors.profileHead,
+                                    //width: 18,
+                                    height: 26,
+                                  ),
+                                )
+                              : Image.asset(
+                                  "assets/images/leftIcon.png",
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : AppColors.profileHead,
+                                  //width: 18,
+                                  height: 26,
+                                ),
                         ),
                         const Spacer(),
                         Text(
-                          widget.pageName,
+                          (AppLocalizations.of(context)!.myTeam),
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -191,9 +205,9 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
               ),
             ),
           ),
-          backgroundColor:Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkThemeback
-            : AppColors.lightThemeback,
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkThemeback
+              : AppColors.lightThemeback,
           elevation: 0,
         ),
         body: _buildBody(),
@@ -232,17 +246,17 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Consumer2<ProfileProvider, ProfileCreateProvider>(
-          builder: (context, provider,mytimeProv, child) {
+          builder: (context, provider, mytimeProv, child) {
             if (provider.profileModel == null) {
               return Center(
                 child: CircularProgressIndicator(),
               );
             } else {
               final profileData = provider.profileModel!;
-  final mytime = mytimeProv.timeModel;
+              final mytime = mytimeProv.timeModel;
               imageUrl = profileData.result.imageUrl;
               name = profileData.result.name ?? "";
- time = mytime?.result.toString()??"";
+              time = mytime?.result.toString() ?? "";
               return Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -343,7 +357,8 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
               height: 8,
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
+              padding: const EdgeInsets.only(
+                  left: 20, top: 10, bottom: 10, right: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -360,7 +375,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                     ),
                   ),
                   Text(
-                    "Member from $time",
+                    "${(AppLocalizations.of(context)!.membership)} $time",
                     style: TextStyle(
                       color: AppColors.dotColor,
                       fontSize: 14,
@@ -400,27 +415,28 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                     backgroundColor: isFirstButtonSelected
                         ? AppColors.elevatedColor
                         : Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkThemeback
-          : AppColors.homeBack,
+                            ? AppColors.darkThemeback
+                            : AppColors.homeBack,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
                         side: BorderSide(
-                            color: isFirstButtonSelected
-                                ? Colors.transparent
-                                : Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkAppBarboarder
-          : AppColors.appbarBoarder,)),
+                          color: isFirstButtonSelected
+                              ? Colors.transparent
+                              : Theme.of(context).brightness == Brightness.dark
+                                  ? AppColors.darkAppBarboarder
+                                  : AppColors.appbarBoarder,
+                        )),
                   ),
                   child: Text(
-                    'My Friends',
+                   (AppLocalizations.of(context)!.myFriends),
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: isFirstButtonSelected
                           ? Colors.white
                           : Theme.of(context).brightness == Brightness.dark
-          ? AppColors.hintColor
-          : AppColors.bookingInvalid,
+                              ? AppColors.hintColor
+                              : AppColors.bookingInvalid,
                       fontSize: 12,
                       fontFamily: FontFamily.satoshi,
                       fontWeight: FontWeight.w700,
@@ -445,27 +461,28 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isSecondButtonSelected
                         ? AppColors.elevatedColor
-                        :  Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkThemeback
-          : AppColors.homeBack,
+                        : Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkThemeback
+                            : AppColors.homeBack,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
                         side: BorderSide(
-                            color: isSecondButtonSelected
-                                ? Colors.transparent
-                                : Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkAppBarboarder
-          : AppColors.appbarBoarder,)),
+                          color: isSecondButtonSelected
+                              ? Colors.transparent
+                              : Theme.of(context).brightness == Brightness.dark
+                                  ? AppColors.darkAppBarboarder
+                                  : AppColors.appbarBoarder,
+                        )),
                   ),
-                  child: Text('Requests',
+                  child: Text((AppLocalizations.of(context)!.requests),
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color:  isSecondButtonSelected
+                        color: isSecondButtonSelected
                             ? Colors.white
                             : Theme.of(context).brightness == Brightness.dark
-          ? AppColors.hintColor
-          : AppColors.bookingInvalid,
+                                ? AppColors.hintColor
+                                : AppColors.bookingInvalid,
                         fontSize: 12,
                         fontFamily: FontFamily.satoshi,
                         fontWeight: FontWeight.w700,
@@ -527,7 +544,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                           ? MotionToast(
                               primaryColor: AppColors.dotColor,
                               description: Text(
-                                "Account Removed Successfully!",
+                               (AppLocalizations.of(context)!.removeText),
                                 style: TextStyle(
                                   color: Theme.of(context).brightness ==
                                           Brightness.dark
@@ -545,7 +562,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                           : MotionToast(
                               primaryColor: AppColors.errorColor,
                               description: Text(
-                                "Something went wrong!",
+                                (AppLocalizations.of(context)!.wrongText),
                                 style: TextStyle(
                                   color: Theme.of(context).brightness ==
                                           Brightness.dark
@@ -578,6 +595,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
 
   Widget _friendRequestWidget(
       int index, int itemCount, MyFriendRequest? myfriend) {
+         final languageNotifier = context.watch<LanguageChangeController>();
     Color borderColor = AppColors.appbarBoarder;
     final themeNotifier = context.watch<ThemeModeNotifier>();
     final textScaleFactor = MediaQuery.of(context).textScaleFactor;
@@ -624,7 +642,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                     MotionToast(
                       primaryColor: AppColors.warningToast,
                       description: Text(
-                        "🙁 Rejected ${myfriend?.friendName} request",
+                        "🙁 ${(AppLocalizations.of(context)!.rejected)} ${myfriend?.friendName} ${(AppLocalizations.of(context)!.request)}",
                         style: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark
                               ? AppColors.headingTextColor
@@ -646,14 +664,14 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                       borderRadius: BorderRadius.circular(4),
                       border: Border.all(color: AppColors.errorColor, width: 1),
                     ),
-                    child: const Padding(
+                    child: Padding(
                       padding: EdgeInsets.only(left: 12, right: 12),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            'Reject',
+                           (AppLocalizations.of(context)!.reject),
                             style: TextStyle(
                               color: AppColors.errorColor,
                               fontSize: 12,
@@ -677,7 +695,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                     MotionToast(
                       primaryColor: AppColors.dotColor,
                       description: Text(
-                        "😀 Accepted ${myfriend?.friendName} request",
+                        "😀 ${(AppLocalizations.of(context)!.accepted)} ${myfriend?.friendName} ${(AppLocalizations.of(context)!.request)}",
                         style: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark
                               ? AppColors.headingTextColor
@@ -699,14 +717,14 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                       border:
                           Border.all(color: AppColors.confirmValid, width: 1),
                     ),
-                    child: const Padding(
+                    child:  Padding(
                       padding: EdgeInsets.only(left: 12, right: 12),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            'Accept',
+                           (AppLocalizations.of(context)!.accept),
                             style: TextStyle(
                               color: AppColors.confirmValid,
                               fontSize: 12,
@@ -765,7 +783,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
               ? 70
               : double.infinity,
           isLoading: isLoading,
-          text: "Add Friends",
+          text: (AppLocalizations.of(context)!.addFrined),
           onPressed: () {
             Navigator.push(
                 context,

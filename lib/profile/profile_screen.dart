@@ -19,6 +19,7 @@ import 'package:tennis_court_booking_app/profile/profileprovider/profile_provide
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:tennis_court_booking_app/theme/theme_manager.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -69,6 +70,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
+      final languageNotifier = context.watch<LanguageChangeController>();
       return Scaffold(
         backgroundColor: Theme.of(context).brightness == Brightness.dark
             ? AppColors.darkThemeback
@@ -83,7 +85,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                 width: 24,
               ),
               Text(
-                "My Account",
+                  (AppLocalizations.of(context)!.accounts),
                 style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.headingTextColor
@@ -233,6 +235,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildProfilePerfomence() {
+    
     final themeNotifier = context.watch<ThemeModeNotifier>();
     final languageNotifier = context.watch<LanguageChangeController>();
     final textScaleFactor = MediaQuery.of(context).textScaleFactor;
@@ -282,7 +285,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(width: 25),
                         Text(
-                          "My Profile",
+ (AppLocalizations.of(context)!.myProfile),
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -299,18 +302,28 @@ class ProfileScreenState extends State<ProfileScreen> {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(right: 20),
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: Image.asset(
-                              "assets/images/Right3.png",
-                              width: 24,
-                              height: 24,
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.profileDarkText
-                                  : AppColors.subheadColor,
-                            ),
-                          ),
+                          child: languageNotifier.appLocale == Locale("en")?
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Image.asset(
+                                    "assets/images/Right.png",
+                                    height: 24,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.headingTextColor
+                                        : Colors.black,
+                                  ),
+                                ): Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Image.asset(
+                                    "assets/images/rightarabic.png",
+                                    height: 24,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.headingTextColor
+                                        : Colors.black,
+                                  ),
+                                ),
                         ),
                       ],
                     ),
@@ -341,7 +354,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                       GestureDetector(
                         onTap: () async {},
                         child: Text(
-                          "Membership",
+                         (AppLocalizations.of(context)!.membership),
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -359,20 +372,28 @@ class ProfileScreenState extends State<ProfileScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(right: 20),
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                              onTap: () async {},
-                              child: Image.asset(
-                                "assets/images/Right3.png",
-                                width: 24,
-                                height: 24,
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.profileDarkText
-                                    : AppColors.subheadColor,
-                              )),
-                        ),
+                        child: languageNotifier.appLocale == Locale("en")?
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Image.asset(
+                                    "assets/images/Right.png",
+                                    height: 24,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.headingTextColor
+                                        : Colors.black,
+                                  ),
+                                ): Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Image.asset(
+                                    "assets/images/rightarabic.png",
+                                    height: 24,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.headingTextColor
+                                        : Colors.black,
+                                  ),
+                                ),
                       ),
                     ],
                   ),
@@ -416,7 +437,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                                       )));
                         },
                         child: Text(
-                          "My Team",
+                        (AppLocalizations.of(context)!.myTeam),
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -434,20 +455,28 @@ class ProfileScreenState extends State<ProfileScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(right: 20),
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: GestureDetector(
-                              onTap: () async {},
-                              child: Image.asset(
-                                "assets/images/Right3.png",
-                                width: 24,
-                                height: 24,
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.profileDarkText
-                                    : AppColors.subheadColor,
-                              )),
-                        ),
+                        child: languageNotifier.appLocale == Locale("en")?
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Image.asset(
+                                    "assets/images/Right.png",
+                                    height: 24,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.headingTextColor
+                                        : Colors.black,
+                                  ),
+                                ): Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Image.asset(
+                                    "assets/images/rightarabic.png",
+                                    height: 24,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.headingTextColor
+                                        : Colors.black,
+                                  ),
+                                ),
                       ),
                     ],
                   ),
@@ -482,7 +511,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(width: 25),
                         Text(
-                          "Notifications",
+                           (AppLocalizations.of(context)!.notification),
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -499,18 +528,28 @@ class ProfileScreenState extends State<ProfileScreen> {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(right: 20),
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: Image.asset(
-                              "assets/images/Right3.png",
-                              width: 24,
-                              height: 24,
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.profileDarkText
-                                  : AppColors.subheadColor,
-                            ),
-                          ),
+                          child:  languageNotifier.appLocale == Locale("en")?
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Image.asset(
+                                    "assets/images/Right.png",
+                                    height: 24,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.headingTextColor
+                                        : Colors.black,
+                                  ),
+                                ): Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Image.asset(
+                                    "assets/images/rightarabic.png",
+                                    height: 24,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.headingTextColor
+                                        : Colors.black,
+                                  ),
+                                ),
                         ),
                       ],
                     ),
@@ -544,7 +583,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                           data: MediaQuery.of(context)
                               .copyWith(textScaleFactor: 1.0),
                           child: Text(
-                            "Languages - English",
+                           (AppLocalizations.of(context)!.language),
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
@@ -612,7 +651,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                       GestureDetector(
                         onTap: () async {},
                         child: Text(
-                          "Light Mode",
+                         (AppLocalizations.of(context)!.lightMode),
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -684,7 +723,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                       GestureDetector(
                         onTap: () async {},
                         child: Text(
-                          "Rate Us",
+                          (AppLocalizations.of(context)!.rateUS),
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -723,14 +762,24 @@ class ProfileScreenState extends State<ProfileScreen> {
                                       builder: (context) =>
                                           const LoginScreen()));
                             },
-                            child: Image.asset(
-                              "assets/images/Logout.png",
-                              height: 15,
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.profileDarkText
-                                  : AppColors.subheadColor,
-                            )),
+                            child:languageNotifier.appLocale == Locale("ar")? Transform.flip(
+                          flipX: true,
+                              child: Image.asset(
+                                "assets/images/Logout.png",
+                                height: 15,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.profileDarkText
+                                    : AppColors.subheadColor,
+                              ),
+                            ):Image.asset(
+                                "assets/images/Logout.png",
+                                height: 15,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.profileDarkText
+                                    : AppColors.subheadColor,
+                              ),),
                       ),
                       const SizedBox(width: 25),
                       GestureDetector(
@@ -750,7 +799,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                                   builder: (context) => const LoginScreen()));
                         },
                         child: Text(
-                          "Log Out",
+                         (AppLocalizations.of(context)!.logOut),
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark

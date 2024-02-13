@@ -42,29 +42,56 @@
 
     "clubInfo":"معلومات النادي",
     "announcement":"إعلان",
+    "eventAnnouncement":"إعلان الحدث",
     "courtMaintainance":"صيانة المحكمة",
     "generalAnnouncement":"إعلان عام",
     
 
-    "accounts":"حسابات",
+    "accounts":"حسابي",
+    "atLeast8char":"ثمانية أحرف على الأقل",
+    "lowerCase": "يحتوي على حرف صغير",
+    "upperCase":"يحتوي على حرف كبير",
+    "atleast1num":"يحتوي على رقم واحد على الأقل",
+    "specialChar":"يحتوي على طابع خاص",
+    "updatePass":"تطوير كلمة السر",
 
     "myProfile":"ملفي",
     "editProfile":"تعديل الملف الشخصي",
-    "totalNoBooking":"إجمالي عدد الحجوزات",
-    "cancelledBooking":"الحجوزات الملغاة",
+    "totalNo":"العدد الإجمالي",
+    "booking":"الحجوزات",
+    "cancelledBooking":"ألغيت",
     "discard":"ينبذ",
     "updateProfile":"تحديث الملف",
+    "phoneNo":"رقم الهاتف.",
+    "changePass":"تغيير كلمة المرور",
+    "currentPass":"كلمة السر الحالية",
+    "confirmPass":"تأكيد كلمة المرور",
+    "memberFrom":"عضو من",
+     "myFriends":"أصدقائي",
+   "requests":"الطلبات",
+    "removeText":   "تمت إزالة الحساب بنجاح!",
+    "wrongText":   "هناك خطأ ما!",
+    "rejected":"مرفوض",
+    "request":"طلب",
+    "reject":"يرفض",
+    "accepted":"قبلت",
+    "accept":"يقبل",
+    "addFrined":"اضف اصدقاء",
+    "noRecentSearch":"لا يوجد بحث حديث",
+    "requested":"مطلوب",
+    "addFri":"إضافة صديق",
+    "searchFriend":"البحث عن الأصدقاء",
+
+
 
     "membership":"عضوية",
     "myTeam":"فريقي",
 
     "notification":"إشعارات",
-    "language":"إشعارات",
+    "language":"اللغات - الانجليزية",
     "lightMode":"وضع الضوء",
 
     "rateUS":"قيمنا",
 
     "logOut":"تسجيل خروج"
-
-
 }

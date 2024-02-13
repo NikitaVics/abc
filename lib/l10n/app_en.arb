@@ -36,7 +36,7 @@
 
     "bookings":"Bookings",
     "myBookings":"My Bookings",
-    "upCommingBooking":"Up Comming Booking",
+    "upCommingBooking":"UpComming Booking",
     "previousBooking":"Previous Booking",
     "bookingId":"Booking Id",
     "team":"Team",
@@ -44,39 +44,60 @@
     "clubInfo":"Club Info",
     "announcement":"Announcement",
     "courtMaintainance":"Court Maintenance",
+    "eventAnnouncement":"Event Announcement",
     "generalAnnouncement":"General Announcement",
-    
+    "phoneNo": "Phone No.",
 
-    "accounts":"Accounts",
+
+    "accounts":"My Account",
 
     "myProfile":"My Profile",
     "editProfile":"Edit Profile",
-    "totalNoBooking":"Total Number of Bookings",
-    "cancelledBooking":"Cancelled Bookings",
+    "totalNo":"Total Number of ",
+    "booking":"Bookings",
+    "cancelledBooking":"Cancelled ",
     "discard":"Discard",
     "updateProfile":"Update Profile",
+   "changePass":"Change Password",
+   "currentPass":"Current Password",
+   "confirmPass":"Confirm Password",
+   "memberFrom":"Member from",
+   "myFriends":"My Friends",
+   "requests":"Requests",
+    "removeText":   "Account Removed Successfully!",
+    "wrongText":   "Something went wrong!",
+    "rejected":"Rejected",
+    "request":"request",
+    "reject":"reject",
+    "accepted":"Accepted",
+    "accept":"Accept",
+    "addFrined":"Add Friends",
+    "noRecentSearch":"No Recent Search",
+    "requested":"REQUESTED",
+    "addFri":"ADD FRIEND",
+    "searchFriend":"Search friends",
+
+
+
+
+
 
     "membership":"Membership",
     "myTeam":"My Team",
+   
 
     "notification":"Notifications",
-    "language":"Language-English",
+    "language":"Languages - English",
     "lightMode":"Light Mode",
 
     "rateUS":"Rate Us",
 
-    "logOut":"Log Out"
-
-
-
-
-
-
-
-
-
-
-    
-
-
+    "logOut":"Log Out",
+     
+    "atLeast8char":"At least 8 characters",
+    "lowerCase": "Contains lowercase letter",
+    "upperCase":"Contains uppercase letter",
+    "atleast1num":"Contains at least 1 number",
+    "specialChar":"Contains special character",
+    "updatePass":"Update Password"
 }

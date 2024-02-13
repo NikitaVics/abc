@@ -1276,7 +1276,8 @@ class HomeScreenState extends State<HomeScreen>
           String timeRange = '$endTime - $startTime';
             print(timeRange);
           return Padding(
-            padding: const EdgeInsets.only(right: 20),
+            padding:    languageNotifier.appLocale == Locale("en")
+                                      ?EdgeInsets.only(right: 20):EdgeInsets.only(left: 20),
             child: MediaQuery(
               data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
               child: GestureDetector(
@@ -1511,7 +1512,7 @@ class HomeScreenState extends State<HomeScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Recent Bookings",
+               (AppLocalizations.of(context)!.recentBookings),
                 style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.headingTextColor
@@ -1531,8 +1532,8 @@ class HomeScreenState extends State<HomeScreen>
                     ),
                   );
                 },
-                child: const Text(
-                  "See all",
+                child:  Text(
+                 (AppLocalizations.of(context)!.seeAll),
                   style: TextStyle(
                     decoration: TextDecoration.underline,
                     decorationColor: AppColors.dotColor,
@@ -1573,6 +1574,7 @@ class HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildupComingbooking(int index, int itemCount, Booking? booking) {
+    final languageNotifier = context.watch<LanguageChangeController>();
     DateTime date = DateTime.parse(booking?.bookingDate.toString() ?? "");
 
     String formattedDate = DateFormat('MMM d').format(date);
@@ -1600,7 +1602,9 @@ class HomeScreenState extends State<HomeScreen>
     // Format day (23)
     String day = DateFormat("d").format(dateTiming);
 
-    return Padding(
+    return  languageNotifier.appLocale == Locale("en")
+                                      ?
+    Padding(
       padding: const EdgeInsets.only(right: 20),
       child: Container(
         height: MediaQuery.of(context).size.height,
@@ -1798,6 +1802,220 @@ class HomeScreenState extends State<HomeScreen>
                                       );
                                     },
                                   ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ): Padding(
+      padding: const EdgeInsets.only(left: 20),
+      child: Container(
+        height: MediaQuery.of(context).size.height,
+        width: 250,
+        decoration: BoxDecoration(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkTextInput
+              : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 2,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: SilentErrorImage(
+                    height: 102,
+                    width: 82,
+                    imageUrl: booking?.tennisCourt.courtImageURLs[0] ??
+                        'assets/images/ProfileImage.png',
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(right: 14),
+                child: Stack(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            booking?.tennisCourt.name ?? "",
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.booklight
+                                  : AppColors.allHeadColor,
+                              fontSize: 16,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w500,
+                              height: 24 / 16,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 2,
+                        ),
+                        Container(
+                          /// color: Colors.pink,
+                          height: 16,
+                          child: Row(
+                            //crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Image.asset(
+                                "assets/images/calender.png",
+                                height: 12,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.profileDarkText
+                                    : AppColors.subheadColor,
+                              ),
+                              SizedBox(
+                                width: 7,
+                              ),
+                               Text(
+                                "${day} ",
+                                style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.profileDarkText
+                                      : Colors.black.withOpacity(0.5),
+                                  fontSize: 10,
+                                  fontFamily: FontFamily.roboto,
+                                  fontWeight: FontWeight.w400,
+                                  // height: 0.16,
+                                ),
+                              ),
+                              Text(
+                                "${month}".toUpperCase(),
+                                style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.profileDarkText
+                                      : Colors.black.withOpacity(0.5),
+                                  fontSize: 10,
+                                  fontFamily: FontFamily.roboto,
+                                  fontWeight: FontWeight.w400,
+                                  //height: 0.16,
+                                ),
+                              ),
+                             
+                              Text(
+                                " ${timePart} ${dateTime.hour < 12 ? 'am' : 'pm'}",
+                                style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.profileDarkText
+                                      : Colors.black.withOpacity(0.5),
+                                  fontSize: 10,
+                                  fontFamily: FontFamily.roboto,
+                                  fontWeight: FontWeight.w400,
+                                  // height: 0.16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        Container(
+                          /// color: Colors.pink,
+                          height: 16,
+                          child: Row(
+                            //crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Image.asset(
+                                "assets/images/Group3.png",
+                                height: 12,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.profileDarkText
+                                    : Colors.black.withOpacity(0.5),
+                              ),
+                              SizedBox(
+                                width: 7,
+                              ),
+                              Text(
+                               (AppLocalizations.of(context)!.teamMem),
+                                style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.profileDarkText
+                                      : Colors.black.withOpacity(0.5),
+                                  fontSize: 10,
+                                  fontFamily: FontFamily.roboto,
+                                  fontWeight: FontWeight.w400,
+                                  // height: 0.16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 4,
+                        ),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 100,
+                              height: 36,
+                              child: Stack(
+                                children: [
+                                  
+                                  ...List.generate(
+                                    booking?.teamMembers.length ??
+                                        0, // Ensure the list has three items
+                                    (index) {
+                                      TeamMember teamMember =
+                                          booking!.teamMembers[index];
+                                      double leftPad =
+                                          (23 * (index + 1)).toDouble();
+                                      return Positioned(
+                                        right: leftPad,
+                                        top: 0,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(150.0),
+                                          child: SilentErrorImage(
+                                            width: 30,
+                                            height: 30,
+                                            imageUrl: teamMember.imageUrl,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  Positioned(
+                                      right: 0,
+                                      top: 0,
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(110.0),
+                                        child: SilentErrorImage(
+                                          width: 30,
+                                          height: 30,
+                                          imageUrl: booking?.userImage ??
+                                              'assets/images/ProfileImage.png',
+                                        ),
+                                      )),
                                 ],
                               ),
                             ),

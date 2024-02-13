@@ -12,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/language/provider/language_change_controller.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
 
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
@@ -29,6 +30,8 @@ import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/genderField.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_noneditable.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MyProfileScreen extends StatefulWidget {
   final String pageName;
@@ -48,6 +51,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   final TextEditingController _password = TextEditingController();
   final TextEditingController _confirmpassword = TextEditingController();
   FocusNode _focusNode = FocusNode();
+  
 
   //predefine bool value for error:---------------------------------------------
   bool emailError = false,
@@ -142,6 +146,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
+      final languageNotifier = context.watch<LanguageChangeController>();
       return Scaffold(
         backgroundColor: Theme.of(context).brightness == Brightness.dark
             ? AppColors.darkThemeback
@@ -173,7 +178,18 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                           onPressed: () {
                             Navigator.pop(context, null);
                           },
-                          icon: Image.asset(
+                          icon:languageNotifier.appLocale == Locale("ar")? Transform.flip(
+                            flipX: true,
+                           child: Image.asset(
+                              "assets/images/leftIcon.png",
+                              color:
+                                  Theme.of(context).brightness == Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : AppColors.profileHead,
+                              //width: 18,
+                              height: 26,
+                            ),
+                          ): Image.asset(
                             "assets/images/leftIcon.png",
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -187,7 +203,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                           width: 106,
                         ),
                         Text(
-                          widget.pageName,
+                          (AppLocalizations.of(context)!.myProfile),
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -343,7 +359,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
               height: 8,
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
+              padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10,right: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -374,7 +390,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                       });
                     },
                     child: Text(
-                      isEdited ? "Discard" : "Edit Profile",
+                      isEdited ? (AppLocalizations.of(context)!.discard) : (AppLocalizations.of(context)!.editProfile),
                       style: TextStyle(
                         color: isEdited
                             ? AppColors.errorColor
@@ -403,6 +419,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
         ? AppColors.darkAppBarboarder
         : AppColors.appbarBoarder;
     final themeNotifier = context.watch<ThemeModeNotifier>();
+    final languageNotifier = context.watch<LanguageChangeController>();
     return Padding(
         padding: const EdgeInsets.only(top: 20),
         child: Consumer<MyProfileProvider>(builder: (context, provider, child) {
@@ -502,7 +519,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                                 flex: 2,
                                 child: TextFieldWidget(
                                   read: false,
-                                  hint: 'Phone No.',
+                                  hint: (AppLocalizations.of(context)!.phoneNo),
                                   inputType: TextInputType.phone,
                                   hintColor: Theme.of(context).brightness ==
                                           Brightness.dark
@@ -744,7 +761,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "Change Password",
+                                   (AppLocalizations.of(context)!.changePass),
                                     style: TextStyle(
                                       color: Theme.of(context).brightness ==
                                               Brightness.dark
@@ -759,7 +776,18 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                                   IconButton(
                                     padding: EdgeInsets.zero,
                                     onPressed: () {},
-                                    icon: Image.asset(
+                                    icon: languageNotifier.appLocale == Locale("ar")?Transform.flip(
+                                      flipX: true,
+                                      child: Image.asset(
+                                        "assets/images/Right.png",
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : AppColors.subheadColor,
+                                        //width: 18,
+                                        height: 24,
+                                      ),
+                                    ):Image.asset(
                                       "assets/images/Right.png",
                                       color: Theme.of(context).brightness ==
                                               Brightness.dark
@@ -782,6 +810,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
   }
 
   Widget changePaasword() {
+    final languageNotifier = context.watch<LanguageChangeController>();
     return DraggableScrollableSheet(
       initialChildSize: 0.85,
       maxChildSize: 0.9,
@@ -881,7 +910,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                           Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: Text(
-                              "Total Number of ",
+(AppLocalizations.of(context)!.totalNo),
                               style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark
@@ -897,7 +926,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                           Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: Text(
-                              "Bookings",
+                              (AppLocalizations.of(context)!.bookings),
                               style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark
@@ -950,7 +979,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                           Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: Text(
-                              "Cancelled ",
+                            (AppLocalizations.of(context)!.cancelledBooking),
                               style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark
@@ -966,7 +995,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                           Padding(
                             padding: const EdgeInsets.only(right: 10),
                             child: Text(
-                              "Bookings",
+                              (AppLocalizations.of(context)!.bookings),
                               style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark

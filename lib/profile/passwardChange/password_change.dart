@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/language/provider/language_change_controller.dart';
 import 'package:tennis_court_booking_app/model/login/login_response_model.dart';
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
@@ -10,6 +11,8 @@ import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PasswordChangeScreen extends StatefulWidget {
   final String email;
@@ -101,6 +104,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final languageNotifier = context.watch<LanguageChangeController>();
     return Builder(builder: (context) {
       return Scaffold(
         backgroundColor: Theme.of(context).brightness == Brightness.dark
@@ -133,19 +137,30 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
                             onPressed: () {
                               Navigator.pop(context, null);
                             },
-                            icon: Image.asset(
+                            icon:languageNotifier.appLocale == Locale("ar")? Transform.flip(
+                            flipX: true,
+                           child: Image.asset(
                               "assets/images/leftIcon.png",
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.headingTextColor
-                                  : AppColors.allHeadColor,
+                              color:
+                                  Theme.of(context).brightness == Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : AppColors.profileHead,
                               //width: 18,
                               height: 26,
                             ),
+                          ): Image.asset(
+                            "assets/images/leftIcon.png",
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.profileHead,
+                            //width: 18,
+                            height: 26,
+                          ),
                           ),
                           const Spacer(),
                           Text(
-                            "Change Password ",
+                           (AppLocalizations.of(context)!.changePass),
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
@@ -224,7 +239,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
   Widget _buildCurrentPasswordField() {
     return TextFieldWidget(
       read: false,
-      hint: "Current Password",
+      hint: (AppLocalizations.of(context)!.currentPass),
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
           : AppColors.hintColor,
@@ -255,7 +270,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
       children: [
         TextFieldWidget(
           read: false,
-          hint: "Password",
+          hint: (AppLocalizations.of(context)!.password),
           hintColor: Theme.of(context).brightness == Brightness.dark
               ? AppColors.darkhint
               : AppColors.hintColor,
@@ -331,15 +346,15 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
   String _getConditionText(int index) {
     switch (index) {
       case 0:
-        return "At least 8 characters";
+        return (AppLocalizations.of(context)!.atLeast8char);
       case 1:
-        return "Contains lowercase letter";
+        return (AppLocalizations.of(context)!.lowerCase);
       case 2:
-        return "Contains uppercase letter";
+        return (AppLocalizations.of(context)!.upperCase);
       case 3:
-        return "Contains at least 1 number";
+        return (AppLocalizations.of(context)!.atleast1num);
       case 4:
-        return "Contains special character";
+        return (AppLocalizations.of(context)!.specialChar);
       default:
         return "";
     }
@@ -348,7 +363,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
   Widget _buildConfirmPasswordField() {
     return TextFieldWidget(
       read: false,
-      hint: "Confirm Password",
+      hint: (AppLocalizations.of(context)!.confirmPass),
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
           : AppColors.hintColor,
@@ -384,7 +399,7 @@ class PasswordChangeScreenState extends State<PasswordChangeScreen> {
               width: MediaQuery.of(context).orientation == Orientation.landscape
                   ? 70
                   : double.infinity,
-              text: "Update Password",
+              text:(AppLocalizations.of(context)!.updatePass),
               isLoading: isLoading,
               onPressed: () async {
                 FocusManager.instance.primaryFocus?.unfocus();

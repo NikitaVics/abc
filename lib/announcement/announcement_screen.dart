@@ -6,6 +6,7 @@ import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/theme/theme_manager.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AnnouncementScreen extends StatefulWidget {
   const AnnouncementScreen({super.key});
@@ -69,7 +70,7 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                 width: 24,
               ),
               Text(
-                "Announcement",
+                (AppLocalizations.of(context)!.announcement),
                 style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.headingTextColor
@@ -279,7 +280,7 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                     height: 20,
                   ),
                   Text(
-                    "Court Maintenance",
+                   (AppLocalizations.of(context)!.courtMaintainance),
                     style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
                             ? AppColors.profileDarkText
@@ -408,7 +409,7 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
                     height: 20,
                   ),
                   Text(
-                    "Event Announcement",
+                    (AppLocalizations.of(context)!.eventAnnouncement),
                     style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
                             ? AppColors.profileDarkText
@@ -661,7 +662,7 @@ Widget _buildGeneralAnnouncement(Announcement announcement) {
                     height: 20,
                   ),
                   Text(
-                    "General Announcement",
+                      (AppLocalizations.of(context)!.generalAnnouncement),
                     style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
                             ? AppColors.profileDarkText
