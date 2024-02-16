@@ -22,7 +22,8 @@ import 'package:intl/intl.dart';
 
 class BookingDetailsScreen extends StatefulWidget {
   final int id;
-  const BookingDetailsScreen({super.key, required this.id});
+  final bool valid;
+  const BookingDetailsScreen({super.key, required this.id, required this.valid});
 
   @override
   BookingDetailsScreenState createState() => BookingDetailsScreenState();
@@ -44,7 +45,7 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
     super.initState();
 
     _fetchBookingResponse();
-     _fetchUpcomingData();
+    _fetchUpcomingData();
   }
 
   void _fetchBookingResponse() async {
@@ -53,14 +54,15 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
         .read<BookResultShowProvider>()
         .fetchBookResult(tokens!, widget.id);
   }
-   void _fetchUpcomingData() async {
+
+  void _fetchUpcomingData() async {
     tokens = await SharePref.fetchAuthToken();
     final upComingProvider =
         Provider.of<UpcomingBookProvider>(context, listen: false);
     upComingProvider.fetchupComingData(tokens!);
   }
 
-bool isLoading = false;
+  bool isLoading = false;
   final List<String> selectedCourts = [];
   int? bookId;
 
@@ -115,10 +117,10 @@ bool isLoading = false;
                               },
                               icon: Image.asset(
                                 "assets/images/leftIcon.png",
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? AppColors.headingTextColor
-                                      : AppColors.profileHead,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.profileHead,
                                 //width: 18,
                                 height: 26,
                               ),
@@ -146,8 +148,8 @@ bool isLoading = false;
                 ),
               ),
               backgroundColor: Theme.of(context).brightness == Brightness.dark
-                ? AppColors.darkThemeback
-                : AppColors.homeBack,
+                  ? AppColors.darkThemeback
+                  : AppColors.homeBack,
               elevation: 0,
             ),
             body: _buildBody(),
@@ -172,7 +174,7 @@ bool isLoading = false;
         child: Column(
           children: [
             Expanded(child: _buildRightSide()),
-            _buildSignInButton(),
+           widget.valid==true? _buildSignInButton():SizedBox(),
           ],
         ),
       ),
@@ -180,70 +182,83 @@ bool isLoading = false;
   }
 
   Widget _buildRightSide() {
-  return SingleChildScrollView(
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Stack(
-        children: [
-          Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Center(child: _buildBookingSlot()),
-            ],
-          ),
-          if (isLoading)
-            Padding(
-              padding: const EdgeInsets.only(top:80),
-              child: Center(
-                child: Container(
-                  color: Colors.transparent,
-                  child: Center(
-                    child: AlertDialog(
-                     surfaceTintColor: Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.hintColor
-                          : AppColors.homeBack,
-                      backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.darkTextInput: AppColors.primaryColor,
-                      title: Text(
-                        "Cancel Booking",
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark ? AppColors.headingTextColor : AppColors.logoutColor,
-                          fontSize: 24,
-                          fontFamily: FontFamily.satoshi,
-                          fontWeight: FontWeight.w700,
-                          height: 32 / 24,
-                        ),
-                      ),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircularProgressIndicator(color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.darkEditColor
-                    : AppColors.dotColor,),
-                          SizedBox(height: 16),
-                          Text(
-                            "Please wait...Request processing, patience on the clock.",
-                            style: TextStyle(
-                              color: Theme.of(context).brightness == Brightness.dark ? AppColors.profileDarkText : Color(0xff49454F),
-                              fontSize: 12,
-                              fontFamily: FontFamily.poppins,
-                              fontWeight: FontWeight.w400,
-                              height: 20 / 12,
-                            ),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        child: Stack(
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Center(child: _buildBookingSlot()),
+              ],
+            ),
+            if (isLoading)
+              Padding(
+                padding: const EdgeInsets.only(top: 80),
+                child: Center(
+                  child: Container(
+                    color: Colors.transparent,
+                    child: Center(
+                      child: AlertDialog(
+                        surfaceTintColor:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.hintColor
+                                : AppColors.homeBack,
+                        backgroundColor:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.darkTextInput
+                                : AppColors.primaryColor,
+                        title: Text(
+                          "Cancel Booking",
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.logoutColor,
+                            fontSize: 24,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w700,
+                            height: 32 / 24,
                           ),
-                        ],
+                        ),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircularProgressIndicator(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? AppColors.darkEditColor
+                                  : AppColors.dotColor,
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              "Please wait...Request processing, patience on the clock.",
+                              style: TextStyle(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.profileDarkText
+                                    : Color(0xff49454F),
+                                fontSize: 12,
+                                fontFamily: FontFamily.poppins,
+                                fontWeight: FontWeight.w400,
+                                height: 20 / 12,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   String convertTo24HourFormat(String time, String amPm) {
     List<String> parts = time.split(':');
@@ -266,8 +281,8 @@ bool isLoading = false;
 
   Widget _buildBookingSlot() {
     return Padding(
-      padding: const EdgeInsets.only(
-        top: 24,
+      padding:  EdgeInsets.only(
+        top:widget.valid==true? 24:44,
       ),
       child: Consumer<BookResultShowProvider>(
         builder: (context, provider, child) {
@@ -485,7 +500,7 @@ bool isLoading = false;
                                       height: 21.15 / 15.86,
                                     ),
                                   ),
-                                  SizedBox(width: 167.45),
+                                 
                                   Text(
                                     'Edit team',
                                     style: TextStyle(
@@ -620,7 +635,6 @@ bool isLoading = false;
                     ],
                   ),
                 ),
-               
               ],
             );
           } else {
@@ -634,10 +648,11 @@ bool isLoading = false;
                         height: 100,
                         child: Center(
                           child: CircularProgressIndicator(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.darkEditColor
-                                  : AppColors.dotColor,),
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.darkEditColor
+                                    : AppColors.dotColor,
+                          ),
                         )),
                     SizedBox(
                       height: 5,
@@ -676,24 +691,18 @@ bool isLoading = false;
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-       memberImageUrl.isNotEmpty? CircleAvatar(
-          radius: 14.1,
-          backgroundImage:  NetworkImage(
-            memberImageUrl
-              
-          )  
-        ): CircleAvatar(
-          radius: 14.1,
-          backgroundImage: Theme.of(context).brightness == Brightness.dark
-            ? AssetImage(
-                "assets/images/darkavat.png",
-             
-              )
-            :AssetImage(
-                "assets/images/userTeam.png",
-               
-              )
-        ),
+        memberImageUrl.isNotEmpty
+            ? CircleAvatar(
+                radius: 14.1, backgroundImage: NetworkImage(memberImageUrl))
+            : CircleAvatar(
+                radius: 14.1,
+                backgroundImage: Theme.of(context).brightness == Brightness.dark
+                    ? AssetImage(
+                        "assets/images/darkavat.png",
+                      )
+                    : AssetImage(
+                        "assets/images/userTeam.png",
+                      )),
         SizedBox(width: 10.58),
         Text(
           memberName.isNotEmpty ? memberName : "",
@@ -712,7 +721,7 @@ bool isLoading = false;
     );
   }
 
-Widget _buildSignInButton() {
+  Widget _buildSignInButton() {
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
       child: Padding(
@@ -750,93 +759,98 @@ Widget _buildSignInButton() {
                       height: 32 / 24,
                     ),
                   ),
-                  content:isLoading?Text(
-                    "Keep Patience..Caneclling....",
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.profileDarkText
-                          : Color(0xff49454F),
-                      fontSize: 12,
-                      fontFamily: FontFamily.poppins,
-                      fontWeight: FontWeight.w400,
-                      height: 20 / 12,
-                    ),
-                  ): Text(
-                    "You are attempting to cancel your recent booking.",
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.profileDarkText
-                          : Color(0xff49454F),
-                      fontSize: 12,
-                      fontFamily: FontFamily.poppins,
-                      fontWeight: FontWeight.w400,
-                      height: 20 / 12,
-                    ),
-                  ),
+                  content: isLoading
+                      ? Text(
+                          "Keep Patience..Caneclling....",
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.profileDarkText
+                                    : Color(0xff49454F),
+                            fontSize: 12,
+                            fontFamily: FontFamily.poppins,
+                            fontWeight: FontWeight.w400,
+                            height: 20 / 12,
+                          ),
+                        )
+                      : Text(
+                          "You are attempting to cancel your recent booking.",
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.profileDarkText
+                                    : Color(0xff49454F),
+                            fontSize: 12,
+                            fontFamily: FontFamily.poppins,
+                            fontWeight: FontWeight.w400,
+                            height: 20 / 12,
+                          ),
+                        ),
                   actions: <Widget>[
-        TextButton(
-          onPressed: () {
-            Navigator.of(ctx).pop();
-          },
-          child: Container(
-            color: Colors.transparent,
-            padding: const EdgeInsets.all(12),
-            child: Text(
-              "Cancel",
-              style: TextStyle(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.hoverColor
-                    : AppColors.subheadColor,
-                fontSize: 14,
-                fontFamily: FontFamily.roboto,
-                fontWeight: FontWeight.w500,
-                height: 20 / 14,
-              ),
-            ),
-          ),
-        ),
-        TextButton(
-          onPressed: () async {
-        
-                  setState(() {
-                    isLoading = true;
-                  });
-                   Navigator.of(ctx).pop();
-                  await Api.deleteBooking(
-                    tokens!,
-                    bookId!,
-                  );
-                  _fetchUpcomingData();
-                
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const BottomNavBar(initial: 1),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                      },
+                      child: Container(
+                        color: Colors.transparent,
+                        padding: const EdgeInsets.all(12),
+                        child: Text(
+                          "Cancel",
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.hoverColor
+                                    : AppColors.subheadColor,
+                            fontSize: 14,
+                            fontFamily: FontFamily.roboto,
+                            fontWeight: FontWeight.w500,
+                            height: 20 / 14,
+                          ),
+                        ),
+                      ),
                     ),
-                  );
-                    setState(() {
-                    isLoading = false;
-                  });
-                 
-                },
-          child: Container(
-            color: Colors.transparent,
-            padding: const EdgeInsets.all(12),
-            child: Text(
-              "Confirm",
-              style: TextStyle(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.darkEditColor
-                    : AppColors.dotColor,
-                fontSize: 14,
-                fontFamily: FontFamily.roboto,
-                fontWeight: FontWeight.w500,
-                height: 20 / 14,
-              ),
-            ),
-          ),
-        ),
-      ],
+                    TextButton(
+                      onPressed: () async {
+                        setState(() {
+                          isLoading = true;
+                        });
+                        Navigator.of(ctx).pop();
+                        await Api.deleteBooking(
+                          tokens!,
+                          bookId!,
+                        );
+                        _fetchUpcomingData();
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const BottomNavBar(initial: 1),
+                          ),
+                        );
+                        setState(() {
+                          isLoading = false;
+                        });
+                      },
+                      child: Container(
+                        color: Colors.transparent,
+                        padding: const EdgeInsets.all(12),
+                        child: Text(
+                          "Confirm",
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppColors.darkEditColor
+                                    : AppColors.dotColor,
+                            fontSize: 14,
+                            fontFamily: FontFamily.roboto,
+                            fontWeight: FontWeight.w500,
+                            height: 20 / 14,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               );
 
@@ -912,10 +926,10 @@ class HalfCutContainer extends StatelessWidget {
       child: Stack(children: [
         Container(
           height: 560,
-          decoration:  BoxDecoration(
+          decoration: BoxDecoration(
             color: Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.darkTextInput
-                  : Colors.white,
+                ? AppColors.darkTextInput
+                : Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(12)),
             boxShadow: [
               BoxShadow(

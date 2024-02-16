@@ -53,7 +53,7 @@ class LoginEmailForotpScreenState extends State<LoginEmailForotpScreen> {
               : AppColors.lightThemeback,
           primary: true,
           appBar: const CustomAppBar(
-            isIcon: false,
+            isIcon: true,
             isBoarder: true,
             title: "Login with OTP",
             isProgress: false,

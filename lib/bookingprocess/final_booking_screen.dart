@@ -491,7 +491,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                       height: 21.15 / 15.86,
                                     ),
                                   ),
-                                  SizedBox(width: 167.45),
+                                  
                                   Text(
                                     'Edit team',
                                     style: TextStyle(

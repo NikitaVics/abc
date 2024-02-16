@@ -199,9 +199,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                             height: 26,
                           ),
                         ),
-                        SizedBox(
-                          width: 106,
-                        ),
+                        const Spacer(),
                         Text(
                           (AppLocalizations.of(context)!.myProfile),
                           style: TextStyle(
@@ -215,6 +213,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                             height: 32 / 20,
                           ),
                         ),
+                         const Spacer(flex: 2)
                       ],
                     ),
                   ),

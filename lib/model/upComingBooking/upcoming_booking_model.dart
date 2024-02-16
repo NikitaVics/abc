@@ -39,6 +39,7 @@ class Booking {
   int userId;
   String? userName;
   String? userImage;
+  String bookingStatus;
 
   Booking({
     required this.bookingId,
@@ -54,6 +55,7 @@ class Booking {
     required this.userId,
     required this.userName,
     required this.userImage,
+    required this.bookingStatus,
   });
 
   factory Booking.fromJson(Map<String, dynamic> json) {
@@ -77,6 +79,7 @@ class Booking {
       userId: json['userId'] ?? 0,
       userName: json['userName'],
       userImage: json['userImage'],
+      bookingStatus: json['bookingStatus'],
     );
   }
 }
@@ -95,16 +98,17 @@ class TeamMember {
   factory TeamMember.fromJson(Map<String, dynamic> json) {
     return TeamMember(
       id: json['id'] ?? 0,
-      imageUrl: json['imageUrl']??'',
+      imageUrl: json['imageUrl'] ?? '',
       name: json['name'],
     );
   }
 }
+
 class Tenis {
   int id;
-  
+
   String name;
-   List<String> courtImageURLs;
+  List<String> courtImageURLs;
 
   Tenis({
     required this.id,
@@ -115,7 +119,7 @@ class Tenis {
   factory Tenis.fromJson(Map<String, dynamic> json) {
     return Tenis(
       id: json['id'] ?? 0,
-courtImageURLs: (json['courtImages'] as List<dynamic>? ?? [])
+      courtImageURLs: (json['courtImages'] as List<dynamic>? ?? [])
           .map((item) => item.toString())
           .toList(),
       name: json['name'],

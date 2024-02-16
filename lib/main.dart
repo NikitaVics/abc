@@ -47,6 +47,7 @@ Future<void> main() async {
   runApp(MyApp(
     locale: languageCode,
   ));
+ 
 }
 
 @pragma('vm:entry-point')
@@ -67,8 +68,10 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
+       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight
     ]);
     return MultiProvider(
       providers: [

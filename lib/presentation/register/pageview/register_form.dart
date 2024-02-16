@@ -11,6 +11,7 @@ import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/presentation/register/pageview/congrats_screen.dart';
 import 'package:tennis_court_booking_app/presentation/register/verifyemail/verify_email.dart';
+import 'package:tennis_court_booking_app/widgets/animated_toast.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/dateTextField.dart';
@@ -66,13 +67,25 @@ class _RegisterFormState extends State<RegisterForm> {
   late FocusNode _genderNode;
   late FocusNode _ageNode;
   late FocusNode _phonePrefixNode;
+  bool isGenderVisible = false;
+  bool isAge = false;
   @override
   void initState() {
     super.initState();
     _userEmailController.text = widget.email;
     _dobFocusNode = FocusNode();
     _genderNode = FocusNode();
+    _genderNode.addListener(() {
+      setState(() {
+        isGenderVisible = _genderNode.hasFocus;
+      });
+    });
     _ageNode = FocusNode();
+      _ageNode.addListener(() {
+      setState(() {
+        isAge = _ageNode.hasFocus;
+      });
+    });
 
     _phonePrefixNode = FocusNode();
 
@@ -88,6 +101,8 @@ class _RegisterFormState extends State<RegisterForm> {
   File? imageFile;
   File? imageFiles;
   DateTime? result;
+  List<String> genders = ['Male', 'Female', 'Not Disclosed'];
+
 
   @override
   Widget build(BuildContext context) {
@@ -182,10 +197,11 @@ class _RegisterFormState extends State<RegisterForm> {
               SizedBox(height: 24.0),
               _buildUserName(),
               //_buildUserIdField(),
-      
+
               // _buildUserDOB(),
               _buildUserphone(),
               _buildUserGender(),
+             isAge || isGenderVisible==true? _buildUserClause():SizedBox()
               // _buildPasswordField(),
               //_buildUploadDocumentField(context),
               // _buildNotMemberText(),
@@ -241,6 +257,80 @@ class _RegisterFormState extends State<RegisterForm> {
     );
   }
 
+  Widget _buildUserClause() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+       Expanded(
+        child: SizedBox(
+          height: 300, // Set a fixed height for the list
+          child: Visibility(
+            visible: isAge,
+            child: Card(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkTextInput
+                  : AppColors.textInputField,
+              child: ListView.separated(
+                separatorBuilder: (context, index) => Divider(color:Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkTextInput
+                  : AppColors.textInputField,),
+                itemCount: 61,
+                itemBuilder: (context, index) {
+                  String age = (index + 10).toString();
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: GestureDetector(
+                     onTap: () {
+                       ageController.text = age;
+                       ageError = false;
+                        validateAge();
+                      },
+                      child: Center(child: Text(age))),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+        Expanded(
+  child: Visibility(
+    visible: isGenderVisible,
+    child: SizedBox(
+      height:170,
+      child: Card(
+        color: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.darkTextInput
+            : AppColors.textInputField,
+        child: ListView.separated(
+          separatorBuilder: (context, index) => Divider(color: Theme.of(context).brightness == Brightness.dark
+            ? AppColors.darkTextInput
+            : AppColors.textInputField,),
+          itemCount: genders.length,
+          itemBuilder: (context, index) {
+            String gender = genders[index];
+            return GestureDetector(
+              onTap: () {
+                genderController.text = gender;
+                genderError = false;
+                validateGender();
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(child: Text(gender)),
+              ),
+            );
+          },
+        ),
+      ),
+    ),
+  ),
+),
+
+      ],
+    );
+  }
+
   Widget _buildUserGender() {
     return Row(
       children: [
@@ -264,19 +354,8 @@ class _RegisterFormState extends State<RegisterForm> {
             autoFocus: false,
             onSuffixIconPressed: () async {
               FocusScope.of(context).requestFocus(_ageNode);
-              String? selectedAge = await showAgeMenu(context);
-
-              if (selectedAge != null) {
-                setState(() {
-                  ageController.text = selectedAge;
-                  ageError = false;
-                   validateAge(); // Reset the error flag
-                });
-              }
             },
-            onChanged: (value) {
-              
-            },
+            onChanged: (value) {},
 
             errorText: ageError ? "Please enter age" : " ",
             isIcon: true,
@@ -305,18 +384,9 @@ class _RegisterFormState extends State<RegisterForm> {
             autoFocus: false,
             onSuffixIconPressed: () async {
               FocusScope.of(context).requestFocus(_genderNode);
-              String? selectedGender = await showGenderMenu(context);
-
-              if (selectedGender != null) {
-                setState(() {
-                  genderController.text = selectedGender;
-                  genderError = false;
-                   validateGender(); // Reset the error flag
-                });
-                
-              }
+              
             },
-          
+
             errorText: genderError ? "Please enter gender" : " ",
             isIcon: true,
           ),
@@ -345,9 +415,9 @@ class _RegisterFormState extends State<RegisterForm> {
     );
 
     final String? selectedGender = await showMenu<String>(
-      surfaceTintColor:  Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.darkTextInput
-                              : AppColors.textInputField,
+      surfaceTintColor: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkTextInput
+          : AppColors.textInputField,
       context: context,
       position: position,
       items: ['Male', 'Female', 'Not Disclosed'].map((String gender) {
@@ -388,7 +458,7 @@ class _RegisterFormState extends State<RegisterForm> {
     final String? selectedAge = await showMenu<String>(
       context: context,
       position: position,
-      items:  List.generate(61, (index) => (index + 10).toString())
+      items: List.generate(61, (index) => (index + 10).toString())
           .map((String age) {
         return PopupMenuItem<String>(
           value: age,
@@ -399,8 +469,8 @@ class _RegisterFormState extends State<RegisterForm> {
 
     if (selectedAge != null) {
       ageController.text = selectedAge;
-        ageError = false;
-                   validateAge();
+      ageError = false;
+      validateAge();
       // Handle the selected gender as needed
       print('Selected age: $selectedAge');
     }
@@ -554,19 +624,22 @@ class _RegisterFormState extends State<RegisterForm> {
             onSuffixIconPressed: () async {
               FocusScope.of(context).requestFocus(_phonePrefixNode);
               showCountryPicker(
+                countryListTheme:
+                    CountryListThemeData(textStyle: TextStyle(fontSize: 10)),
                 context: context,
                 showPhoneCode: true,
+                useSafeArea: true,
                 onSelect: (Country country) {
                   phonePrefixController.text = "+ ${country.phoneCode}";
-                   setState(() {
-                phoneprefixError = false; // Reset the error flag
-              });
-              validatePhonePrefix(); 
+                  setState(() {
+                    phoneprefixError = false; // Reset the error flag
+                  });
+                  validatePhonePrefix();
                 },
               );
             },
             onChanged: (value) {
-             // Trigger validation on text change
+              // Trigger validation on text change
             },
             errorText: phoneprefixError ? phoneprefixErrorText : " ",
             isIcon: true,
@@ -815,15 +888,15 @@ class _RegisterFormState extends State<RegisterForm> {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24, vertical: 19),
           child: FocusScope(
-            
             // Manage keyboard focus
             child: Consumer<SignInProvider>(builder: (context, value, child) {
-               // FocusManager.instance.primaryFocus?.unfocus();
+              // FocusManager.instance.primaryFocus?.unfocus();
               return SizedBox(
                 height: 60,
-                width: MediaQuery.of(context).orientation == Orientation.landscape
-                    ? 70
-                    : double.infinity,
+                width:
+                    MediaQuery.of(context).orientation == Orientation.landscape
+                        ? 70
+                        : double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -838,60 +911,76 @@ class _RegisterFormState extends State<RegisterForm> {
                     backgroundColor: AppColors
                         .elevatedColor, // Change background color on hover
                   ),
-                  onPressed: isLoading  ? (){
-                      //FocusManager.instance.primaryFocus?.unfocus();
-                  }:() async {
-                    
-                    FocusManager.instance.primaryFocus?.unfocus();
-                    bool nameValid = await validateName();
-      
-                    bool phoneValid = await validatePhone();
-                    bool ageValid = await validateAge();
-                    bool prefValid = await validatePhonePrefix();
-                    bool isGender = await validateGender();
-      
-                    if (nameValid && phoneValid && ageValid && isGender &&prefValid) {
-                      setState(() {
-                        isLoading = true;
-                      });
-      
-                      value
-                          .registerApi(
-                              widget.email,
-                              widget.password,
-                              _userNameController.text,
-                              int.parse(ageController.text),
-                              genderController.text,
-                              phonePrefixController.text,
-                              _userPhoneController.text)
-                          .then((val) {
-                        if (val['statusCode'] == 200) {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (context) => VerifyEmailScreen(
-                                      email: widget.email,
-                                      password: widget.password,
-                                    )),
-                          );
-                          setState(() {
-                            isLoading = false;
-                          });
-                          print("yup");
-                        } else {
-                          setState(() {
-                            isLoading = false;
-                          });
-                          print("false");
+                  onPressed: isLoading
+                      ? () {
+                          //FocusManager.instance.primaryFocus?.unfocus();
                         }
-                      });
-                    }
-                  },
+                      : () async {
+                        setState(() {
+                loginError = false;
+              });
+
+                          FocusManager.instance.primaryFocus?.unfocus();
+                          bool nameValid = await validateName();
+
+                          bool phoneValid = await validatePhone();
+                          bool ageValid = await validateAge();
+                          bool prefValid = await validatePhonePrefix();
+                          bool isGender = await validateGender();
+
+                          if (nameValid &&
+                              phoneValid &&
+                              ageValid &&
+                              isGender &&
+                              prefValid) {
+                            setState(() {
+                              isLoading = true;
+                            });
+
+                            value
+                                .registerApi(
+                                    widget.email,
+                                    widget.password,
+                                    _userNameController.text,
+                                    int.parse(ageController.text),
+                                    genderController.text,
+                                    phonePrefixController.text,
+                                    _userPhoneController.text)
+                                .then((val) {
+                              if (val['statusCode'] == 200) {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (context) => VerifyEmailScreen(
+                                            email: widget.email,
+                                            password: widget.password,
+                                          )),
+                                );
+                                setState(() {
+                                  isLoading = false;
+                                });
+                                print("yup");
+                              } else {
+                    setState(() {
+                      if (val != null) {
+                        loginError = true;
+                        AnimatedToast.showToastMessage(
+                          context,
+                          val["errorMessage"][0],
+                          const Color.fromRGBO(87, 87, 87, 0.93),
+                        );
+                      }
+                      isLoading = false;
+                    });
+                  }
+                            });
+                          }
+                        },
                   child: isLoading
                       ? const SizedBox(
                           height: 24,
                           child: SpinKitThreeBounce(
                             // Use the spinner from Spinkit you prefer
-      
+
                             color: Colors.white,
                             size: 24.0,
                           ),
@@ -909,7 +998,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 ),
               );
             }),
-      
+
             /*CustomElevatedButton(
               isLoading: false,
               height: 60,

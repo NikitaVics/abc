@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +12,7 @@ import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_pro
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/otp_input.dart';
+import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class OtpSendScreen extends StatefulWidget {
   final String email;
@@ -160,23 +162,18 @@ bool allowNavigation = false;
             _buildLoginText(),
             const SizedBox(height: 24.0),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 OtpInput(_fieldOne, true),
-                const SizedBox(
-                  width: 20,
-                ),
+               
                 OtpInput(_fieldTwo, false),
-                const SizedBox(
-                  width: 20,
-                ),
+                
                 OtpInput(_fieldThree, false),
-                const SizedBox(
-                  width: 20,
-                ),
+               
                 OtpInput(_fieldFour, false),
               ],
             ),
+            const SizedBox(height: 18,),
             _buildResendText()
           ],
         ),
@@ -189,7 +186,7 @@ bool allowNavigation = false;
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Verify with Otp",
+          "Verify with OTP",
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.dark
                 ? AppColors.headingTextColor
@@ -231,7 +228,7 @@ bool allowNavigation = false;
           children: [
             resendTime != 0?
             Text(
-              "This code will expired in ",
+              "This code will expire in ",
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.darkSubHead
@@ -240,16 +237,16 @@ bool allowNavigation = false;
                   fontFamily: FontFamily.satoshi,
                   fontWeight: FontWeight.w400,
                   height: 24 / 14),
-            ):Text(
-              "Your code was expired..Please resend the code... ",
+            ):AutoSizeText(
+              "Your code has been expired..Please resend the code... ",
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.darkSubHead
                       : AppColors.subheadColor,
-                  fontSize: 14,
+                  fontSize: 12,
                   fontFamily: FontFamily.satoshi,
                   fontWeight: FontWeight.w400,
-                  height: 24 / 14),
+                  height: 20 / 12),
             ),
             resendTime != 0
                 ? Text(
@@ -281,10 +278,7 @@ bool allowNavigation = false;
 
     return Align(
       alignment: Alignment.topLeft,
-      child:resendTime != 0 ? TextButton(
-        onPressed: () {
-         
-        },
+      child:resendTime != 0 ? GestureDetector(
         child: const Text(
           "Resend Code",
           style: TextStyle(
@@ -295,23 +289,27 @@ bool allowNavigation = false;
           ),
         ),
       ):
-      TextButton(
-        onPressed: () {
+      GestureDetector(
+        onTap: ()
+        {
           signInProvider.loginWithOtp(widget.email).then((val) {
             if (val["statusCode"] == 200) {
               restartTimer();
             }
           });
         },
-        child: const Text(
-          "Resend Code",
-          style: TextStyle(
-            color: AppColors.dotColor,
-            fontSize: 14,
-            fontFamily: FontFamily.satoshi,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        child: WidgetAnimator(
+                atRestEffect: WidgetRestingEffects.size(),
+                child: const Text(
+                  "Resend Code",
+                  style: TextStyle(
+                    color: AppColors.dotColor,
+                    fontSize: 14,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
       ) 
     );
   }
@@ -329,7 +327,7 @@ bool allowNavigation = false;
               width: MediaQuery.of(context).orientation == Orientation.landscape
                   ? 70
                   : double.infinity,
-              text: "Verify Otp",
+              text: "Verify OTP",
               onPressed: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
                 SharedPreferences pref = await SharedPreferences.getInstance();

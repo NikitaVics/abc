@@ -473,7 +473,15 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const LoginScreen(),
+                ),
+              );
+            },
+            child:  Text(
             "Already a member ?",
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.dark
@@ -484,6 +492,8 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
               fontWeight: FontWeight.w500,
             ),
           ),
+          ),
+         
           TextButton(
             onPressed: () {
               Navigator.of(context).push(
@@ -493,7 +503,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
               );
             },
             child: Text(
-              " Login now",
+              "Login now",
               style: TextStyle(
                 color: AppColors.dotColor,
                 fontSize: 14,

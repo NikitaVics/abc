@@ -189,7 +189,7 @@ class HomeScreenState extends State<HomeScreen>
                                 Theme.of(context).brightness == Brightness.dark
                                     ? AppColors.darkTextInput
                                     : Colors.white,
-                            height: 90,
+                            height: 82,
                             width: MediaQuery.of(context).size.width,
                             child: Center(
                               child: MediaQuery(
@@ -649,7 +649,7 @@ class HomeScreenState extends State<HomeScreen>
                                               builder: (context) =>
                                                   BookingDetailsScreen(
                                                       id: bookings[index]
-                                                          .bookingId)));
+                                                          .bookingId,valid: true,)));
                                     },
                                     child: _buildupComingbooking(index,
                                         bookings.length, bookings[index]),

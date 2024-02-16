@@ -182,7 +182,7 @@ class LoginScreenState extends State<LoginScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Log in",
+          "Login",
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.dark
                 ? AppColors.headingTextColor
@@ -280,7 +280,7 @@ class LoginScreenState extends State<LoginScreen> {
       children: [
         MaterialButton(
           padding: const EdgeInsets.all(0.0),
-          child: const Text("Forgot Passward?",
+          child: const Text("Forgot Password?",
               style: TextStyle(
                   color: AppColors.forgotpass,
                   fontSize: 14,
@@ -322,7 +322,9 @@ class LoginScreenState extends State<LoginScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
+         
+          TextButton(
+            child:   Text(
             "Not a member ?",
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.dark
@@ -333,8 +335,16 @@ class LoginScreenState extends State<LoginScreen> {
               fontWeight: FontWeight.w500,
             ),
           ),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const RegisterAsMember(),
+                ),
+              );
+            },
+          ),
           TextButton(
-            child: const Text(" Register now",
+            child: const Text("Register now",
                 style: TextStyle(
                     color: AppColors.forgotpass,
                     fontSize: 14,

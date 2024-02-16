@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -100,8 +101,8 @@ class MyBookingScreenState extends State<MyBookingScreen> {
               : AppColors.lightThemeback,
           primary: true,
           appBar: AppBar(
-            toolbarHeight: 72,
-            automaticallyImplyLeading: false,
+              toolbarHeight: 60,
+          automaticallyImplyLeading: false,
             title: Padding(
               padding: const EdgeInsets.only(left: 24),
               child: Column(
@@ -110,6 +111,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                     height: 20,
                   ),
                   Text(
+                     textScaler: const TextScaler.linear(1.0),
                  (AppLocalizations.of(context)!.myBookings),
                     style: TextStyle(
                       color: Theme.of(context).brightness == Brightness.dark
@@ -177,25 +179,31 @@ class MyBookingScreenState extends State<MyBookingScreen> {
           if (bookingResponse != null) {
             if (bookingResponse.result.isNotEmpty) {
               List<Booking> bookings = bookingResponse.result;
+              
 
               print(bookings.length);
               return ListView.builder(
                 scrollDirection: Axis.vertical,
                 itemCount: bookings.length,
                 itemBuilder: (context, index) {
+                 
                   return GestureDetector(
                     onTap: () {
+                         
                       context.read<BookResultShowProvider>().clearStateList();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => BookingDetailsScreen(
-                              id: bookings[index].bookingId),
+                              id: bookings[index].bookingId,valid:true),
                         ),
                       );
                     },
-                    child: _buildupComingbooking(
-                        index, bookings.length, bookings[index]),
+                    child: Visibility(
+                      //visible:bookings[index].bookingStatus=="0",
+                      child: _buildupComingbooking(
+                          index, bookings.length, bookings[index]),
+                    ),
                   );
                 },
               );
@@ -217,8 +225,10 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                     AnimatedTextKit(
                       animatedTexts: [
                         WavyAnimatedText(
+                          
                           'Sorry no bookings to show!...',
                           textStyle: TextStyle(
+                            
                             color:
                                 Theme.of(context).brightness == Brightness.dark
                                     ? AppColors.headingTextColor
@@ -289,10 +299,12 @@ class MyBookingScreenState extends State<MyBookingScreen> {
             List<Booking> bookings = bookingResponse.result;
 
             print(bookings.length);
-            return ListView.builder(
+            return 
+             ListView.builder(
               scrollDirection: Axis.vertical,
               itemCount: bookings.length,
               itemBuilder: (context, index) {
+                
                 return GestureDetector(
                   onTap: () {
                     context.read<BookResultShowProvider>().clearStateList();
@@ -300,7 +312,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            BookingDetailsScreen(id: bookings[index].bookingId),
+                            BookingDetailsScreen(id: bookings[index].bookingId,valid: false,),
                       ),
                     );
                   },
@@ -380,6 +392,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
               height: 8,
             ),
             Text(
+               textScaler: const TextScaler.linear(1.0),
               name,
               style: TextStyle(
                 color: Theme.of(context).brightness == Brightness.dark
@@ -398,107 +411,101 @@ class MyBookingScreenState extends State<MyBookingScreen> {
         ));
   }
 
-  Widget _buildBookingButton() {
-    return Padding(
-        padding: const EdgeInsets.only(top: 22, bottom: 20, left: 2, right: 2),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Flexible(
-              flex: 2,
-              child: SizedBox(
-                height: 40,
-                width: MediaQuery.of(context).size.width * 0.58,
-                child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      isFirstButtonSelected = true;
-                      isSecondButtonSelected = false;
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isFirstButtonSelected
-                        ? AppColors.elevatedColor
-                        : Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkThemeback
-          : AppColors.homeBack,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                        side: BorderSide(
-                            color: isFirstButtonSelected
-                                ? Colors.transparent
-                                : Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkAppBarboarder
-          : AppColors.appbarBoarder,)),
-                  ),
-                  child: Text(
-                   (AppLocalizations.of(context)!.upCommingBooking),
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: isFirstButtonSelected
-                          ? Colors.white
-                          : Theme.of(context).brightness == Brightness.dark
-          ? AppColors.hintColor
-          : AppColors.bookingInvalid,
-                      fontSize: 12,
-                      fontFamily: FontFamily.satoshi,
-                      fontWeight: FontWeight.w700,
-                      height: 24 / 12,
-                    ),
-                  ),
+    Widget _buildBookingButton() {
+  return Padding(
+    padding: const EdgeInsets.only(top: 22, bottom: 20),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(
+          child: ElevatedButton(
+            onPressed: () {
+              setState(() {
+                isFirstButtonSelected = true;
+                isSecondButtonSelected = false;
+              });
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: isFirstButtonSelected
+                ? AppColors.elevatedColor
+                : Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkThemeback
+                  : AppColors.homeBack,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+                side: BorderSide(
+                  color: isFirstButtonSelected
+                    ? Colors.transparent
+                    : Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.darkAppBarboarder
+                      : AppColors.appbarBoarder,
                 ),
               ),
             ),
-            const SizedBox(width: 9),
-            Flexible(
-              flex: 2,
-              child: SizedBox(
-                height: 40,
-                width: MediaQuery.of(context).size.width * 0.39,
-                child: ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      isFirstButtonSelected = false;
-                      isSecondButtonSelected = true;
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isSecondButtonSelected
-                        ? AppColors.elevatedColor
-                        :  Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkThemeback
-          : AppColors.homeBack,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                        side: BorderSide(
-                            color: isSecondButtonSelected
-                                ? Colors.transparent
-                                : Theme.of(context).brightness == Brightness.dark
-          ? AppColors.darkAppBarboarder
-          : AppColors.appbarBoarder,)),
-                  ),
-                  child: Text((AppLocalizations.of(context)!.previousBooking),
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: isSecondButtonSelected
-                            ? Colors.white
-                            : Theme.of(context).brightness == Brightness.dark
-          ? AppColors.hintColor
-          : AppColors.bookingInvalid,
-                        fontSize: 12,
-                        fontFamily: FontFamily.satoshi,
-                        fontWeight: FontWeight.w700,
-                        height: 24 / 12,
-                      )),
+            child: AutoSizeText(
+              AppLocalizations.of(context)!.upCommingBooking,
+              style: TextStyle(
+                color: isFirstButtonSelected
+                  ? Colors.white
+                  : Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.hintColor
+                    : AppColors.bookingInvalid,
+                fontSize: 12,
+                fontFamily: FontFamily.satoshi,
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 1,
+            ),
+          ),
+        ),
+        const SizedBox(width: 9),
+        Expanded(
+          child: ElevatedButton(
+            onPressed: () {
+              setState(() {
+                isFirstButtonSelected = false;
+                isSecondButtonSelected = true;
+              });
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: isSecondButtonSelected
+                ? AppColors.elevatedColor
+                : Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkThemeback
+                  : AppColors.homeBack,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+                side: BorderSide(
+                  color: isSecondButtonSelected
+                    ? Colors.transparent
+                    : Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.darkAppBarboarder
+                      : AppColors.appbarBoarder,
                 ),
               ),
             ),
-          ],
-        ));
-  }
-
+            child: AutoSizeText(
+              AppLocalizations.of(context)!.previousBooking,
+              style: TextStyle(
+                color: isSecondButtonSelected
+                  ? Colors.white
+                  : Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.hintColor
+                    : AppColors.bookingInvalid,
+                fontSize: 12,
+                fontFamily: FontFamily.satoshi,
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 1,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
   String convertTo24HourFormat(String time, String amPm) {
     List<String> parts = time.split(':');
     int hour = int.parse(parts[0]);
@@ -550,6 +557,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
     return Column(
       children: [
         Container(
+         // width:double.infinity,
           height: 120,
           margin: const EdgeInsets.only(bottom: 20, top: 20),
           child: Stack(
@@ -561,8 +569,8 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                 borderRadius: BorderRadius.circular(12.0),
                 child:  languageNotifier.appLocale == Locale("en")
                                 ?Image.asset(
-                  "assets/images/DarkShape.png",
-                ):Transform.flip(
+                                                  "assets/images/DarkShape.png",
+                                                ):Transform.flip(
                   flipX: true,
                   child: Image.asset(
                   "assets/images/DarkShape.png",
@@ -603,17 +611,20 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                           const SizedBox(
                             width: 12,
                           ),
-                          Text(
-                            booking?.userName ?? "",
-                            style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.darkTextInput
-                                  : Colors.white,
-                              fontSize: 16,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w500,
-                              height: 24 / 16,
+                          Flexible(
+                            child: Text(
+                              booking?.userName ?? "",
+                               textScaler: const TextScaler.linear(1.0),
+                              style: TextStyle(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.darkTextInput
+                                    : Colors.white,
+                                fontSize: 16,
+                                fontFamily: FontFamily.satoshi,
+                                fontWeight: FontWeight.w500,
+                                height: 24 / 16,
+                              ),
                             ),
                           ),
                         ],
@@ -622,6 +633,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                         children: [
                           Text(
                               (AppLocalizations.of(context)!.bookingId),
+                               textScaler: const TextScaler.linear(1.0),
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
@@ -635,6 +647,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                           ),
                           Text(
                             " - ${booking?.bookingId ?? ""}",
+                             textScaler: const TextScaler.linear(1.0),
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
@@ -661,6 +674,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                   children: [
                     Text(
                       "${(AppLocalizations.of(context)!.team)} -",
+                       textScaler: const TextScaler.linear(1.0),
                       style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
                             ? AppColors.darkTextInput
@@ -725,6 +739,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                   children: [
                     Text(
                       "Team -",
+                       textScaler: const TextScaler.linear(1.0),
                       style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
                             ? AppColors.darkTextInput
@@ -787,51 +802,56 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                 top: 37.5,
                 left:15,
               //  right:languageNotifier.appLocale == Locale("ar")?0:15,
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          "${month}".toUpperCase(),
-                          style: TextStyle(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white
-                                    : AppColors.allHeadColor,
-                            fontSize: 24,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w700,
-                            height: 32 / 24,
+                child: Expanded(
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                             textScaler: const TextScaler.linear(1.0),
+                            "${month}".toUpperCase(),
+                            style: TextStyle(
+                              color:
+                                  Theme.of(context).brightness == Brightness.dark
+                                      ? Colors.white
+                                      : AppColors.allHeadColor,
+                              fontSize: 24,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w700,
+                              height: 32 / 24,
+                            ),
                           ),
-                        ),
-                        Text(
-                          " ${day}",
-                          style: TextStyle(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? AppColors.elevatedColor
-                                    : AppColors.elevatedColor,
-                            fontSize: 24,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w700,
-                            height: 32 / 24,
+                          Text(
+                             textScaler: const TextScaler.linear(1.0),
+                            " ${day}",
+                            style: TextStyle(
+                              color:
+                                  Theme.of(context).brightness == Brightness.dark
+                                      ? AppColors.elevatedColor
+                                      : AppColors.elevatedColor,
+                              fontSize: 24,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w700,
+                              height: 32 / 24,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      "$timePart - $results",
-                      style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white
-                            : AppColors.subheadColor,
-                        fontSize: 12,
-                        fontFamily: FontFamily.satoshi,
-                        fontWeight: FontWeight.w400,
-                        height: 16 / 12,
+                        ],
                       ),
-                    ),
-                  ],
+                      Text(
+                         textScaler: const TextScaler.linear(1.0),
+                        "$timePart - $results",
+                        style: TextStyle(
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : AppColors.subheadColor,
+                          fontSize: 12,
+                          fontFamily: FontFamily.satoshi,
+                          fontWeight: FontWeight.w400,
+                          height: 16 / 12,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ):Positioned(
                 top: 37.5,
@@ -842,6 +862,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                     Row(
                       children: [
                         Text(
+                           textScaler: const TextScaler.linear(1.0),
                           "${month}".toUpperCase(),
                           style: TextStyle(
                             color:
@@ -855,6 +876,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                           ),
                         ),
                         Text(
+                           textScaler: const TextScaler.linear(1.0),
                           " ${day}",
                           style: TextStyle(
                             color:
@@ -870,6 +892,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                       ],
                     ),
                     Text(
+                       textScaler: const TextScaler.linear(1.0),
                       "$timePart - $results",
                       style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark

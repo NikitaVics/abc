@@ -172,6 +172,14 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
             print(name);
             //imageUrl = profileData.result.imageUrl;
             //name = profileData.result.name ?? "";
+             if (filteredAnnouncements.isEmpty) {
+              return Center(
+                child: Text(
+                  'No announcements available',
+                  style: TextStyle(fontSize: 18.0),
+                ),
+              );
+            }
             return Column(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.start,
