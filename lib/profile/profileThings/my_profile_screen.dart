@@ -424,7 +424,11 @@ class MyProfileScreenState extends State<MyProfileScreen> {
         child: Consumer<MyProfileProvider>(builder: (context, provider, child) {
           if (provider.myProfile == null) {
             return Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(
+                color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.darkEditColor
+                      : AppColors.dotColor,
+              ),
             );
           } else {
             return Center(
@@ -1073,7 +1077,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                   ? 70
                   : double.infinity,
               isLoading: isLoading,
-              text: "Update Profile",
+              text:  (AppLocalizations.of(context)!.updateProfile),
               onPressed:
                   passwordError & emailError ? () {} : loginButtonPressed,
               buttonColor: Theme.of(context).brightness == Brightness.dark

@@ -163,8 +163,13 @@ class ProfileScreenState extends State<ProfileScreen> {
         child: Consumer<ProfileProvider>(
           builder: (context, provider, child) {
             if (provider.profileModel == null) {
-              return Center(
-                child: CircularProgressIndicator(),
+              return Padding(
+                padding: const EdgeInsets.only(top:180),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.dotColor,
+                  ),
+                ),
               );
             } else {
               final profileData = provider.profileModel!;

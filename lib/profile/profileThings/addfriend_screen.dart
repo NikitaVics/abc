@@ -140,7 +140,7 @@ class AddFriendScreenState extends State<AddFriendScreen> {
                         ),
                         const Spacer(),
                         Text(
-                         (AppLocalizations.of(context)!.addFrined),
+                          (AppLocalizations.of(context)!.addFrined),
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -161,8 +161,8 @@ class AddFriendScreenState extends State<AddFriendScreen> {
             ),
           ),
           backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkThemeback
-            : AppColors.lightThemeback,
+              ? AppColors.darkThemeback
+              : AppColors.lightThemeback,
           elevation: 0,
         ),
         body: _buildBody(),
@@ -188,7 +188,7 @@ class AddFriendScreenState extends State<AddFriendScreen> {
               : Column(
                   children: [
                     Expanded(child: _buildRightSide()),
-                    
+
                     //isEdited ? _buildSignInButton() : SizedBox()
                   ],
                 ),
@@ -206,7 +206,9 @@ class AddFriendScreenState extends State<AddFriendScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             _buildLoginText(),
-            SizedBox(height: 18,),
+            SizedBox(
+              height: 18,
+            ),
             Consumer<SearchProvider>(
               builder: (context, provider, child) {
                 final myFriendData = provider.search;
@@ -214,7 +216,8 @@ class AddFriendScreenState extends State<AddFriendScreen> {
                   return Center(
                     child: Padding(
                       padding: const EdgeInsets.only(top: 100),
-                      child: Text( (AppLocalizations.of(context)!.noRecentSearch)),
+                      child:
+                          Text((AppLocalizations.of(context)!.noRecentSearch)),
                     ),
                   );
                 } else {
@@ -248,12 +251,12 @@ class AddFriendScreenState extends State<AddFriendScreen> {
           child: Container(
             decoration: BoxDecoration(
               color: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkTextInput
-            : AppColors.textInputField,
+                  ? AppColors.darkTextInput
+                  : AppColors.textInputField,
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Padding(
-              padding: const EdgeInsets.only(top: 5,bottom:5),
+              padding: const EdgeInsets.only(top: 5, bottom: 5),
               child: Row(
                 children: [
                   Padding(
@@ -271,8 +274,8 @@ class AddFriendScreenState extends State<AddFriendScreen> {
                         // Call the search function whenever the text changes
                         profile();
                       },
-                      decoration:  InputDecoration(
-                        hintText:  (AppLocalizations.of(context)!.searchFriend),
+                      decoration: InputDecoration(
+                        hintText: (AppLocalizations.of(context)!.searchFriend),
                         hintStyle: TextStyle(
                           color: AppColors.hintColor,
                           fontSize: 14,
@@ -343,7 +346,7 @@ class AddFriendScreenState extends State<AddFriendScreen> {
                               border: Border.all(
                                   color: AppColors.requestedfriend, width: 1),
                             ),
-                            child:  Padding(
+                            child: Padding(
                               padding: EdgeInsets.only(left: 12, right: 12),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -366,9 +369,9 @@ class AddFriendScreenState extends State<AddFriendScreen> {
                       : GestureDetector(
                           onTap: () async {
                             int response = await Api.sendFriendRequest(
-                                tokens!, myfriend!.id);
-
-                           await profile();
+                                tokens!, myfriend.id);
+                            print(myfriend.id);
+                            await profile();
                           },
                           child: Container(
                             height: 36,
@@ -378,14 +381,14 @@ class AddFriendScreenState extends State<AddFriendScreen> {
                               border: Border.all(
                                   color: AppColors.confirmValid, width: 1),
                             ),
-                            child:  Padding(
+                            child: Padding(
                               padding: EdgeInsets.only(left: 12, right: 12),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Text(
-                                     (AppLocalizations.of(context)!.addFrined),
+                                    (AppLocalizations.of(context)!.addFrined),
                                     style: TextStyle(
                                       color: AppColors.confirmValid,
                                       fontSize: 12,
@@ -407,7 +410,6 @@ class AddFriendScreenState extends State<AddFriendScreen> {
     );
   }
 
- 
   // General Methods:-----------------------------------------------------------
 
   // dispose:-------------------------------------------------------------------

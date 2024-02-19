@@ -16,12 +16,13 @@ import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/conf
 import 'package:tennis_court_booking_app/bottomnavbar/bottom_navbar.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/language/provider/language_change_controller.dart';
 import 'package:tennis_court_booking_app/mybookings/provider/upComing_provider.dart';
 import 'package:tennis_court_booking_app/provider/booking_response_provider.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:intl/intl.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class FinalBookingScreen extends StatefulWidget {
   final int id;
   const FinalBookingScreen({super.key, required this.id});
@@ -136,7 +137,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                           : AppColors.disableButtonColor,
                       backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.darkTextInput: AppColors.primaryColor,
                       title: Text(
-                        "Cancel Booking",
+                       (AppLocalizations.of(context)!.cancelledBooking),
                         style: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark ? AppColors.headingTextColor : AppColors.logoutColor,
                           fontSize: 24,
@@ -153,7 +154,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                     : AppColors.dotColor,),
                           SizedBox(height: 16),
                           Text(
-                            "Please wait...Request processing, patience on the clock.",
+                           (AppLocalizations.of(context)!.waitText),
                             style: TextStyle(
                               color: Theme.of(context).brightness == Brightness.dark ? AppColors.profileDarkText : Color(0xff49454F),
                               fontSize: 12,
@@ -192,17 +193,22 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
   }
 
   Widget _buildSuccessfulText() {
+     final languageNotifier = context.watch<LanguageChangeController>();
     return Padding(
       padding: const EdgeInsets.only(top: 43),
-      child: Column(
+      child:
+        languageNotifier.appLocale == Locale("en")?
+       Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
+         
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+             
               Text(
-                "Successfully",
+               (AppLocalizations.of(context)!.successfully),
                 style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.headingTextColor
@@ -234,7 +240,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
             ],
           ),
           Text(
-            "Booked!",
+  (AppLocalizations.of(context)!.booked),
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.dark
                   ? AppColors.darkSubHead
@@ -246,7 +252,43 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
             ),
           ),
         ],
-      ),
+      ):
+      Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+             
+              Text(
+               ("${AppLocalizations.of(context)!.successfully} ${ (AppLocalizations.of(context)!.booked)}"),
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.headingTextColor
+                      : Colors.white,
+                  fontSize: 32,
+                  fontFamily: FontFamily.satoshi,
+                  fontWeight: FontWeight.w700,
+                  height: 40 / 32,
+                ),
+              ),
+              IconButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () async {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BottomNavBar(initial: 0),
+                      ),
+                    );
+                    context.read<BookResultShowProvider>().clearStateList();
+                  },
+                  icon: Icon(
+                    Icons.close,
+                    size: 25,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.headingTextColor
+                        : Colors.white,
+                  )),
+            ],
+          ),
     );
   }
 
@@ -277,6 +319,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
       ),
       child: Consumer<BookResultShowProvider>(
         builder: (context, provider, child) {
+           final languageNotifier = context.watch<LanguageChangeController>();
           final bookingResponse = provider.bookedResult;
 
           if (bookingResponse != null) {
@@ -295,6 +338,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
             print(formattedTime);
             DateTime dateTime =
                 DateTime.parse('$formattedDates $formattedTime:00');
+
 
             // Add 1 hour
             dateTime = dateTime.add(const Duration(hours: 1));
@@ -457,7 +501,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                         padding:
                             const EdgeInsets.only(top: 10, left: 19, right: 19),
                         child: Container(
-                          height: 145,
+                          height:languageNotifier.appLocale == Locale("en")? 145:165,
                           width: double.infinity,
                           padding: const EdgeInsets.all(17.63),
                           decoration: BoxDecoration(
@@ -598,7 +642,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                       ),
                       Padding(
                         padding:
-                            const EdgeInsets.only(top: 35, left: 65, right: 65),
+                            const EdgeInsets.only(top: 65, left: 65, right: 65),
                         child: Container(
                           height: 190,
                           child: QrImageView(
@@ -736,7 +780,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                 ? 70
                 : double.infinity,
             isLoading: false,
-            text: "Cancel Booking",
+            text:(AppLocalizations.of(context)!.cancelledBooking),
             onPressed: () async {
               showDialog(
                 context: context,
@@ -907,10 +951,12 @@ class HalfCutContainer extends StatelessWidget {
   HalfCutContainer({required this.innerContainer});
   @override
   Widget build(BuildContext context) {
+    
+ final languageNotifier = context.watch<LanguageChangeController>();
     return Center(
       child: Stack(children: [
         Container(
-          height: 560,
+          height: languageNotifier.appLocale == Locale("en")?560:600,
           decoration: BoxDecoration(
             color: Theme.of(context).brightness == Brightness.dark
                 ? AppColors.darkTextInput
@@ -935,7 +981,7 @@ class HalfCutContainer extends StatelessWidget {
         ),
         Positioned(
           left: -25, // Adjust the left position as needed
-          top: 560 / 2,
+          top:languageNotifier.appLocale == Locale("en")?560:600 / 2,
           child: Container(
             height: 43,
             width: 43,
@@ -949,7 +995,7 @@ class HalfCutContainer extends StatelessWidget {
         // Positioned circle on the right side
         Positioned(
           right: -25, // Adjust the right position as needed
-          top: 560 / 2,
+          top:languageNotifier.appLocale == Locale("en")?560:600 / 2,
           child: Container(
             height: 43,
             width: 43,

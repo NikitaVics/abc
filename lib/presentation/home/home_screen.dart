@@ -142,19 +142,20 @@ class HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     final languageNotifier = context.watch<LanguageChangeController>();
-    return Consumer2<CheckStatusProvider, ProfileProvider>(
-      builder: (context, checkStatusProvider, profileProvider, child) {
-        if (checkStatusProvider.checkStatus == null) {
+    return Consumer< ProfileProvider>(
+      builder: (context,  profileProvider, child) {
+        if (profileProvider.profileModel == null) {
           profileProvider.fetchProfile(tokens ?? "");
-          checkStatusProvider.checkRegistrationStatus(tokens ?? "");
+          //checkStatusProvider.checkRegistrationStatus(tokens ?? "");
 
           return const Center(
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator(   color: AppColors.dotColor,),
           );
         } else {
           imageUrl = profileProvider.profileModel?.result.imageUrl;
           name = profileProvider.profileModel?.result.name ?? "";
-          hasErrorMessage = checkStatusProvider.checkStatus!.result;
+          hasErrorMessage = true;
+          //checkStatusProvider.checkStatus!.result
           List<String> nameParts = name.split(' ');
 
 // Extract the first name
@@ -164,7 +165,7 @@ class HomeScreenState extends State<HomeScreen>
 
           return loading == true && _isInitializationComplete == true
               ? const Center(
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator(   color: AppColors.dotColor,),
                 )
               : Scaffold(
                   backgroundColor:
@@ -604,8 +605,11 @@ class HomeScreenState extends State<HomeScreen>
               courtShowProvider.fetchCourts();
 
               // You can show a loading indicator here if needed
-              return Center(
-                child: CircularProgressIndicator(),
+              return Padding(
+                padding: const EdgeInsets.only(top:180),
+                child: Center(
+                  child: CircularProgressIndicator(   color: AppColors.dotColor,),
+                ),
               );
             } else {
               return Column(
@@ -651,8 +655,11 @@ class HomeScreenState extends State<HomeScreen>
                                                       id: bookings[index]
                                                           .bookingId,valid: true,)));
                                     },
-                                    child: _buildupComingbooking(index,
-                                        bookings.length, bookings[index]),
+                                    child: Visibility(
+                      visible:bookings[index].bookingStatus=="Booked",
+                      child: _buildupComingbooking(
+                          index, bookings.length, bookings[index]),
+                    ),
                                   );
                                 },
                               ),

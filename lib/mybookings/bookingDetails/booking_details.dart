@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:tennis_court_booking_app/api/api.dart';
 import 'package:tennis_court_booking_app/bookingprocess/booking_court.dart';
+import 'package:tennis_court_booking_app/bookingprocess/editTeam/edit_team.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/complete_booking_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/confirm_booking_provider.dart';
 import 'package:tennis_court_booking_app/bottomnavbar/bottom_navbar.dart';
@@ -501,24 +502,32 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                     ),
                                   ),
                                  
-                                  Text(
-                                    'Edit team',
-                                    style: TextStyle(
-                                      color: Theme.of(context).brightness ==
-                                              Brightness.dark
-                                          ? AppColors.darkEditColor
-                                          : AppColors.dotColor,
-                                      decorationColor:
-                                          Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? AppColors.darkEditColor
-                                              : AppColors.dotColor,
-                                      fontSize: 12.34,
-                                      fontFamily: FontFamily.satoshi,
-                                      fontWeight: FontWeight.w700,
-                                      decoration: TextDecoration.underline,
-                                      decorationThickness: 2,
-                                      height: 21.15 / 12.34,
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>EditTeamScreen(result:courtData.bookingDate, time:  courtData.slot, courtName: courtData.tennisCourt.name)));
+                                    },
+                                    child: Text(
+                                      'Edit team',
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.darkEditColor
+                                            : AppColors.dotColor,
+                                        decorationColor:
+                                            Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? AppColors.darkEditColor
+                                                : AppColors.dotColor,
+                                        fontSize: 12.34,
+                                        fontFamily: FontFamily.satoshi,
+                                        fontWeight: FontWeight.w700,
+                                        decoration: TextDecoration.underline,
+                                        decorationThickness: 2,
+                                        height: 21.15 / 12.34,
+                                      ),
                                     ),
                                   ),
                                 ],

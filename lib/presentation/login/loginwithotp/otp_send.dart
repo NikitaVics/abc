@@ -9,6 +9,7 @@ import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
+import 'package:tennis_court_booking_app/widgets/animated_toast.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/otp_input.dart';
@@ -358,6 +359,11 @@ bool allowNavigation = false;
                     setState(() {
                       print(val['errorMessage']);
                       isLoading = false;
+                       AnimatedToast.showToastMessage(
+                          context,
+                          val["errorMessage"][0],
+                          const Color.fromRGBO(87, 87, 87, 0.93),
+                        );
                     });
                   }
                 });

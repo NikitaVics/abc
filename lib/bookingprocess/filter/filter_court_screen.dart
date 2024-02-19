@@ -6,6 +6,7 @@ import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/provider/booking_response_provider.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FilterCourtScreen extends StatefulWidget {
   final DateTime result;
@@ -101,7 +102,7 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
                           ),
                           Center(
                             child: Text(
-                              "Filters",
+                             (AppLocalizations.of(context)!.filters),
                               style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark
@@ -181,7 +182,7 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
         child: Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            "PREFERRED COURT",
+            (AppLocalizations.of(context)!.prefCourt),
           
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.dark
@@ -318,12 +319,12 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
                           ? 70
                           : double.infinity,
                       isLoading: false,
-                      text: "Apply Filter",
+                      text:(AppLocalizations.of(context)!.applyFilt),
                       onPressed: () async {
                         MotionToast(
 
   primaryColor: AppColors.warningToast,
-  description:  Text("Please select your prefer court..",
+  description:  Text((AppLocalizations.of(context)!.pleaseCourt),
   style: TextStyle(
                                     color: Theme.of(context).brightness ==
                                             Brightness.dark
@@ -349,7 +350,7 @@ class FilterCourtScreenState extends State<FilterCourtScreen> {
                           ? 70
                           : double.infinity,
                       isLoading: false,
-                      text: "Apply Filter",
+                      text: (AppLocalizations.of(context)!.applyFilt),
                       onPressed: () async {
                          Provider.of<BookingResponseProvider>(context, listen: false).resetState();
                          Navigator.push(

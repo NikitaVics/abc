@@ -36,7 +36,7 @@
 
     "bookings":"Bookings",
     "myBookings":"My Bookings",
-    "upCommingBooking":"UpComming Booking",
+    "upCommingBooking":"UpComing Booking",
     "previousBooking":"Previous Booking",
     "bookingId":"Booking Id",
     "team":"Team",
@@ -76,6 +76,34 @@
     "requested":"REQUESTED",
     "addFri":"ADD FRIEND",
     "searchFriend":"Search friends",
+    "newBooking": "New Booking",
+    "info":"INFO",
+    "filters":"Filter",
+    "prefCourt":"PREFERRED COURT",
+    "applyFilt":"Apply Filter",
+    "availablefac":"Available facilities",
+    "pleaseCourt":"Please select your prefer court..",
+    "loading":"Loading",
+
+    "date":"Date",
+    "time":"Time",
+    "change":"Change",
+    "addTeam":"Add Team",
+    "addCoach":"Add Coach",
+    "repeatTeam":"Repeat Team",
+    "repeatCoach":"Repeat Coach",
+    "confirmTeam":"Confirm Team",
+    "confirmbooking":"Confirm Booking",
+
+    "successfully":"Successfully",
+    "booked":"Booked!",
+    "editTeam":"Edit Team",
+    "cancelledBooking":"Cancel Booking",
+    "attemtText":"You are attempting to cancel your recent booking.",
+    "confirm":"Confirm",
+    "cancel":"Cancel",
+    "waitText":"Please wait...Request processing, patience on the clock.",
+
 
 
 

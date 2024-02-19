@@ -9,6 +9,7 @@ import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/comp
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/confirm_booking_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/court_info_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/friend_show_provider.dart';
+import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/repeat_friend_provider.dart';
 import 'package:tennis_court_booking_app/language/provider/language_change_controller.dart';
 import 'package:tennis_court_booking_app/mybookings/provider/previous_booking_provider.dart';
 import 'package:tennis_court_booking_app/mybookings/provider/upComing_provider.dart';
@@ -136,6 +137,9 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider<ProfileCreateProvider>(
           create: (context) => ProfileCreateProvider(),
+        ),
+         ChangeNotifierProvider<RepeatFreindShowProvider>(
+          create: (context) =>RepeatFreindShowProvider(),
         ),
       ],
       child: Builder(

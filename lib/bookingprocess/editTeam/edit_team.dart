@@ -15,29 +15,28 @@ import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/frie
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/repeat_friend_provider.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
-import 'package:tennis_court_booking_app/language/provider/language_change_controller.dart';
 import 'package:tennis_court_booking_app/model/repeat/repeat_freind.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/profile_provider.dart';
 import 'package:tennis_court_booking_app/provider/booking_response_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-class TeamSelectScreen extends StatefulWidget {
+
+class EditTeamScreen extends StatefulWidget {
   final DateTime result;
   final String time;
   final String courtName;
-  const TeamSelectScreen(
+  const EditTeamScreen(
       {super.key,
       required this.result,
       required this.time,
       required this.courtName});
 
   @override
-  TeamSelectScreenState createState() => TeamSelectScreenState();
+  EditTeamScreenState createState() => EditTeamScreenState();
 }
 
-class TeamSelectScreenState extends State<TeamSelectScreen> {
+class EditTeamScreenState extends State<EditTeamScreen> {
   //text controllers:-----------------------------------------------------------
 
   //predefine bool value for error:---------------------------------------------
@@ -103,7 +102,6 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final languageNotifier = context.watch<LanguageChangeController>();
     return Builder(builder: (context) {
       return WillPopScope(
         onWillPop: () async {
@@ -144,20 +142,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                                 onPressed: () {
                                   Navigator.pop(context, null);
                                 },
-                                 icon: languageNotifier.appLocale == Locale("ar")
-                              ? Transform.flip(
-                                  flipX: true,
-                                  child: Image.asset(
-                                    "assets/images/leftIcon.png",
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? AppColors.headingTextColor
-                                        : AppColors.profileHead,
-                                    //width: 18,
-                                    height: 26,
-                                  ),
-                                )
-                              : Image.asset(
+                                icon: Image.asset(
                                   "assets/images/leftIcon.png",
                                   color: Theme.of(context).brightness ==
                                           Brightness.dark
@@ -239,7 +224,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  _buildDatePick(),
+                 
                   _buildImage(isImageVisible, isImage),
                   _buildAddTeam(),
                   Padding(
@@ -283,7 +268,6 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
   }
 
   Widget _buildDatePick() {
-     final languageNotifier = context.watch<LanguageChangeController>();
     DateTime date = DateTime.parse(result.toString());
 
     String formattedDate = DateFormat('MMM d').format(date); // Dec 13
@@ -318,7 +302,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                 : AppColors.homeBack,
             borderRadius: BorderRadius.circular(8),
           ),
-          height: 88,
+          height: 78,
           child: Padding(
             padding:
                 const EdgeInsets.only(left: 28, right: 28, top: 15, bottom: 15),
@@ -328,7 +312,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                   Row(
                     children: [
                       Text(
-                        "${(AppLocalizations.of(context)!.date)} - ",
+                        "Date - ",
                         style: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark
                               ? AppColors.profileDarkText
@@ -368,7 +352,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                   Row(
                     children: [
                       Text(
-                        "${(AppLocalizations.of(context)!.time)} - ",
+                        "Time - ",
                         style: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark
                               ? AppColors.profileDarkText
@@ -410,8 +394,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
               Padding(
                 padding: EdgeInsets.only(top: 4),
                 child: Align(
-                    alignment:languageNotifier.appLocale == Locale("en")?
- Alignment.centerRight:Alignment.centerLeft,
+                    alignment: Alignment.centerRight,
                     child: GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(
@@ -435,7 +418,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                           padding: const EdgeInsets.only(
                               left: 13, right: 13, top: 11, bottom: 11),
                           child: Text(
-                           (AppLocalizations.of(context)!.change),
+                            "Change",
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
@@ -466,14 +449,13 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
   }
 
   Widget _buildAddTeam() {
-     final languageNotifier = context.watch<LanguageChangeController>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 31, bottom: 21),
           child: Text(
-            (AppLocalizations.of(context)!.addTeam),
+            "Add team",
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.dark
                   ? AppColors.headingTextColor
@@ -490,8 +472,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
             Expanded(
               child: SizedBox(
                 height: 48,
-                child:languageNotifier.appLocale == Locale("en")?
-                 Stack(
+                child: Stack(
                   children: [
                     Positioned(
                         left: 0,
@@ -513,42 +494,6 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                         double leftPad = (35 * (index + 1)).toDouble();
                         return Positioned(
                           left: leftPad,
-                          top: 0,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(150.0),
-                            child: SilentErrorImage(
-                              height: 48,
-                              width: 48,
-                              imageUrl: imageUrl,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ):
-                 Stack(
-                  children: [
-                    Positioned(
-                        right: 0,
-                        top: 0,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(110.0),
-                          child: SilentErrorImage(
-                            width: 48.0,
-                            height: 48.0,
-                            imageUrl: imageUrl!,
-                          ),
-                        )),
-                    ...List.generate(
-                      3, // Ensure the list has three items
-                      (index) {
-                        String imageUrl = index < selectedImageUrls.length
-                            ? selectedImageUrls[index]
-                            : "";
-                        double leftPad = (35 * (index + 1)).toDouble();
-                        return Positioned(
-                          right: leftPad,
                           top: 0,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(150.0),
@@ -624,7 +569,6 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
 
 
   Widget _buildImageProfile(bool visibilityShow) {
-    final languageNotifier = context.watch<LanguageChangeController>();
     return Visibility(
       visible: visibilityShow,
       child: Container(
@@ -659,8 +603,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                         Expanded(
                           child: SizedBox(
                             height: 48,
-                            child:languageNotifier.appLocale == Locale("en")?
-                             Stack(
+                            child: Stack(
                               children: List.generate(
                                 friendData.length, // Ensure the list has three items
                                 (index) {
@@ -669,28 +612,6 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                                   double leftPad = (35 * index).toDouble();
                                   return Positioned(
                                     left: leftPad,
-                                    top: 0,
-                                    child: ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(150.0),
-                                      child: SilentErrorImage(
-                                        height: 48,
-                                        width: 48,
-                                        imageUrl: imageUrl,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ): Stack(
-                              children: List.generate(
-                                friendData.length, // Ensure the list has three items
-                                (index) {
-                                  String imageUrl =
-                                      friendData[index].imageUrl;
-                                  double leftPad = (35 * index).toDouble();
-                                  return Positioned(
-                                   right: leftPad,
                                     top: 0,
                                     child: ClipRRect(
                                       borderRadius:
@@ -730,7 +651,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                             child: Padding(
                                 padding: EdgeInsets.all(10),
                                 child: Text(
-                                 (AppLocalizations.of(context)!.repeatTeam),
+                                  "Repeat Team",
                                   style: TextStyle(
                                     color: Theme.of(context).brightness ==
                                             Brightness.dark
@@ -861,7 +782,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                     return AnimatedTextKit(
                       animatedTexts: [
                         WavyAnimatedText(
-                          '${(AppLocalizations.of(context)!.loading)}...',
+                          'Loading...',
                           textStyle: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -888,14 +809,13 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
   }
 
   Widget _buildCoach() {
-    final languageNotifier = context.watch<LanguageChangeController>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 31, bottom: 21),
           child: Text(
-            (AppLocalizations.of(context)!.addCoach),
+            "Add coach",
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.dark
                   ? AppColors.headingTextColor
@@ -912,26 +832,10 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
             Expanded(
               child: SizedBox(
                 height: 48,
-                child: 
-                languageNotifier.appLocale == Locale("en")?
-                Stack(
+                child: Stack(
                   children: [
                     Positioned(
                         left: 0,
-                        top: 0,
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(150.0),
-                            child: SilentErrorImage(
-                                height: 48,
-                                width: 48,
-                                imageUrl: coachImage ??
-                                    "assets/images/userTeam.png"))),
-                  ],
-                ):
-                 Stack(
-                  children: [
-                    Positioned(
-                        right: 0,
                         top: 0,
                         child: ClipRRect(
                             borderRadius: BorderRadius.circular(150.0),
@@ -989,7 +893,6 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
   }
 
   Widget _buildCoachProfile(bool visibilityShow) {
-     final languageNotifier = context.watch<LanguageChangeController>();
     return Visibility(
       visible: visibilityShow,
       child: Container(
@@ -1017,26 +920,10 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                     Expanded(
                       child: SizedBox(
                         height: 48,
-                        child:
-                        languageNotifier.appLocale == Locale("en")?
-                         Stack(
+                        child: Stack(
                           children: [
                             Positioned(
                               left: 0,
-                              top: 0,
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(150.0),
-                                  child: SilentErrorImage(
-                                      height: 48,
-                                      width: 48,
-                                      imageUrl: coachImage ??
-                                          "assets/images/userTeam.png")),
-                            ),
-                          ],
-                        ):Stack(
-                          children: [
-                            Positioned(
-                              right: 0,
                               top: 0,
                               child: ClipRRect(
                                   borderRadius: BorderRadius.circular(150.0),
@@ -1068,7 +955,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                         child: Padding(
                             padding: EdgeInsets.all(10),
                             child: Text(
-                              (AppLocalizations.of(context)!.repeatCoach),
+                              "Repeat Coach",
                               style: TextStyle(
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark
@@ -1171,7 +1058,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                     return AnimatedTextKit(
                       animatedTexts: [
                         WavyAnimatedText(
-                        '${(AppLocalizations.of(context)!.loading)}...',
+                          'Loading...',
                           textStyle: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -1213,7 +1100,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                 ? 70
                 : double.infinity,
             isLoading: isProcessing,
-            text: (AppLocalizations.of(context)!.confirmbooking),
+            text: "Confirm Booking",
             onPressed: () async {
               setState(() {
                 isProcessing = true;
@@ -1264,7 +1151,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                 ? 70
                 : double.infinity,
             isLoading: false,
-            text:(AppLocalizations.of(context)!.confirmTeam),
+            text: "Confirm Team",
             onPressed: () async {
               setState(() {
                 isImageVisible = true;

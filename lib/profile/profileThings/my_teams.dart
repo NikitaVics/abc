@@ -249,7 +249,11 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
           builder: (context, provider, mytimeProv, child) {
             if (provider.profileModel == null) {
               return Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(
+                    color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.darkEditColor
+                      : AppColors.dotColor,
+                ),
               );
             } else {
               final profileData = provider.profileModel!;
@@ -270,7 +274,11 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                             final myFriendData = provider.myFriend;
                             if (provider.myFriend == null) {
                               return Center(
-                                child: CircularProgressIndicator(),
+                                child: CircularProgressIndicator(
+                                    color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.darkEditColor
+                      : AppColors.dotColor,
+                                ),
                               );
                             } else {
                               List<MyFriend> allfriend = myFriendData!.result;
@@ -293,7 +301,9 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                             final myFriendData = provider.myFriend;
                             if (provider.myFriend == null) {
                               return Center(
-                                child: CircularProgressIndicator(),
+                                child: CircularProgressIndicator(  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.darkEditColor
+                      : AppColors.dotColor,),
                               );
                             } else {
                               List<MyFriendRequest> allfriend =

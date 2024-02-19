@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/language/provider/language_change_controller.dart';
 import 'package:tennis_court_booking_app/notifications/notification_model.dart';
 import 'package:tennis_court_booking_app/notifications/provider/notification_provider.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/search_provider.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class NotificationScreen extends StatefulWidget {
   final String pageName;
@@ -72,6 +74,7 @@ class NotificationScreenState extends State<NotificationScreen> {
   bool isEdited = false;
   @override
   Widget build(BuildContext context) {
+    final languageNotifier = context.watch<LanguageChangeController>();
     return Builder(builder: (context) {
       return Scaffold(
         backgroundColor: Theme.of(context).brightness == Brightness.dark
@@ -104,19 +107,32 @@ class NotificationScreenState extends State<NotificationScreen> {
                           onPressed: () {
                             Navigator.pop(context, null);
                           },
-                          icon: Image.asset(
-                            "assets/images/leftIcon.png",
-                             color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? AppColors.headingTextColor
-                                    : AppColors.profileHead,
-                            //width: 18,
-                            height: 26,
-                          ),
+                          icon: languageNotifier.appLocale == Locale("ar")
+                              ? Transform.flip(
+                                  flipX: true,
+                                  child: Image.asset(
+                                    "assets/images/leftIcon.png",
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.headingTextColor
+                                        : AppColors.profileHead,
+                                    //width: 18,
+                                    height: 26,
+                                  ),
+                                )
+                              : Image.asset(
+                                  "assets/images/leftIcon.png",
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : AppColors.profileHead,
+                                  //width: 18,
+                                  height: 26,
+                                ),
                         ),
                         const Spacer(),
                         Text(
-                          widget.pageName,
+                         (AppLocalizations.of(context)!.notification),
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -180,7 +196,9 @@ class NotificationScreenState extends State<NotificationScreen> {
         builder: (context, provider, child) {
           if (provider.notificationModel == null) {
             return Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.darkEditColor
+                      : AppColors.dotColor,),
             );
           } else {
             final noticeData = provider.notificationModel!;
@@ -215,6 +233,7 @@ class NotificationScreenState extends State<NotificationScreen> {
   }
 
   Widget _notificationsWidget(int index, int itemCount,List<Notifications> notice) {
+    final languageNotifier = context.watch<LanguageChangeController>();
     Notifications notification = notice[index]; // Get the current notification
   String? imageUrl = notification.imageUrl;
   Color _getNotificationTitleColor(String title) {
@@ -249,6 +268,7 @@ class NotificationScreenState extends State<NotificationScreen> {
                 SizedBox(
                   width: 19,
                 ),
+                languageNotifier.appLocale == Locale("en")?
                 Expanded(
                   child: RichText(
                     text: TextSpan(
@@ -280,6 +300,44 @@ class NotificationScreenState extends State<NotificationScreen> {
                       ],
                     ),
                   ),
+                ):
+                Expanded(
+                  child: Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: RichText(
+                      text: TextSpan(
+                        children: <TextSpan>[
+                          TextSpan(
+                            text: "${notification.title} - "??"",
+                    
+                            style: TextStyle(
+                              
+                              color:_getNotificationTitleColor(notification.title),
+                              fontSize: 16,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w500,
+                              height: 24 / 16,
+                    
+                            ),
+                          ),
+                          TextSpan(
+                            text:
+                                notification.notificationBody, // The first half of the sentence
+                            style: TextStyle(
+                              color:  Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.darkSubHead
+                              : AppColors.subheadColor,
+                              fontSize: 16,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w400,
+                              height: 24 / 16,
+                            ),
+                          ),
+                          
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -299,6 +357,7 @@ class NotificationScreenState extends State<NotificationScreen> {
     super.dispose();
   }
 }
+
 
 class SilentErrorImage extends StatelessWidget {
   final String imageUrl;
@@ -320,13 +379,19 @@ class SilentErrorImage extends StatelessWidget {
       height: height,
       fit: BoxFit.fill,
       errorBuilder:
-          (BuildContext context, Object exception, StackTrace? stackTrace) {
-        // Return an empty container (or any other widget) to silently handle errors
-        return Image.asset(
-          "assets/images/userImage.png",
-          width: width,
-          height: height,
-        );
+          (BuildContext context, Object error, StackTrace? stackTrace) {
+        // Handle the error, e.g., display a placeholder image
+        return Theme.of(context).brightness == Brightness.dark
+            ? Image.asset(
+                "assets/images/darkavat.png",
+                width: width,
+                height: height,
+              )
+            : Image.asset(
+                "assets/images/userTeam.png",
+                width: width,
+                height: height,
+              );
       },
     );
   }
