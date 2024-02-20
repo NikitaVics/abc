@@ -3,6 +3,7 @@
 import 'dart:math';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_sequence_animator/image_sequence_animator.dart';
@@ -90,7 +91,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
           return await _onWilPop();
         },
         child: MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
           child: AbsorbPointer(
             absorbing: isLoading,
             child: Scaffold(
@@ -131,39 +132,42 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                 child: Container(
                   color: Colors.transparent,
                   child: Center(
-                    child: AlertDialog(
-                     surfaceTintColor: Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.hintColor
-                          : AppColors.disableButtonColor,
-                      backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.darkTextInput: AppColors.primaryColor,
-                      title: Text(
-                       (AppLocalizations.of(context)!.cancelledBooking),
-                        style: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark ? AppColors.headingTextColor : AppColors.logoutColor,
-                          fontSize: 24,
-                          fontFamily: FontFamily.satoshi,
-                          fontWeight: FontWeight.w700,
-                          height: 32 / 24,
-                        ),
-                      ),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircularProgressIndicator(color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.darkEditColor
-                    : AppColors.dotColor,),
-                          SizedBox(height: 16),
-                          Text(
-                           (AppLocalizations.of(context)!.waitText),
-                            style: TextStyle(
-                              color: Theme.of(context).brightness == Brightness.dark ? AppColors.profileDarkText : Color(0xff49454F),
-                              fontSize: 12,
-                              fontFamily: FontFamily.poppins,
-                              fontWeight: FontWeight.w400,
-                              height: 20 / 12,
-                            ),
+                    child: MediaQuery(
+                       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                      child: AlertDialog(
+                       surfaceTintColor: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.hintColor
+                            : AppColors.disableButtonColor,
+                        backgroundColor: Theme.of(context).brightness == Brightness.dark ? AppColors.darkTextInput: AppColors.primaryColor,
+                        title: Text(
+                         (AppLocalizations.of(context)!.cancelledBooking),
+                          style: TextStyle(
+                            color: Theme.of(context).brightness == Brightness.dark ? AppColors.headingTextColor : AppColors.logoutColor,
+                            fontSize: 24,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w700,
+                            height: 32 / 24,
                           ),
-                        ],
+                        ),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircularProgressIndicator(color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.darkEditColor
+                      : AppColors.dotColor,),
+                            SizedBox(height: 16),
+                            Text(
+                             (AppLocalizations.of(context)!.waitText),
+                              style: TextStyle(
+                                color: Theme.of(context).brightness == Brightness.dark ? AppColors.profileDarkText : Color(0xff49454F),
+                                fontSize: 12,
+                                fontFamily: FontFamily.poppins,
+                                fontWeight: FontWeight.w400,
+                                height: 20 / 12,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -366,7 +370,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.only(left: 19, top: 19),
+                            padding:  EdgeInsets.only(left: languageNotifier.appLocale == Locale("en")?19:0, top: 19,right:languageNotifier.appLocale == Locale("en")?0:19 ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,7 +391,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                 Row(
                                   children: [
                                     Text(
-                                      "Booking ID",
+                                      (AppLocalizations.of(context)!.bookingId),
                                       style: TextStyle(
                                         color: Theme.of(context).brightness ==
                                                 Brightness.dark
@@ -417,7 +421,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                 Row(
                                   children: [
                                     Text(
-                                      "Date",
+                                     (AppLocalizations.of(context)!.date),
                                       style: TextStyle(
                                         color: Theme.of(context).brightness ==
                                                 Brightness.dark
@@ -447,7 +451,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                 Row(
                                   children: [
                                     Text(
-                                      "Time",
+                                     (AppLocalizations.of(context)!.time),
                                       style: TextStyle(
                                         color: Theme.of(context).brightness ==
                                                 Brightness.dark
@@ -498,10 +502,9 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                         ],
                       ),
                       Padding(
-                        padding:
-                            const EdgeInsets.only(top: 10, left: 19, right: 19),
+                        padding: EdgeInsets.only(top: languageNotifier.appLocale == Locale("en")?10:20, left: 19, right: 19),
                         child: Container(
-                          height:languageNotifier.appLocale == Locale("en")? 145:165,
+                          height:languageNotifier.appLocale == Locale("en")? 145:155,
                           width: double.infinity,
                           padding: const EdgeInsets.all(17.63),
                           decoration: BoxDecoration(
@@ -523,7 +526,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Team',
+                                    (AppLocalizations.of(context)!.team),
                                     style: TextStyle(
                                       color: Theme.of(context).brightness ==
                                               Brightness.dark
@@ -537,7 +540,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                   ),
                                   
                                   Text(
-                                    'Edit team',
+                                    (AppLocalizations.of(context)!.editTeam),
                                     style: TextStyle(
                                       color: Theme.of(context).brightness ==
                                               Brightness.dark
@@ -597,7 +600,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                                               fontWeight: FontWeight.w400,
                                             ),
                                           ),
-                                          SizedBox(height: 2.64),
+                                          SizedBox(width: 2.64),
                                           Image.asset(
                                             "assets/images/ticket.png",
                                             height: 9,
@@ -642,7 +645,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                       ),
                       Padding(
                         padding:
-                            const EdgeInsets.only(top: 65, left: 65, right: 65),
+                           EdgeInsets.only(top:languageNotifier.appLocale == Locale("en")? 55:65, left: 65, right: 65),
                         child: Container(
                           height: 190,
                           child: QrImageView(
@@ -700,7 +703,7 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
                     AnimatedTextKit(
                       animatedTexts: [
                         WavyAnimatedText(
-                          'Loading...',
+                        (AppLocalizations.of(context)!.loading),
                           textStyle: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -750,7 +753,8 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
               )
         ),
         SizedBox(width: 10.58),
-        Text(
+        AutoSizeText(
+          maxLines: 2,
           memberName.isNotEmpty ? memberName : "",
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.dark
@@ -784,102 +788,105 @@ class FinalBookingScreenState extends State<FinalBookingScreen> {
             onPressed: () async {
               showDialog(
                 context: context,
-                builder: (ctx) => AlertDialog(
-                  surfaceTintColor:
-                      Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.hintColor
-                          : AppColors.homeBack,
-                  backgroundColor:
-                      Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.darkThemeback
-                          : AppColors.homeBack,
-                  title: Text(
-                    "Cancel Booking",
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.headingTextColor
-                          : AppColors.logoutColor,
-                      fontSize: 24,
-                      fontFamily: FontFamily.satoshi,
-                      fontWeight: FontWeight.w700,
-                      height: 32 / 24,
+                builder: (ctx) => MediaQuery(
+                   data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                  child: AlertDialog(
+                    surfaceTintColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.hintColor
+                            : AppColors.homeBack,
+                    backgroundColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkThemeback
+                            : AppColors.homeBack,
+                    title: Text(
+                   (AppLocalizations.of(context)!.cancelledBooking),
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.headingTextColor
+                            : AppColors.logoutColor,
+                        fontSize: 24,
+                        fontFamily: FontFamily.satoshi,
+                        fontWeight: FontWeight.w700,
+                        height: 32 / 24,
+                      ),
                     ),
-                  ),
-                  content: Text(
-                    "You are attempting to cancel your recent booking.",
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.profileDarkText
-                          : Color(0xff49454F),
-                      fontSize: 12,
-                      fontFamily: FontFamily.poppins,
-                      fontWeight: FontWeight.w400,
-                      height: 20 / 12,
+                    content: Text(
+                     (AppLocalizations.of(context)!.attemtText),
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.profileDarkText
+                            : Color(0xff49454F),
+                        fontSize: 12,
+                        fontFamily: FontFamily.poppins,
+                        fontWeight: FontWeight.w400,
+                        height: 20 / 12,
+                      ),
                     ),
-                  ),
-                  actions: <Widget>[
-        TextButton(
-          onPressed: () {
-            Navigator.of(ctx).pop();
-          },
-          child: Container(
-            color: Colors.transparent,
-            padding: const EdgeInsets.all(12),
-            child: Text(
-              "Cancel",
-              style: TextStyle(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.hoverColor
-                    : AppColors.subheadColor,
-                fontSize: 14,
-                fontFamily: FontFamily.roboto,
-                fontWeight: FontWeight.w500,
-                height: 20 / 14,
-              ),
-            ),
-          ),
-        ),
-        TextButton(
-          onPressed: () async {
-        Navigator.of(ctx).pop();
-                  setState(() {
-                    isLoading = true;
-                  });
-                  await Api.deleteBooking(
-                    tokens!,
-                    bookId!,
-                  );
-                  _fetchUpcomingData();
-                
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const BottomNavBar(initial: 0),
-                    ),
-                  );
+                    actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(ctx).pop();
+                            },
+                            child: Container(
+                              color: Colors.transparent,
+                              padding: const EdgeInsets.all(12),
+                              child: Text(
+                                (AppLocalizations.of(context)!.cancel),
+                                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.hoverColor
+                      : AppColors.subheadColor,
+                  fontSize: 14,
+                  fontFamily: FontFamily.roboto,
+                  fontWeight: FontWeight.w500,
+                  height: 20 / 14,
+                                ),
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                          Navigator.of(ctx).pop();
                     setState(() {
-                    isLoading = false;
-                  });
+                      isLoading = true;
+                    });
+                    await Api.deleteBooking(
+                      tokens!,
+                      bookId!,
+                    );
+                    _fetchUpcomingData();
                   
-                },
-          child: Container(
-            color: Colors.transparent,
-            padding: const EdgeInsets.all(12),
-            child: Text(
-              "Confirm",
-              style: TextStyle(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? AppColors.darkEditColor
-                    : AppColors.dotColor,
-                fontSize: 14,
-                fontFamily: FontFamily.roboto,
-                fontWeight: FontWeight.w500,
-                height: 20 / 14,
-              ),
-            ),
-          ),
-        ),
-      ],
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BottomNavBar(initial: 0),
+                      ),
+                    );
+                      setState(() {
+                      isLoading = false;
+                    });
+                    
+                  },
+                            child: Container(
+                              color: Colors.transparent,
+                              padding: const EdgeInsets.all(12),
+                              child: Text(
+                              (AppLocalizations.of(context)!.confirm),
+                                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? AppColors.darkEditColor
+                      : AppColors.dotColor,
+                  fontSize: 14,
+                  fontFamily: FontFamily.roboto,
+                  fontWeight: FontWeight.w500,
+                  height: 20 / 14,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                  ),
                 ),
               );
 
@@ -981,7 +988,7 @@ class HalfCutContainer extends StatelessWidget {
         ),
         Positioned(
           left: -25, // Adjust the left position as needed
-          top:languageNotifier.appLocale == Locale("en")?560:600 / 2,
+          top:(languageNotifier.appLocale == Locale("en")?560:600) / 2,
           child: Container(
             height: 43,
             width: 43,
@@ -995,7 +1002,7 @@ class HalfCutContainer extends StatelessWidget {
         // Positioned circle on the right side
         Positioned(
           right: -25, // Adjust the right position as needed
-          top:languageNotifier.appLocale == Locale("en")?560:600 / 2,
+          top:(languageNotifier.appLocale == Locale("en")?560:600) / 2,
           child: Container(
             height: 43,
             width: 43,

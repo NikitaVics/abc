@@ -21,6 +21,7 @@ import 'package:tennis_court_booking_app/widgets/animated_toast.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -93,10 +94,10 @@ class LoginScreenState extends State<LoginScreen> {
                 ? AppColors.darkThemeback
                 : AppColors.lightThemeback,
             primary: true,
-            appBar: const CustomAppBar(
+            appBar: CustomAppBar(
                isIcon: false,
               isBoarder: true,
-              title: "Login",
+              title:(AppLocalizations.of(context)!.login),
               isProgress: false,
               step: 0,
             ),
@@ -182,7 +183,7 @@ class LoginScreenState extends State<LoginScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Login",
+         (AppLocalizations.of(context)!.login),
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.dark
                 ? AppColors.headingTextColor
@@ -197,7 +198,7 @@ class LoginScreenState extends State<LoginScreen> {
         Row(
           children: [
             Text(
-              "If You Need Any Support",
+              (AppLocalizations.of(context)!.ifYouNeed),
               style: TextStyle(
                 color: Theme.of(context).brightness == Brightness.dark
                     ? AppColors.darkSubHead
@@ -207,8 +208,8 @@ class LoginScreenState extends State<LoginScreen> {
                 fontWeight: FontWeight.w400,
               ),
             ),
-            const Text(
-              " Click Here",
+             Text(
+             " ${ (AppLocalizations.of(context)!.clickHere)} ",
               style: TextStyle(
                 color: AppColors.dotColor,
                 fontSize: 12,
@@ -225,7 +226,7 @@ class LoginScreenState extends State<LoginScreen> {
   Widget _buildUserIdField() {
     return TextFieldWidget(
       read:isLoading?true: false,
-      hint: 'E-Mail',
+      hint: (AppLocalizations.of(context)!.email),
       inputType: TextInputType.emailAddress,
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
@@ -254,7 +255,7 @@ class LoginScreenState extends State<LoginScreen> {
     return TextFieldWidget(
       read:     isLoading?true: false,
 
-      hint: "Password",
+      hint: (AppLocalizations.of(context)!.password),
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
           : AppColors.hintColor,
@@ -280,7 +281,7 @@ class LoginScreenState extends State<LoginScreen> {
       children: [
         MaterialButton(
           padding: const EdgeInsets.all(0.0),
-          child: const Text("Forgot Password?",
+          child: Text((AppLocalizations.of(context)!.forgotPass),
               style: TextStyle(
                   color: AppColors.forgotpass,
                   fontSize: 14,
@@ -297,7 +298,7 @@ class LoginScreenState extends State<LoginScreen> {
         ),
         MaterialButton(
           padding: const EdgeInsets.all(0.0),
-          child: const Text("Login with OTP",
+          child:  Text((AppLocalizations.of(context)!.loginWithOtp),
               style: TextStyle(
                   color: AppColors.forgotpass,
                   fontSize: 14,
@@ -325,7 +326,7 @@ class LoginScreenState extends State<LoginScreen> {
          
           TextButton(
             child:   Text(
-            "Not a member ?",
+           (AppLocalizations.of(context)!.notAMem),
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.dark
                   ? AppColors.darkSubHead
@@ -344,7 +345,7 @@ class LoginScreenState extends State<LoginScreen> {
             },
           ),
           TextButton(
-            child: const Text("Register now",
+            child: Text((AppLocalizations.of(context)!.registerNow),
                 style: TextStyle(
                     color: AppColors.forgotpass,
                     fontSize: 14,
@@ -431,7 +432,7 @@ class LoginScreenState extends State<LoginScreen> {
                   ? 70
                   : double.infinity,
               isLoading: isLoading,
-              text: "Login",
+              text: (AppLocalizations.of(context)!.login),
               onPressed:
                   passwordError & emailError ? () {} : loginButtonPressed,
               buttonColor: Theme.of(context).brightness == Brightness.dark

@@ -95,46 +95,49 @@ class MyBookingScreenState extends State<MyBookingScreen> {
         onWillPop: () async {
           return false;
         },
-        child: Scaffold(
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkThemeback
-              : AppColors.lightThemeback,
-          primary: true,
-          appBar: AppBar(
-            toolbarHeight: 60,
-            automaticallyImplyLeading: false,
-            title: Padding(
-              padding: const EdgeInsets.only(left: 24),
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    textScaler: const TextScaler.linear(1.0),
-                    (AppLocalizations.of(context)!.myBookings),
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.headingTextColor
-                          : AppColors.profileHead,
-                      fontSize: 20,
-                      fontFamily: FontFamily.satoshi,
-                      fontWeight: FontWeight.w700,
-                      height: 32 / 20,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                ],
-              ),
-            ),
+        child: MediaQuery(
+           data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
+          child: Scaffold(
             backgroundColor: Theme.of(context).brightness == Brightness.dark
-                ? AppColors.darkTextInput
-                : Colors.white,
-            elevation: 0,
+                ? AppColors.darkThemeback
+                : AppColors.lightThemeback,
+            primary: true,
+            appBar: AppBar(
+              toolbarHeight: 60,
+              automaticallyImplyLeading: false,
+              title: Padding(
+                padding: const EdgeInsets.only(left: 24),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      textScaler: const TextScaler.linear(1.0),
+                      (AppLocalizations.of(context)!.myBookings),
+                      style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.headingTextColor
+                            : AppColors.profileHead,
+                        fontSize: 20,
+                        fontFamily: FontFamily.satoshi,
+                        fontWeight: FontWeight.w700,
+                        height: 32 / 20,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                  ],
+                ),
+              ),
+              backgroundColor: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkTextInput
+                  : Colors.white,
+              elevation: 0,
+            ),
+            body: _buildBody(),
           ),
-          body: _buildBody(),
         ),
       );
     });

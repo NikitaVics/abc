@@ -19,6 +19,7 @@
     "registerAsMem":"Register as Member",
     "email":"E-Mail",
     "alreadyAMem":"Already a member?",
+    "emailError":"
 
 
     "home":"Home",
@@ -103,7 +104,9 @@
     "confirm":"Confirm",
     "cancel":"Cancel",
     "waitText":"Please wait...Request processing, patience on the clock.",
-
+     
+    "bookingDetails":"Booking Details",
+    "attemtText2":"You are attempting to cancel your booking.",
 
 
 

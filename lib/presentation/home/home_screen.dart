@@ -167,225 +167,228 @@ class HomeScreenState extends State<HomeScreen>
               ? const Center(
                   child: CircularProgressIndicator(   color: AppColors.dotColor,),
                 )
-              : Scaffold(
-                  backgroundColor:
-                      Theme.of(context).brightness == Brightness.dark
-                          ? AppColors.darkThemeback
-                          : AppColors.lightThemeback,
-                  primary: true,
-                  body: Column(
-                    children: [
-                      AnimatedBuilder(
-                        animation: _animationController,
-                        builder: (context, child) {
-                          return Transform.translate(
-                            offset: Offset(0.0, -100 * (1 - _animation.value)),
-                            child: child,
-                          );
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 12),
-                          child: Container(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? AppColors.darkTextInput
-                                    : Colors.white,
-                            height: 82,
-                            width: MediaQuery.of(context).size.width,
-                            child: Center(
-                              child: MediaQuery(
-                                data: MediaQuery.of(context)
-                                    .copyWith(textScaleFactor: 1.0),
-                                child: Row(
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () async {
-                                        Map<Permission, PermissionStatus>
-                                            statuses = await [
-                                          Permission.storage,
-                                          Permission.camera,
-                                        ].request();
-                                        if (statuses[Permission.storage]!
-                                                .isGranted &&
-                                            statuses[Permission.camera]!
-                                                .isGranted) {
-                                          showModalBottomSheet(
-                                            context: context,
-                                            isScrollControlled: true,
-                                            backgroundColor: Colors.transparent,
-                                            builder: (context) => changeImage(),
-                                          );
-                                        } else {}
-                                      },
-                                      child: SizedBox(
-                                        height: 48,
-                                        child: Padding(
-                                          padding: languageNotifier.appLocale ==
-                                                  Locale("en")
-                                              ? const EdgeInsets.only(left: 24)
-                                              : const EdgeInsets.only(
-                                                  right: 24),
-                                          child: isDeleting
-                                              ? SilentErrorImage(
-                                                  width: 48.0,
-                                                  height: 48.0,
-                                                  imageUrl: tempImageUrl!)
-                                              : ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          150.0),
-                                                  child: imageFile == null
-                                                      ? SilentErrorImage(
-                                                          width: 48.0,
-                                                          height: 48.0,
-                                                          imageUrl: imageUrl!,
-                                                        )
-                                                      : ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      150.0),
-                                                          child: Image.file(
-                                                            imageFile!,
-                                                            height: 48.0,
-                                                            width: 48.0,
-                                                            fit: BoxFit.fill,
-                                                          ))),
-                                        ),
-                                      ),
-                                    ),
-                                    hasErrorMessage!
-                                        ? const SizedBox(
-                                            width: 20,
-                                          )
-                                        : const SizedBox(
-                                            width: 10,
-                                          ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 10),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            (AppLocalizations.of(context)!
-                                                .hello),
-                                            style: TextStyle(
-                                              color: Theme.of(context)
-                                                          .brightness ==
-                                                      Brightness.dark
-                                                  ? AppColors.headingTextColor
-                                                  : AppColors.allHeadColor,
-                                              fontFamily: FontFamily.satoshi,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w400,
-                                              height: 24 / 16,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 3,
-                                          ),
-                                          Text(
-                                            firstName ?? " ",
-                                            style: TextStyle(
-                                              color: Theme.of(context)
-                                                          .brightness ==
-                                                      Brightness.dark
-                                                  ? AppColors.headingTextColor
-                                                  : AppColors.allHeadColor,
-                                              fontFamily: FontFamily.satoshi,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w400,
-                                              height: 24 / 16,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Expanded(child: Container()),
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 20),
-                                      child: hasErrorMessage!
-                                          ? const SizedBox()
-                                          : SizedBox(
-                                              height: 34,
-                                              child: OutlinedButton(
-                                                onPressed: () async {
-                                                  SharedPreferences pref =
-                                                      await SharedPreferences
-                                                          .getInstance();
-                                                  String? email =
-                                                      await SharePref
-                                                          .fetchEmail();
-                                                  Navigator.of(context).push(
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          RegisterForm(
-                                                        email: email!,
-                                                        password: '',
-                                                      ),
-                                                    ),
-                                                  );
-                                                },
-                                                style: OutlinedButton.styleFrom(
-                                                  backgroundColor:
-                                                      AppColors.errorback,
-                                                  foregroundColor:
-                                                      AppColors.errorColor,
-                                                  side: BorderSide(
-                                                      color:
-                                                          AppColors.errorColor),
-                                                  shape: RoundedRectangleBorder(
+              : MediaQuery(
+                 data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                child: Scaffold(
+                    backgroundColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkThemeback
+                            : AppColors.lightThemeback,
+                    primary: true,
+                    body: Column(
+                      children: [
+                        AnimatedBuilder(
+                          animation: _animationController,
+                          builder: (context, child) {
+                            return Transform.translate(
+                              offset: Offset(0.0, -100 * (1 - _animation.value)),
+                              child: child,
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 12),
+                            child: Container(
+                              color:
+                                  Theme.of(context).brightness == Brightness.dark
+                                      ? AppColors.darkTextInput
+                                      : Colors.white,
+                              height: 82,
+                              width: MediaQuery.of(context).size.width,
+                              child: Center(
+                                child: MediaQuery(
+                                  data: MediaQuery.of(context)
+                                      .copyWith(textScaleFactor: 1.0),
+                                  child: Row(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () async {
+                                          Map<Permission, PermissionStatus>
+                                              statuses = await [
+                                            Permission.storage,
+                                            Permission.camera,
+                                          ].request();
+                                          if (statuses[Permission.storage]!
+                                                  .isGranted &&
+                                              statuses[Permission.camera]!
+                                                  .isGranted) {
+                                            showModalBottomSheet(
+                                              context: context,
+                                              isScrollControlled: true,
+                                              backgroundColor: Colors.transparent,
+                                              builder: (context) => changeImage(),
+                                            );
+                                          } else {}
+                                        },
+                                        child: SizedBox(
+                                          height: 48,
+                                          child: Padding(
+                                            padding: languageNotifier.appLocale ==
+                                                    Locale("en")
+                                                ? const EdgeInsets.only(left: 24)
+                                                : const EdgeInsets.only(
+                                                    right: 24),
+                                            child: isDeleting
+                                                ? SilentErrorImage(
+                                                    width: 48.0,
+                                                    height: 48.0,
+                                                    imageUrl: tempImageUrl!)
+                                                : ClipRRect(
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                            20),
+                                                            150.0),
+                                                    child: imageFile == null
+                                                        ? SilentErrorImage(
+                                                            width: 48.0,
+                                                            height: 48.0,
+                                                            imageUrl: imageUrl!,
+                                                          )
+                                                        : ClipRRect(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        150.0),
+                                                            child: Image.file(
+                                                              imageFile!,
+                                                              height: 48.0,
+                                                              width: 48.0,
+                                                              fit: BoxFit.fill,
+                                                            ))),
+                                          ),
+                                        ),
+                                      ),
+                                      hasErrorMessage!
+                                          ? const SizedBox(
+                                              width: 20,
+                                            )
+                                          : const SizedBox(
+                                              width: 10,
+                                            ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 10),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              (AppLocalizations.of(context)!
+                                                  .hello),
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? AppColors.headingTextColor
+                                                    : AppColors.allHeadColor,
+                                                fontFamily: FontFamily.satoshi,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400,
+                                                height: 24 / 16,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              width: 3,
+                                            ),
+                                            Text(
+                                              firstName ?? " ",
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                            .brightness ==
+                                                        Brightness.dark
+                                                    ? AppColors.headingTextColor
+                                                    : AppColors.allHeadColor,
+                                                fontFamily: FontFamily.satoshi,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w400,
+                                                height: 24 / 16,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      Expanded(child: Container()),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 20),
+                                        child: hasErrorMessage!
+                                            ? const SizedBox()
+                                            : SizedBox(
+                                                height: 34,
+                                                child: OutlinedButton(
+                                                  onPressed: () async {
+                                                    SharedPreferences pref =
+                                                        await SharedPreferences
+                                                            .getInstance();
+                                                    String? email =
+                                                        await SharePref
+                                                            .fetchEmail();
+                                                    Navigator.of(context).push(
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            RegisterForm(
+                                                          email: email!,
+                                                          password: '',
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                  style: OutlinedButton.styleFrom(
+                                                    backgroundColor:
+                                                        AppColors.errorback,
+                                                    foregroundColor:
+                                                        AppColors.errorColor,
+                                                    side: BorderSide(
+                                                        color:
+                                                            AppColors.errorColor),
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                    ),
                                                   ),
-                                                ),
-                                                child: const Text(
-                                                  'Complete profile',
-                                                  style: TextStyle(
-                                                    fontFamily:
-                                                        FontFamily.satoshi,
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w400,
-                                                    height: 24 / 14,
+                                                  child: const Text(
+                                                    'Complete profile',
+                                                    style: TextStyle(
+                                                      fontFamily:
+                                                          FontFamily.satoshi,
+                                                      fontSize: 14,
+                                                      fontWeight: FontWeight.w400,
+                                                      height: 24 / 14,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
+                                      ),
+                                      Padding(
+                                        padding: languageNotifier.appLocale ==
+                                                Locale("en")
+                                            ? const EdgeInsets.only(right: 24)
+                                            : const EdgeInsets.only(left: 24),
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              showAlertDialog(context);
+                                            },
+                                            child: Image.asset(
+                                              "assets/images/notification1.png",
+                                              height: 25,
+                                              color:
+                                                  Theme.of(context).brightness ==
+                                                          Brightness.dark
+                                                      ? AppColors.headingTextColor
+                                                      : Colors.black,
                                             ),
-                                    ),
-                                    Padding(
-                                      padding: languageNotifier.appLocale ==
-                                              Locale("en")
-                                          ? const EdgeInsets.only(right: 24)
-                                          : const EdgeInsets.only(left: 24),
-                                      child: Align(
-                                        alignment: Alignment.centerRight,
-                                        child: GestureDetector(
-                                          onTap: () {
-                                            showAlertDialog(context);
-                                          },
-                                          child: Image.asset(
-                                            "assets/images/notification1.png",
-                                            height: 25,
-                                            color:
-                                                Theme.of(context).brightness ==
-                                                        Brightness.dark
-                                                    ? AppColors.headingTextColor
-                                                    : Colors.black,
                                           ),
                                         ),
-                                      ),
-                                    )
-                                  ],
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      Expanded(child: _buildBody()),
-                    ],
+                        Expanded(child: _buildBody()),
+                      ],
+                    ),
                   ),
-                );
+              );
         }
       },
     );
@@ -1311,7 +1314,7 @@ class HomeScreenState extends State<HomeScreen>
                                 child: AnimatedTextKit(
                                   animatedTexts: [
                                     WavyAnimatedText(
-                                      'Loading...',
+(AppLocalizations.of(context)!.loading),
                                       textStyle: TextStyle(
                                           color: Theme.of(context).brightness ==
                                                   Brightness.dark
@@ -2394,6 +2397,7 @@ class HomeScreenState extends State<HomeScreen>
   }
 
   Widget buidSheet() {
+    final languageNotifier = context.watch<LanguageChangeController>();
     double screenWidth = MediaQuery.of(context).size.width;
     double containerWidth = screenWidth - 48; // 24 padding on each side
     double containerHeight = MediaQuery.of(context).size.height / 1.5;
@@ -2441,15 +2445,28 @@ class HomeScreenState extends State<HomeScreen>
                             onPressed: () {
                               Navigator.pop(context, null);
                             },
-                            icon: Image.asset(
-                              "assets/images/leftIcon.png",
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.headingTextColor
-                                  : AppColors.profileHead,
-                              //width: 18,
-                              height: 26,
-                            ),
+                            icon: languageNotifier.appLocale == Locale("ar")
+                              ? Transform.flip(
+                                  flipX: true,
+                                  child: Image.asset(
+                                    "assets/images/leftIcon.png",
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.headingTextColor
+                                        : AppColors.profileHead,
+                                    //width: 18,
+                                    height: 26,
+                                  ),
+                                )
+                              : Image.asset(
+                                  "assets/images/leftIcon.png",
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : AppColors.profileHead,
+                                  //width: 18,
+                                  height: 26,
+                                ),
                           ),
                           const Spacer(
                             flex: 1,
@@ -2495,20 +2512,62 @@ class HomeScreenState extends State<HomeScreen>
                               height: 32 / 16,
                             ),
                           ),
-                          Text(
-                            "${startTime} - ${endTime}",
-                            style: TextStyle(
-                              decoration: TextDecoration.none,
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? Color(0xff2CC36B)
-                                  : AppColors.confirmValid,
-                              fontSize: 12,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w400,
-                              height: 16 / 12,
-                            ),
-                          ),
+                          languageNotifier.appLocale == Locale("en")
+                                      ? Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            "${startTime} - ${endTime}",
+                                           style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.confirmValid
+                                      : AppColors.confirmValid,
+                                  fontSize: 12,
+                                  fontFamily: FontFamily.satoshi,
+                                  fontWeight: FontWeight.w400,
+                                  height: 16 / 12,
+                                ),
+                                          ),
+                                        )
+                                      : Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "${startTime} \u2013 ",
+                                                                                       
+                                               style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.confirmValid
+                                      : AppColors.confirmValid,
+                                      decoration: TextDecoration.none,
+                                  fontSize: 12,
+                                  fontFamily: FontFamily.satoshi,
+                                  fontWeight: FontWeight.w400,
+                                  height: 16 / 12,
+                                ),
+                                                 
+                                              ),
+                                                Text(
+                                                "${endTime}",
+                                                                                       
+                                                style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.confirmValid
+                                      : AppColors.confirmValid,
+                                       decoration: TextDecoration.none,
+                                  fontSize: 12,
+                                  fontFamily: FontFamily.satoshi,
+                                  fontWeight: FontWeight.w400,
+                                  height: 16 / 12,
+                                ),
+                                                 
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                         ],
                       ),
                     ),
@@ -2541,8 +2600,7 @@ class HomeScreenState extends State<HomeScreen>
                     Padding(
                       padding: EdgeInsets.only(left: 24, right: 24, top: 13.5),
                       child: Text(
-                        "Available facilities",
-                        style: TextStyle(
+                          (AppLocalizations.of(context)!.availablefac),     style: TextStyle(
                           decoration: TextDecoration.none,
                           color: Theme.of(context).brightness == Brightness.dark
                               ? AppColors.headingTextColor
@@ -2564,7 +2622,7 @@ class HomeScreenState extends State<HomeScreen>
                           itemBuilder: (context, index) {
                             Facility facility = courtData.facilities[index];
                             return Padding(
-                                padding: const EdgeInsets.only(right: 20),
+                             padding: languageNotifier.appLocale == Locale("en")?const EdgeInsets.only(right: 20):const EdgeInsets.only(left: 20),
                                 child: Column(
                                   children: [
                                     Image.asset(

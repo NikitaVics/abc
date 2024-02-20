@@ -71,39 +71,43 @@ class ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
       final languageNotifier = context.watch<LanguageChangeController>();
-      return Scaffold(
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkThemeback
-            : AppColors.lightThemeback,
-        primary: true,
-        appBar: AppBar(
-          toolbarHeight: 60,
-          automaticallyImplyLeading: false,
-          title: Row(
-            children: [
-              SizedBox(
-                width: 24,
-              ),
-              Text(
-                  (AppLocalizations.of(context)!.accounts),
-                style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.headingTextColor
-                      : AppColors.profileHead,
-                  fontSize: 20,
-                  fontFamily: FontFamily.satoshi,
-                  fontWeight: FontWeight.w700,
-                  height: 32 / 20,
-                ),
-              ),
-            ],
-          ),
+      return MediaQuery(
+        data: MediaQuery.of(context)
+            .copyWith(textScaler: const TextScaler.linear(1.0)),
+        child: Scaffold(
           backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkTextInput
-              : Colors.white,
-          elevation: 0,
+              ? AppColors.darkThemeback
+              : AppColors.lightThemeback,
+          primary: true,
+          appBar: AppBar(
+            toolbarHeight: 60,
+            automaticallyImplyLeading: false,
+            title: Row(
+              children: [
+                SizedBox(
+                  width: 24,
+                ),
+                Text(
+                  (AppLocalizations.of(context)!.accounts),
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.headingTextColor
+                        : AppColors.profileHead,
+                    fontSize: 20,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w700,
+                    height: 32 / 20,
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkTextInput
+                : Colors.white,
+            elevation: 0,
+          ),
+          body: _buildBody(),
         ),
-        body: _buildBody(),
       );
     });
   }
@@ -164,7 +168,7 @@ class ProfileScreenState extends State<ProfileScreen> {
           builder: (context, provider, child) {
             if (provider.profileModel == null) {
               return Padding(
-                padding: const EdgeInsets.only(top:180),
+                padding: const EdgeInsets.only(top: 180),
                 child: Center(
                   child: CircularProgressIndicator(
                     color: AppColors.dotColor,
@@ -240,7 +244,6 @@ class ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildProfilePerfomence() {
-    
     final themeNotifier = context.watch<ThemeModeNotifier>();
     final languageNotifier = context.watch<LanguageChangeController>();
     final textScaleFactor = MediaQuery.of(context).textScaleFactor;
@@ -256,7 +259,8 @@ class ProfileScreenState extends State<ProfileScreen> {
                   : Colors.white,
             ),
             child: MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+              data: MediaQuery.of(context)
+                  .copyWith(textScaler: const TextScaler.linear(1.0)),
               child: Column(
                 children: [
                   SizedBox(
@@ -290,7 +294,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(width: 25),
                         Text(
- (AppLocalizations.of(context)!.myProfile),
+                          (AppLocalizations.of(context)!.myProfile),
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -307,8 +311,8 @@ class ProfileScreenState extends State<ProfileScreen> {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(right: 20),
-                          child: languageNotifier.appLocale == Locale("en")?
-                                Align(
+                          child: languageNotifier.appLocale == Locale("en")
+                              ? Align(
                                   alignment: Alignment.centerRight,
                                   child: Image.asset(
                                     "assets/images/Right.png",
@@ -318,7 +322,8 @@ class ProfileScreenState extends State<ProfileScreen> {
                                         ? AppColors.headingTextColor
                                         : Colors.black,
                                   ),
-                                ): Align(
+                                )
+                              : Align(
                                   alignment: Alignment.centerLeft,
                                   child: Image.asset(
                                     "assets/images/rightarabic.png",
@@ -359,7 +364,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                       GestureDetector(
                         onTap: () async {},
                         child: Text(
-                         (AppLocalizations.of(context)!.membership),
+                          (AppLocalizations.of(context)!.membership),
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -377,28 +382,29 @@ class ProfileScreenState extends State<ProfileScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(right: 20),
-                        child: languageNotifier.appLocale == Locale("en")?
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Image.asset(
-                                    "assets/images/Right.png",
-                                    height: 24,
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? AppColors.headingTextColor
-                                        : Colors.black,
-                                  ),
-                                ): Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Image.asset(
-                                    "assets/images/rightarabic.png",
-                                    height: 24,
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? AppColors.headingTextColor
-                                        : Colors.black,
-                                  ),
+                        child: languageNotifier.appLocale == Locale("en")
+                            ? Align(
+                                alignment: Alignment.centerRight,
+                                child: Image.asset(
+                                  "assets/images/Right.png",
+                                  height: 24,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : Colors.black,
                                 ),
+                              )
+                            : Align(
+                                alignment: Alignment.centerLeft,
+                                child: Image.asset(
+                                  "assets/images/rightarabic.png",
+                                  height: 24,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : Colors.black,
+                                ),
+                              ),
                       ),
                     ],
                   ),
@@ -442,7 +448,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                                       )));
                         },
                         child: Text(
-                        (AppLocalizations.of(context)!.myTeam),
+                          (AppLocalizations.of(context)!.myTeam),
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -460,28 +466,29 @@ class ProfileScreenState extends State<ProfileScreen> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(right: 20),
-                        child: languageNotifier.appLocale == Locale("en")?
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Image.asset(
-                                    "assets/images/Right.png",
-                                    height: 24,
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? AppColors.headingTextColor
-                                        : Colors.black,
-                                  ),
-                                ): Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Image.asset(
-                                    "assets/images/rightarabic.png",
-                                    height: 24,
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? AppColors.headingTextColor
-                                        : Colors.black,
-                                  ),
+                        child: languageNotifier.appLocale == Locale("en")
+                            ? Align(
+                                alignment: Alignment.centerRight,
+                                child: Image.asset(
+                                  "assets/images/Right.png",
+                                  height: 24,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : Colors.black,
                                 ),
+                              )
+                            : Align(
+                                alignment: Alignment.centerLeft,
+                                child: Image.asset(
+                                  "assets/images/rightarabic.png",
+                                  height: 24,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.headingTextColor
+                                      : Colors.black,
+                                ),
+                              ),
                       ),
                     ],
                   ),
@@ -516,7 +523,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(width: 25),
                         Text(
-                           (AppLocalizations.of(context)!.notification),
+                          (AppLocalizations.of(context)!.notification),
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -533,8 +540,8 @@ class ProfileScreenState extends State<ProfileScreen> {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(right: 20),
-                          child:  languageNotifier.appLocale == Locale("en")?
-                                Align(
+                          child: languageNotifier.appLocale == Locale("en")
+                              ? Align(
                                   alignment: Alignment.centerRight,
                                   child: Image.asset(
                                     "assets/images/Right.png",
@@ -544,7 +551,8 @@ class ProfileScreenState extends State<ProfileScreen> {
                                         ? AppColors.headingTextColor
                                         : Colors.black,
                                   ),
-                                ): Align(
+                                )
+                              : Align(
                                   alignment: Alignment.centerLeft,
                                   child: Image.asset(
                                     "assets/images/rightarabic.png",
@@ -588,7 +596,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                           data: MediaQuery.of(context)
                               .copyWith(textScaleFactor: 1.0),
                           child: Text(
-                           (AppLocalizations.of(context)!.language),
+                            (AppLocalizations.of(context)!.language),
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
@@ -614,17 +622,21 @@ class ProfileScreenState extends State<ProfileScreen> {
                               child: SizedBox(
                                 height: 20,
                                 child: CupertinoSwitch(
-  trackColor: AppColors.disableSwitch,
-  thumbColor: Colors.white,
-  activeColor: AppColors.confirmValid,
-  value: languageNotifier.appLocale == Locale("en"),
-  onChanged: (value) {
-    setState(() {
-      final newLocale = value ? Locale("en") : Locale("ar");
-      languageNotifier.changeLanguage(newLocale);
-    });
-  },
-),
+                                  trackColor: AppColors.disableSwitch,
+                                  thumbColor: Colors.white,
+                                  activeColor: AppColors.confirmValid,
+                                  value: languageNotifier.appLocale ==
+                                      Locale("en"),
+                                  onChanged: (value) {
+                                    print("hi");
+                                    setState(() {
+                                      final newLocale =
+                                          value ? Locale("en") : Locale("ar");
+                                      languageNotifier
+                                          .changeLanguage(newLocale);
+                                    });
+                                  },
+                                ),
                               ),
                             )),
                       ),
@@ -656,7 +668,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                       GestureDetector(
                         onTap: () async {},
                         child: Text(
-                         (AppLocalizations.of(context)!.lightMode),
+                          (AppLocalizations.of(context)!.lightMode),
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -755,36 +767,38 @@ class ProfileScreenState extends State<ProfileScreen> {
                         height: 17,
                         width: 17,
                         child: GestureDetector(
-                            onTap: () async {
-                              SharedPreferences pref =
-                                  await SharedPreferences.getInstance();
+                          onTap: () async {
+                            SharedPreferences pref =
+                                await SharedPreferences.getInstance();
 
-                              pref.remove('authToken');
+                            pref.remove('authToken');
 
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const LoginScreen()));
-                            },
-                            child:languageNotifier.appLocale == Locale("ar")? Transform.flip(
-                          flipX: true,
-                              child: Image.asset(
-                                "assets/images/Logout.png",
-                                height: 15,
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.profileDarkText
-                                    : AppColors.subheadColor,
-                              ),
-                            ):Image.asset(
-                                "assets/images/Logout.png",
-                                height: 15,
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.profileDarkText
-                                    : AppColors.subheadColor,
-                              ),),
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const LoginScreen()));
+                          },
+                          child: languageNotifier.appLocale == Locale("ar")
+                              ? Transform.flip(
+                                  flipX: true,
+                                  child: Image.asset(
+                                    "assets/images/Logout.png",
+                                    height: 15,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.profileDarkText
+                                        : AppColors.subheadColor,
+                                  ),
+                                )
+                              : Image.asset(
+                                  "assets/images/Logout.png",
+                                  height: 15,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.profileDarkText
+                                      : AppColors.subheadColor,
+                                ),
+                        ),
                       ),
                       const SizedBox(width: 25),
                       GestureDetector(
@@ -804,7 +818,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                                   builder: (context) => const LoginScreen()));
                         },
                         child: Text(
-                         (AppLocalizations.of(context)!.logOut),
+                          (AppLocalizations.of(context)!.logOut),
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark

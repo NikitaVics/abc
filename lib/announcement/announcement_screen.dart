@@ -55,40 +55,43 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
-      return Scaffold(
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkThemeback
-            : AppColors.lightThemeback,
-        primary: true,
-        appBar: AppBar(
-          
-          toolbarHeight: 60,
-          automaticallyImplyLeading: false,
-          title: Row(
-            children: [
-              SizedBox(
-                width: 24,
-              ),
-              Text(
-                (AppLocalizations.of(context)!.announcement),
-                style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.headingTextColor
-                      : AppColors.profileHead,
-                  fontSize: 20,
-                  fontFamily: FontFamily.satoshi,
-                  fontWeight: FontWeight.w700,
-                  height: 32 / 20,
-                ),
-              ),
-            ],
-          ),
+      return MediaQuery(
+         data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
+        child: Scaffold(
           backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkTextInput
-              : Colors.white,
-          elevation: 0,
+              ? AppColors.darkThemeback
+              : AppColors.lightThemeback,
+          primary: true,
+          appBar: AppBar(
+            
+            toolbarHeight: 60,
+            automaticallyImplyLeading: false,
+            title: Row(
+              children: [
+                SizedBox(
+                  width: 24,
+                ),
+                Text(
+                  (AppLocalizations.of(context)!.announcement),
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.headingTextColor
+                        : AppColors.profileHead,
+                    fontSize: 20,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w700,
+                    height: 32 / 20,
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkTextInput
+                : Colors.white,
+            elevation: 0,
+          ),
+          body: _buildBody(),
         ),
-        body: _buildBody(),
       );
     });
   }

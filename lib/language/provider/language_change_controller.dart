@@ -6,17 +6,17 @@ class LanguageChangeController extends ChangeNotifier {
   Locale? get appLocale => _appLocale;
 
   // Constructor to initialize the language preference
-  LanguageChangeController() {
+  LanguageChangeController([String? initialLanguageCode]) {
     _loadLanguagePreference();
   }
 
   // Method to load the language preference from SharedPreferences
-  void _loadLanguagePreference() async {
+  void _loadLanguagePreference([String? initialLanguageCode]) async {
     SharedPreferences sp = await SharedPreferences.getInstance();
-    String? languageCode = sp.getString('language_code');
+  String? languageCode = initialLanguageCode ?? sp.getString('language_code');
 
     // If language code is not found, default to English
-    _appLocale = languageCode == 'ar' ? Locale('ar') : Locale('en');
+   _appLocale = languageCode == null ? Locale('en') : Locale(languageCode);
 
     // Notify listeners after loading the language preference
     notifyListeners();
