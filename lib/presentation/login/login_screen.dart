@@ -262,7 +262,7 @@ class LoginScreenState extends State<LoginScreen> {
       isObscure: true,
       textController: password,
       focusNode: _passwordFocusNode,
-      errorText: passwordError ? "Please enter your password" : " ",
+      errorText: passwordError ? (AppLocalizations.of(context)!.passError) : " ",
       defaultBoarder: AppColors.textInputField,
       errorBorderColor: AppColors.errorColor,
       focusBorderColor:
@@ -457,10 +457,10 @@ class LoginScreenState extends State<LoginScreen> {
     setState(() {
       if (email.text.isEmpty) {
         emailError = true;
-        emailErrorText = 'Please enter your email address or username';
+        emailErrorText = (AppLocalizations.of(context)!.emailError);
       } else if (email.text != email.text.toLowerCase()) {
         emailError = true;
-        emailErrorText = 'Entered email or username is not valid';
+        emailErrorText = (AppLocalizations.of(context)!.emailError2);
       } else {
         emailError = false;
       }

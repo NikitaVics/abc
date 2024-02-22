@@ -11,17 +11,18 @@ import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/widgets/animated_toast.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
+import 'package:tennis_court_booking_app/widgets/custom_appbar_login.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/otp_input.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class OtpSendScreen extends StatefulWidget {
   final String email;
   const OtpSendScreen({super.key, required this.email});
 
   @override
-  OtpSendScreenState createState() =>
-      OtpSendScreenState();
+  OtpSendScreenState createState() => OtpSendScreenState();
 }
 
 class OtpSendScreenState extends State<OtpSendScreen> {
@@ -39,7 +40,8 @@ class OtpSendScreenState extends State<OtpSendScreen> {
     startTimer();
     super.initState();
   }
-bool allowNavigation = false;
+
+  bool allowNavigation = true;
   startTimer() {
     try {
       countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -72,35 +74,38 @@ bool allowNavigation = false;
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (allowNavigation) {
-         Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const LoginScreen()),
-                  );
-          return true;
-        } else {
-          // Prevent navigation from this screen.
-          return false;
-        }
-      },
-      child: GestureDetector(
-        onTap: () {
+    return AbsorbPointer(
+      absorbing: isLoading || isLoad,
+      child: WillPopScope(
+        onWillPop: () async {
+          if (allowNavigation) {
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
+            );
+            return true;
+          } else {
+            // Prevent navigation from this screen.
+            return false;
+          }
+        },
+        child: GestureDetector(
+          onTap: () {
             FocusManager.instance.primaryFocus?.unfocus();
           },
-        child: Scaffold(
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkThemeback
-              : AppColors.lightThemeback,
-          primary: true,
-          appBar: const CustomAppBar(
-             isIcon: false,
-            isBoarder: true,
-            title: "Login with OTP",
-            isProgress: false,
-            step: 0,
+          child: Scaffold(
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkThemeback
+                : AppColors.lightThemeback,
+            primary: true,
+            appBar: CustomAppBarsLogin(
+              isIcon: true,
+              isBoarder: true,
+              title: (AppLocalizations.of(context)!.loginWithOtp),
+              isProgress: false,
+              step: 0,
+            ),
+            body: _buildBody(),
           ),
-          body: _buildBody(),
         ),
       ),
     );
@@ -166,15 +171,14 @@ bool allowNavigation = false;
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 OtpInput(_fieldOne, true),
-               
                 OtpInput(_fieldTwo, false),
-                
                 OtpInput(_fieldThree, false),
-               
                 OtpInput(_fieldFour, false),
               ],
             ),
-            const SizedBox(height: 18,),
+            const SizedBox(
+              height: 18,
+            ),
             _buildResendText()
           ],
         ),
@@ -187,7 +191,7 @@ bool allowNavigation = false;
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Verify with OTP",
+          (AppLocalizations.of(context)!.verifywithOtp),
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.dark
                 ? AppColors.headingTextColor
@@ -202,7 +206,7 @@ bool allowNavigation = false;
         Row(
           children: [
             Text(
-              "Code sent to ",
+              (AppLocalizations.of(context)!.codeSent),
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.darkSubHead
@@ -213,7 +217,7 @@ bool allowNavigation = false;
                   height: 24 / 14),
             ),
             Text(
-              widget.email,
+             " ${widget.email} "  ,
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.darkSubHead
@@ -227,31 +231,32 @@ bool allowNavigation = false;
         ),
         Row(
           children: [
-            resendTime != 0?
-            Text(
-              "This code will expire in ",
-              style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.darkSubHead
-                      : AppColors.subheadColor,
-                  fontSize: 14,
-                  fontFamily: FontFamily.satoshi,
-                  fontWeight: FontWeight.w400,
-                  height: 24 / 14),
-            ):AutoSizeText(
-              "Your code has been expired..Please resend the code... ",
-              style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.darkSubHead
-                      : AppColors.subheadColor,
-                  fontSize: 12,
-                  fontFamily: FontFamily.satoshi,
-                  fontWeight: FontWeight.w400,
-                  height: 20 / 12),
-            ),
             resendTime != 0
                 ? Text(
-                    strFormatting(resendTime),
+                    (AppLocalizations.of(context)!.codeExpire),
+                    style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkSubHead
+                            : AppColors.subheadColor,
+                        fontSize: 14,
+                        fontFamily: FontFamily.satoshi,
+                        fontWeight: FontWeight.w400,
+                        height: 24 / 14),
+                  )
+                : AutoSizeText(
+                    (AppLocalizations.of(context)!.expireNote),
+                    style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkSubHead
+                            : AppColors.subheadColor,
+                        fontSize: 12,
+                        fontFamily: FontFamily.satoshi,
+                        fontWeight: FontWeight.w400,
+                        height: 20 / 12),
+                  ),
+            resendTime != 0
+                ? Text(
+                  " ${strFormatting(resendTime)} " ,
                     style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
                             ? AppColors.darkSubHead
@@ -268,6 +273,8 @@ bool allowNavigation = false;
     );
   }
 
+  bool isLoad = false;
+
   Widget _buildResendText() {
     final signInProvider = Provider.of<SignInProvider>(context, listen: false);
     void restartTimer() {
@@ -279,30 +286,39 @@ bool allowNavigation = false;
 
     return Align(
       alignment: Alignment.topLeft,
-      child:resendTime != 0 ? GestureDetector(
-        child: const Text(
-          "Resend Code",
-          style: TextStyle(
-            color: AppColors.hintColor,
-            fontSize: 14,
-            fontFamily: FontFamily.satoshi,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ):
-      GestureDetector(
-        onTap: ()
-        {
+      child: TextButton(
+        onPressed: () {
+          setState(() {
+            isLoad = true;
+          });
           signInProvider.loginWithOtp(widget.email).then((val) {
             if (val["statusCode"] == 200) {
               restartTimer();
             }
+            setState(() {
+              isLoad = false;
+            });
           });
         },
-        child: WidgetAnimator(
+        child: resendTime != 0
+            ? Visibility(
+                visible: !(resendTime != 0),
+                child: Text(
+                  (AppLocalizations.of(context)!.resendCode),
+                  style: TextStyle(
+                    color: isLoad
+                        ? AppColors.disableButtonColor
+                        : AppColors.dotColor,
+                    fontSize: 14,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              )
+            : WidgetAnimator(
                 atRestEffect: WidgetRestingEffects.size(),
-                child: const Text(
-                  "Resend Code",
+                child: Text(
+                  (AppLocalizations.of(context)!.resendCode),
                   style: TextStyle(
                     color: AppColors.dotColor,
                     fontSize: 14,
@@ -311,7 +327,7 @@ bool allowNavigation = false;
                   ),
                 ),
               ),
-      ) 
+      ),
     );
   }
 
@@ -328,52 +344,63 @@ bool allowNavigation = false;
               width: MediaQuery.of(context).orientation == Orientation.landscape
                   ? 70
                   : double.infinity,
-              text: "Verify OTP",
+              text: (AppLocalizations.of(context)!.verifyOtp),
               onPressed: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
-                SharedPreferences pref = await SharedPreferences.getInstance();
-                setState(() {
-                  otp = _fieldOne.text +
-                      _fieldTwo.text +
-                      _fieldThree.text +
-                      _fieldFour.text;
-                  isLoading = true;
-                });
-                value
-                    .sendOtpforlogin(
-                  widget.email,
-                  otp!,
-                )
-                    .then((val) {
-                  if (val["statusCode"] == 200) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const HomeScreen()
-                      ),
-                    );
-                    setState(() {
-                      isLoading = false;
-                    });
-                    print(val);
-                  } else {
-                    setState(() {
-                      print(val['errorMessage']);
-                      isLoading = false;
-                       AnimatedToast.showToastMessage(
+                bool isValid = await validate();
+                if (isValid) {
+                  SharedPreferences pref =
+                      await SharedPreferences.getInstance();
+                  setState(() {
+                    otp = _fieldOne.text +
+                        _fieldTwo.text +
+                        _fieldThree.text +
+                        _fieldFour.text;
+                    isLoading = true;
+                  });
+                  value
+                      .sendOtpforlogin(
+                    widget.email,
+                    otp!,
+                  )
+                      .then((val) {
+                    if (val["statusCode"] == 200) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => const HomeScreen()),
+                      );
+                      setState(() {
+                        isLoading = false;
+                      });
+                      print(val);
+                    } else {
+                      setState(() {
+                        print(val['errorMessage']);
+                        isLoading = false;
+                        AnimatedToast.showToastMessage(
                           context,
                           val["errorMessage"][0],
                           const Color.fromRGBO(87, 87, 87, 0.93),
                         );
-                    });
-                  }
-                });
-                /* if (_formStore.canLogin) {
+                      });
+                    }
+                  });
+                  /* if (_formStore.canLogin) {
                 DeviceUtils.hideKeyboard(context);
                 _userStore.login(
                     _userEmailController.text, _passwordController.text);
               } else {
                 _showErrorMessage('Please fill in all fields');
               }*/
+                }
+                else{
+                   AnimatedToast.showToastMessage(
+                          context,
+                        (AppLocalizations.of(context)!.otpValidation),
+                          const Color.fromRGBO(87, 87, 87, 0.93),
+                        );
+                }
+               
               },
               isLoading: isLoading,
               buttonColor: AppColors.elevatedColor,
@@ -383,5 +410,12 @@ bool allowNavigation = false;
         ),
       ),
     );
+  }
+
+  Future<bool> validate() async {
+    return _fieldOne.text.isNotEmpty &&
+        _fieldTwo.text.isNotEmpty &&
+        _fieldThree.text.isNotEmpty &&
+        _fieldFour.text.isNotEmpty;
   }
 }

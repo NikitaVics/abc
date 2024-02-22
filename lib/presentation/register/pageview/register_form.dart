@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/language/provider/language_change_controller.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/presentation/register/pageview/congrats_screen.dart';
 import 'package:tennis_court_booking_app/presentation/register/verifyemail/verify_email.dart';
@@ -20,6 +21,7 @@ import 'package:tennis_court_booking_app/widgets/prefixphone.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_noneditable.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RegisterForm extends StatefulWidget {
   final String email;
@@ -81,7 +83,7 @@ class _RegisterFormState extends State<RegisterForm> {
       });
     });
     _ageNode = FocusNode();
-      _ageNode.addListener(() {
+    _ageNode.addListener(() {
       setState(() {
         isAge = _ageNode.hasFocus;
       });
@@ -94,6 +96,7 @@ class _RegisterFormState extends State<RegisterForm> {
     });
   }
 
+  int ageCount = 0;
   bool showDocumentErrorMessage = false;
   bool showDErrorMessage = false;
   DateTime? dateTime;
@@ -101,8 +104,6 @@ class _RegisterFormState extends State<RegisterForm> {
   File? imageFile;
   File? imageFiles;
   DateTime? result;
-  List<String> genders = ['Male', 'Female', 'Not Disclosed'];
-
 
   @override
   Widget build(BuildContext context) {
@@ -120,10 +121,10 @@ class _RegisterFormState extends State<RegisterForm> {
                 ? AppColors.darkThemeback
                 : AppColors.lightThemeback,
             primary: true,
-            appBar: const CustomAppBar(
+            appBar: CustomAppBar(
               isIcon: true,
               isBoarder: false,
-              title: "Register as Member",
+              title: (AppLocalizations.of(context)!.registerAsMem),
               isProgress: true,
               step: 2,
             ),
@@ -201,7 +202,7 @@ class _RegisterFormState extends State<RegisterForm> {
               // _buildUserDOB(),
               _buildUserphone(),
               _buildUserGender(),
-             isAge || isGenderVisible==true? _buildUserClause():SizedBox()
+              isAge || isGenderVisible == true ? _buildUserClause() : SizedBox()
               // _buildPasswordField(),
               //_buildUploadDocumentField(context),
               // _buildNotMemberText(),
@@ -216,7 +217,7 @@ class _RegisterFormState extends State<RegisterForm> {
     return Align(
       alignment: Alignment.topLeft,
       child: Text(
-        "Tell Us About You",
+        (AppLocalizations.of(context)!.tellUs),
         style: TextStyle(
           color: Theme.of(context).brightness == Brightness.dark
               ? AppColors.headingTextColor
@@ -233,7 +234,7 @@ class _RegisterFormState extends State<RegisterForm> {
   Widget _buildUserName() {
     return TextFieldWidget(
       read: false,
-      hint: 'Full Name',
+      hint: (AppLocalizations.of(context)!.fullName),
       inputType: TextInputType.name,
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
@@ -253,80 +254,140 @@ class _RegisterFormState extends State<RegisterForm> {
         });
         validateName(); // Trigger validation on text change
       },
-      errorText: nameError ? "Please enter name" : " ",
+      errorText: nameError ? (AppLocalizations.of(context)!.nameError) : " ",
     );
   }
 
+  String convertToArabic(String input) {
+    String result = '';
+    for (int i = 0; i < input.length; i++) {
+      switch (input[i]) {
+        case '0':
+          result += '٠';
+          break;
+        case '1':
+          result += '١';
+          break;
+        case '2':
+          result += '٢';
+          break;
+        case '3':
+          result += '٣';
+          break;
+        case '4':
+          result += '٤';
+          break;
+        case '5':
+          result += '٥';
+          break;
+        case '6':
+          result += '٦';
+          break;
+        case '7':
+          result += '٧';
+          break;
+        case '8':
+          result += '٨';
+          break;
+        case '9':
+          result += '٩';
+          break;
+        default:
+          result += input[i];
+          break;
+      }
+    }
+    return result;
+  }
+
   Widget _buildUserClause() {
+    List<String> genders = [
+      (AppLocalizations.of(context)!.male),
+      (AppLocalizations.of(context)!.female),
+      (AppLocalizations.of(context)!.notDisclosed)
+    ];
+    final languageNotifier = context.watch<LanguageChangeController>();
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-       Expanded(
-        child: SizedBox(
-          height: 300, // Set a fixed height for the list
-          child: Visibility(
-            visible: isAge,
-            child: Card(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.darkTextInput
-                  : AppColors.textInputField,
-              child: ListView.separated(
-                separatorBuilder: (context, index) => Divider(color:Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.darkTextInput
-                  : AppColors.textInputField,),
-                itemCount: 61,
-                itemBuilder: (context, index) {
-                  String age = (index + 10).toString();
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: GestureDetector(
-                     onTap: () {
-                       ageController.text = age;
-                       ageError = false;
-                        validateAge();
-                      },
-                      child: Center(child: Text(age))),
-                  );
-                },
+        Expanded(
+          child: SizedBox(
+            height: 300, // Set a fixed height for the list
+            child: Visibility(
+              visible: isAge,
+              child: Card(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkTextInput
+                    : AppColors.textInputField,
+                child: ListView.separated(
+                  separatorBuilder: (context, index) => Divider(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.darkTextInput
+                        : AppColors.textInputField,
+                  ),
+                  itemCount: 61,
+                  itemBuilder: (context, index) {
+                    String age = (index + 10).toString();
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: GestureDetector(
+                          onTap: () {
+                            ageController.text =
+                                languageNotifier.appLocale == Locale("en")
+                                    ? age
+                                    : convertToArabic(age.toString());
+                            ageCount = int.parse(age);
+                            ageError = false;
+                            validateAge();
+                          },
+                          child: Center(
+                              child: Text(
+                            languageNotifier.appLocale == Locale("en")
+                                ? age
+                                : convertToArabic(age.toString()),
+                          ))),
+                    );
+                  },
+                ),
               ),
             ),
           ),
         ),
-      ),
         Expanded(
-  child: Visibility(
-    visible: isGenderVisible,
-    child: SizedBox(
-      height:170,
-      child: Card(
-        color: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkTextInput
-            : AppColors.textInputField,
-        child: ListView.separated(
-          separatorBuilder: (context, index) => Divider(color: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkTextInput
-            : AppColors.textInputField,),
-          itemCount: genders.length,
-          itemBuilder: (context, index) {
-            String gender = genders[index];
-            return GestureDetector(
-              onTap: () {
-                genderController.text = gender;
-                genderError = false;
-                validateGender();
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Center(child: Text(gender)),
+          child: Visibility(
+            visible: isGenderVisible,
+            child: SizedBox(
+              height: 170,
+              child: Card(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkTextInput
+                    : AppColors.textInputField,
+                child: ListView.separated(
+                  separatorBuilder: (context, index) => Divider(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.darkTextInput
+                        : AppColors.textInputField,
+                  ),
+                  itemCount: genders.length,
+                  itemBuilder: (context, index) {
+                    String gender = genders[index];
+                    return GestureDetector(
+                      onTap: () {
+                        genderController.text = gender;
+                        genderError = false;
+                        validateGender();
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(child: Text(gender)),
+                      ),
+                    );
+                  },
+                ),
               ),
-            );
-          },
+            ),
+          ),
         ),
-      ),
-    ),
-  ),
-),
-
       ],
     );
   }
@@ -337,7 +398,7 @@ class _RegisterFormState extends State<RegisterForm> {
         Expanded(
           child: GenderTextFieldWidget(
             read: false,
-            hint: 'Age',
+            hint: (AppLocalizations.of(context)!.age),
             inputType: TextInputType.none,
             focusNode: _ageNode,
             hintColor: Theme.of(context).brightness == Brightness.dark
@@ -357,7 +418,8 @@ class _RegisterFormState extends State<RegisterForm> {
             },
             onChanged: (value) {},
 
-            errorText: ageError ? "Please enter age" : " ",
+            errorText:
+                ageError ? (AppLocalizations.of(context)!.ageError) : " ",
             isIcon: true,
           ),
         ),
@@ -367,7 +429,7 @@ class _RegisterFormState extends State<RegisterForm> {
         Expanded(
           child: GenderTextFieldWidget(
             read: false,
-            hint: 'Gender',
+            hint: (AppLocalizations.of(context)!.gender),
             inputType: TextInputType.none,
             focusNode: _genderNode,
             hintColor: Theme.of(context).brightness == Brightness.dark
@@ -384,10 +446,10 @@ class _RegisterFormState extends State<RegisterForm> {
             autoFocus: false,
             onSuffixIconPressed: () async {
               FocusScope.of(context).requestFocus(_genderNode);
-              
             },
 
-            errorText: genderError ? "Please enter gender" : " ",
+            errorText:
+                genderError ? (AppLocalizations.of(context)!.genderError) : " ",
             isIcon: true,
           ),
         ),
@@ -652,7 +714,7 @@ class _RegisterFormState extends State<RegisterForm> {
             flex: 2,
             child: TextFieldWidget(
               read: false,
-              hint: 'Phone No.',
+              hint: (AppLocalizations.of(context)!.phoneNo),
               inputType: TextInputType.phone,
               hintColor: Theme.of(context).brightness == Brightness.dark
                   ? AppColors.darkhint
@@ -916,9 +978,9 @@ class _RegisterFormState extends State<RegisterForm> {
                           //FocusManager.instance.primaryFocus?.unfocus();
                         }
                       : () async {
-                        setState(() {
-                loginError = false;
-              });
+                          setState(() {
+                            loginError = false;
+                          });
 
                           FocusManager.instance.primaryFocus?.unfocus();
                           bool nameValid = await validateName();
@@ -942,7 +1004,7 @@ class _RegisterFormState extends State<RegisterForm> {
                                     widget.email,
                                     widget.password,
                                     _userNameController.text,
-                                    int.parse(ageController.text),
+                                    ageCount,
                                     genderController.text,
                                     phonePrefixController.text,
                                     _userPhoneController.text)
@@ -960,18 +1022,18 @@ class _RegisterFormState extends State<RegisterForm> {
                                 });
                                 print("yup");
                               } else {
-                    setState(() {
-                      if (val != null) {
-                        loginError = true;
-                        AnimatedToast.showToastMessage(
-                          context,
-                          val["errorMessage"][0],
-                          const Color.fromRGBO(87, 87, 87, 0.93),
-                        );
-                      }
-                      isLoading = false;
-                    });
-                  }
+                                setState(() {
+                                  if (val != null) {
+                                    loginError = true;
+                                    AnimatedToast.showToastMessage(
+                                      context,
+                                      val["errorMessage"][0],
+                                      const Color.fromRGBO(87, 87, 87, 0.93),
+                                    );
+                                  }
+                                  isLoading = false;
+                                });
+                              }
                             });
                           }
                         },
@@ -985,8 +1047,8 @@ class _RegisterFormState extends State<RegisterForm> {
                             size: 24.0,
                           ),
                         )
-                      : const Text(
-                          "Next",
+                      : Text(
+                          (AppLocalizations.of(context)!.next),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 14,
@@ -1103,7 +1165,7 @@ class _RegisterFormState extends State<RegisterForm> {
     setState(() {
       if (_userPhoneController.text.isEmpty) {
         phoneError = true;
-        phoneErrorText = 'Please enter your contact number';
+        phoneErrorText = (AppLocalizations.of(context)!.phoneError);
       } else {
         phoneError = false;
       }
@@ -1118,7 +1180,7 @@ class _RegisterFormState extends State<RegisterForm> {
     setState(() {
       if (phonePrefixController.text.isEmpty) {
         phoneprefixError = true;
-        phoneprefixErrorText = 'Please enter your phone prefix';
+        phoneprefixErrorText = (AppLocalizations.of(context)!.prefError);
       } else {
         phoneprefixError = false;
       }

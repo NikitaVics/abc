@@ -2,11 +2,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tennis_court_booking_app/bottomnavbar/bottom_navbar.dart';
 import 'package:tennis_court_booking_app/constants/strings.dart';
+import 'package:tennis_court_booking_app/language/provider/language_change_controller.dart';
 import 'package:tennis_court_booking_app/onboarding/onboarding_screen.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -54,10 +57,12 @@ class SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+     final languageNotifier = context.watch<LanguageChangeController>();
    return Scaffold(
-    backgroundColor: Color(0xffEDFAF1),
+    backgroundColor:Theme.of(context).brightness == Brightness.dark? Color(0xff0D0D0D):Color(0xffEDFAF1),
       body: Center(
-        child: Image.asset("assets/images/splashIcon.png",
+        child:Theme.of(context).brightness == Brightness.dark? Image.asset("assets/images/tenis2.png",
+        height: 102,): Image.asset("assets/images/splashIcon.png",
         height: 102,),
       ),
     );

@@ -632,6 +632,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                                     setState(() {
                                       final newLocale =
                                           value ? Locale("en") : Locale("ar");
+                                      print(newLocale);
                                       languageNotifier
                                           .changeLanguage(newLocale);
                                     });

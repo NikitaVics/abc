@@ -45,10 +45,10 @@ Future<void> main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   SharedPreferences sp = await SharedPreferences.getInstance();
   final String languageCode = sp.getString('language_code') ?? '';
+  print(languageCode);
   runApp(MyApp(
     locale: languageCode,
   ));
- 
 }
 
 @pragma('vm:entry-point')
@@ -69,7 +69,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
-       DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight
@@ -138,8 +138,8 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider<ProfileCreateProvider>(
           create: (context) => ProfileCreateProvider(),
         ),
-         ChangeNotifierProvider<RepeatFreindShowProvider>(
-          create: (context) =>RepeatFreindShowProvider(),
+        ChangeNotifierProvider<RepeatFreindShowProvider>(
+          create: (context) => RepeatFreindShowProvider(),
         ),
       ],
       child: Builder(
@@ -150,8 +150,7 @@ class _MyAppState extends State<MyApp> {
             if (widget.locale.isEmpty) {
               provider.changeLanguage(const Locale('en'));
             }
-return
-            MaterialApp(
+            return MaterialApp(
               locale: widget.locale == ''
                   ? const Locale('en')
                   : provider.appLocale == null

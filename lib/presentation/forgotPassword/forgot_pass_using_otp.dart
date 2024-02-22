@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,11 +11,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/forgotPassword/reset_pass.dart';
+import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
+import 'package:tennis_court_booking_app/widgets/animated_toast.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
+import 'package:tennis_court_booking_app/widgets/custom_appbar_login.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/otp_input.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:widget_and_text_animator/widget_and_text_animator.dart';
 
 class ForgotPassUsingOtpScreen extends StatefulWidget {
   final String email;
@@ -71,25 +77,38 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
     return formattedTime;
   }
 
+  Future _onWilPop() async {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => LoginScreen()));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-          FocusManager.instance.primaryFocus?.unfocus();
+    return AbsorbPointer(
+      absorbing: isLoading || isLoad,
+      child: WillPopScope(
+        onWillPop: () async {
+          return await _onWilPop(); // Prevent going back
         },
-      child: Scaffold(
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkThemeback
-            : AppColors.lightThemeback,
-        primary: true,
-        appBar: const CustomAppBar(
-           isIcon: false,
-          isBoarder: true,
-          title: "Forgot password",
-          isProgress: false,
-          step: 0,
+        child: GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: Scaffold(
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkThemeback
+                : AppColors.lightThemeback,
+            primary: true,
+            appBar: CustomAppBarsLogin(
+              isIcon: true,
+              isBoarder: true,
+              title: (AppLocalizations.of(context)!.forgotPass),
+              isProgress: false,
+              step: 0,
+            ),
+            body: _buildBody(),
+          ),
         ),
-        body: _buildBody(),
       ),
     );
   }
@@ -151,20 +170,11 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
             _buildLoginText(),
             const SizedBox(height: 24.0),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 OtpInput(_fieldOne, true),
-                const SizedBox(
-                  width: 20,
-                ),
                 OtpInput(_fieldTwo, false),
-                const SizedBox(
-                  width: 20,
-                ),
                 OtpInput(_fieldThree, false),
-                const SizedBox(
-                  width: 20,
-                ),
                 OtpInput(_fieldFour, false),
               ],
             ),
@@ -180,7 +190,7 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Verify with Otp",
+          (AppLocalizations.of(context)!.verifywithOtp),
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.dark
                 ? AppColors.headingTextColor
@@ -195,7 +205,7 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
         Row(
           children: [
             Text(
-              "Code sent to ",
+              (AppLocalizations.of(context)!.codeSent),
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.darkSubHead
@@ -206,7 +216,7 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
                   height: 24 / 14),
             ),
             Text(
-              widget.email,
+              " ${widget.email} ",
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.darkSubHead
@@ -220,31 +230,32 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
         ),
         Row(
           children: [
-            resendTime != 0?
-            Text(
-              "This code will expired in ",
-              style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.darkSubHead
-                      : AppColors.subheadColor,
-                  fontSize: 14,
-                  fontFamily: FontFamily.satoshi,
-                  fontWeight: FontWeight.w400,
-                  height: 24 / 14),
-            ):Text(
-              "Your code was expired..Please resend the code... ",
-              style: TextStyle(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.darkSubHead
-                      : AppColors.subheadColor,
-                  fontSize: 14,
-                  fontFamily: FontFamily.satoshi,
-                  fontWeight: FontWeight.w400,
-                  height: 24 / 14),
-            ),
             resendTime != 0
                 ? Text(
-                    strFormatting(resendTime),
+                    (AppLocalizations.of(context)!.codeExpire),
+                    style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkSubHead
+                            : AppColors.subheadColor,
+                        fontSize: 14,
+                        fontFamily: FontFamily.satoshi,
+                        fontWeight: FontWeight.w400,
+                        height: 24 / 14),
+                  )
+                : AutoSizeText(
+                    (AppLocalizations.of(context)!.expireNote),
+                    style: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.darkSubHead
+                            : AppColors.subheadColor,
+                        fontSize: 14,
+                        fontFamily: FontFamily.satoshi,
+                        fontWeight: FontWeight.w400,
+                        height: 24 / 14),
+                  ),
+            resendTime != 0
+                ? Text(
+                    " ${strFormatting(resendTime)} ",
                     style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
                             ? AppColors.darkSubHead
@@ -261,6 +272,8 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
     );
   }
 
+  bool isLoad = false;
+
   Widget _buildResendText() {
     final signInProvider = Provider.of<SignInProvider>(context, listen: false);
     void restartTimer() {
@@ -274,21 +287,45 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
       alignment: Alignment.topLeft,
       child: TextButton(
         onPressed: () {
+          setState(() {
+            isLoad = true;
+          });
           signInProvider.forgotPasswordApi(widget.email).then((val) {
             if (val["statusCode"] == 200) {
               restartTimer();
             }
           });
+          setState(() {
+            isLoad = false;
+          });
         },
-        child: const Text(
-          "Resend Code",
-          style: TextStyle(
-            color: AppColors.dotColor,
-            fontSize: 14,
-            fontFamily: FontFamily.satoshi,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        child: resendTime != 0
+            ? Visibility(
+                visible: !(resendTime != 0),
+                child: Text(
+                  (AppLocalizations.of(context)!.resendCode),
+                  style: TextStyle(
+                    color: isLoad
+                        ? AppColors.disableButtonColor
+                        : AppColors.dotColor,
+                    fontSize: 14,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              )
+            : WidgetAnimator(
+                atRestEffect: WidgetRestingEffects.size(),
+                child: Text(
+                  (AppLocalizations.of(context)!.resendCode),
+                  style: TextStyle(
+                    color: AppColors.dotColor,
+                    fontSize: 14,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
       ),
     );
   }
@@ -306,49 +343,65 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
               width: MediaQuery.of(context).orientation == Orientation.landscape
                   ? 70
                   : double.infinity,
-              text: "Verify Otp",
+              text: (AppLocalizations.of(context)!.verifyOtp),
               onPressed: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
-                SharedPreferences pref = await SharedPreferences.getInstance();
-                setState(() {
-                  otp = _fieldOne.text +
-                      _fieldTwo.text +
-                      _fieldThree.text +
-                      _fieldFour.text;
-                  isLoading = true;
-                });
-                value
-                    .verifyEmailForgotPasswordApi(
-                  widget.email,
-                  otp!,
-                )
-                    .then((val) {
-                  if (val["statusCode"] == 200) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ResetPassScreen(
-                          email: widget.email,
+                bool isValid = await validate();
+                if (isValid) {
+                  SharedPreferences pref =
+                      await SharedPreferences.getInstance();
+                  setState(() {
+                    otp = _fieldOne.text +
+                        _fieldTwo.text +
+                        _fieldThree.text +
+                        _fieldFour.text;
+                    isLoading = true;
+                  });
+                  value
+                      .verifyEmailForgotPasswordApi(
+                    widget.email,
+                    otp!,
+                  )
+                      .then((val) {
+                    if (val["statusCode"] == 200) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ResetPassScreen(
+                            email: widget.email,
+                          ),
                         ),
-                      ),
-                    );
-                    setState(() {
-                      isLoading = false;
-                    });
-                    print(val);
-                  } else {
-                    setState(() {
-                      print(val['errorMessage']);
-                      isLoading = false;
-                    });
-                  }
-                });
-                /* if (_formStore.canLogin) {
+                      );
+                      setState(() {
+                        isLoading = false;
+                      });
+                      print(val);
+                    } else {
+                     setState(() {
+                        print(val['errorMessage']);
+                        isLoading = false;
+                        AnimatedToast.showToastMessage(
+                          context,
+                          val["errorMessage"][0],
+                          const Color.fromRGBO(87, 87, 87, 0.93),
+                        );
+                      });
+                    }
+                  });
+                  /* if (_formStore.canLogin) {
                 DeviceUtils.hideKeyboard(context);
                 _userStore.login(
                     _userEmailController.text, _passwordController.text);
               } else {
                 _showErrorMessage('Please fill in all fields');
               }*/
+                }
+                else{
+                   AnimatedToast.showToastMessage(
+                          context,
+                        (AppLocalizations.of(context)!.otpValidation),
+                          const Color.fromRGBO(87, 87, 87, 0.93),
+                        );
+                }
               },
               isLoading: isLoading,
               buttonColor: AppColors.elevatedColor,
@@ -358,5 +411,11 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
         ),
       ),
     );
+  }
+   Future<bool> validate() async {
+    return _fieldOne.text.isNotEmpty &&
+        _fieldTwo.text.isNotEmpty &&
+        _fieldThree.text.isNotEmpty &&
+        _fieldFour.text.isNotEmpty;
   }
 }

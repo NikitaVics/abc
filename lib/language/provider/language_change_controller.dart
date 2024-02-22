@@ -7,7 +7,7 @@ class LanguageChangeController extends ChangeNotifier {
 
   // Constructor to initialize the language preference
   LanguageChangeController([String? initialLanguageCode]) {
-    _loadLanguagePreference();
+    _loadLanguagePreference(initialLanguageCode);
   }
 
   // Method to load the language preference from SharedPreferences

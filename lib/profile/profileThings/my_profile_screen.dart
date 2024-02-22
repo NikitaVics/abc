@@ -466,6 +466,8 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                                         .requestFocus(_focusNode);
                                     showCountryPicker(
                                       context: context,
+                                       countryListTheme:
+                    CountryListThemeData(textStyle: TextStyle(fontSize: 10)),
                                       showPhoneCode: true,
                                       onSelect: (Country country) {
                                         phonePrefixController.text =
@@ -482,7 +484,7 @@ class MyProfileScreenState extends State<MyProfileScreen> {
                                 ),
                               )
                             : Expanded(
-                                flex: 1,
+                                flex: 2,
                                 child: Container(
                                   child: Padding(
                                     padding: const EdgeInsets.only(

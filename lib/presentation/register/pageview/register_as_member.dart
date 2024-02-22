@@ -14,6 +14,7 @@ import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/step_progress_indicator.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RegisterAsMember extends StatefulWidget {
   const RegisterAsMember({super.key});
@@ -117,10 +118,10 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
                 ? AppColors.darkThemeback
                 : AppColors.lightThemeback,
             primary: true,
-            appBar: const CustomAppBar(
-               isIcon: false,
+            appBar: CustomAppBar(
+              isIcon: false,
               isBoarder: false,
-              title: "Register as Member",
+              title: (AppLocalizations.of(context)!.registerAsMem),
               isProgress: true,
               step: 1,
             ),
@@ -189,10 +190,10 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
           children: <Widget>[
             _buildLoginText(),
             SizedBox(height: 24.0),
-           // _buildUserName(),
+            // _buildUserName(),
             _buildUserIdField(),
             _buildPasswordField(),
-           // _buildConfirmPasswordField(),
+            // _buildConfirmPasswordField(),
             _buildNotMemberText(),
           ],
         ),
@@ -205,19 +206,17 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Register as Member",
+          (AppLocalizations.of(context)!.registerAsMem),
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.headingTextColor
-                              : AppColors.allHeadColor,
+                ? AppColors.headingTextColor
+                : AppColors.allHeadColor,
             fontSize: 32,
             fontFamily: FontFamily.satoshi,
             fontWeight: FontWeight.w700,
             height: 40 / 32,
           ),
         ),
-      
-       
       ],
     );
   }
@@ -312,7 +311,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
   Widget _buildUserIdField() {
     return TextFieldWidget(
       read: false,
-      hint: 'E-Mail',
+      hint: (AppLocalizations.of(context)!.email),
       inputType: TextInputType.emailAddress,
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
@@ -345,14 +344,14 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
       children: [
         TextFieldWidget(
           read: false,
-          hint: "Password",
+          hint: (AppLocalizations.of(context)!.password),
           hintColor: Theme.of(context).brightness == Brightness.dark
               ? AppColors.darkhint
               : AppColors.hintColor,
           isObscure: true,
           textController: _passwordController,
           focusNode: _passwordFocusNode,
-          errorText: passwordError ? "Please enter valid password" : " ",
+          errorText: passwordError ? passwordErrorText : " ",
           defaultBoarder: AppColors.textInputField,
           errorBorderColor: AppColors.errorColor,
           focusBorderColor:
@@ -368,8 +367,8 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
             visible: !isPasswordValids,
             child: Card(
               color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.darkTextInput
-                              : AppColors.textInputField,
+                  ? AppColors.darkTextInput
+                  : AppColors.textInputField,
               child: Column(
                 children: [
                   for (int i = 0; i < 5; i++)
@@ -393,9 +392,10 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
                                   passwordConditions[i]
                                       ? Icons.check
                                       : Icons.clear,
-                                  color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.allHeadColor
-                              : AppColors.headingTextColor,
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.allHeadColor
+                                      : AppColors.headingTextColor,
                                   size: 15,
                                 ),
                               ),
@@ -403,12 +403,15 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
                             const SizedBox(
                               width: 10,
                             ),
-                            Text(_getConditionText(i),
-                            style: TextStyle(
-                              color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.headingTextColor
-                              : AppColors.allHeadColor,
-                            ),),
+                            Text(
+                              _getConditionText(i),
+                              style: TextStyle(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? AppColors.headingTextColor
+                                    : AppColors.allHeadColor,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 5),
@@ -427,15 +430,15 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
   String _getConditionText(int index) {
     switch (index) {
       case 0:
-        return "At least 8 characters";
+        return (AppLocalizations.of(context)!.atLeast8char);
       case 1:
-        return "Contains lowercase letter";
+        return (AppLocalizations.of(context)!.lowerCase);
       case 2:
-        return "Contains uppercase letter";
+        return (AppLocalizations.of(context)!.upperCase);
       case 3:
-        return "Contains at least 1 number";
+        return (AppLocalizations.of(context)!.atleast1num);
       case 4:
-        return "Contains special character";
+        return (AppLocalizations.of(context)!.specialChar);
       default:
         return "";
     }
@@ -481,19 +484,18 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
                 ),
               );
             },
-            child:  Text(
-            "Already a member ?",
-            style: TextStyle(
-              color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.profileDarkText
-                              : AppColors.allHeadColor,
-              fontSize: 14,
-              fontFamily: FontFamily.satoshi,
-              fontWeight: FontWeight.w500,
+            child: Text(
+              (AppLocalizations.of(context)!.alreadyAMem),
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.profileDarkText
+                    : AppColors.allHeadColor,
+                fontSize: 14,
+                fontFamily: FontFamily.satoshi,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
-          ),
-         
           TextButton(
             onPressed: () {
               Navigator.of(context).push(
@@ -503,7 +505,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
               );
             },
             child: Text(
-              "Login now",
+              (AppLocalizations.of(context)!.loginNow),
               style: TextStyle(
                 color: AppColors.dotColor,
                 fontSize: 14,
@@ -516,64 +518,57 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
       ),
     );
   }
+
   Widget _buildSignInButton() {
     return Align(
       alignment: Alignment.bottomCenter,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 19),
         child: FocusScope(
-          // Manage keyboard focus
-          child: 
-            CustomElevatedButton(
-              height: 60,
-              width: MediaQuery.of(context).orientation == Orientation.landscape
-                  ? 70
-                  : double.infinity,
-              text: "Next",
-              isLoading: isLoading,
-              onPressed: () async {
-                FocusManager.instance.primaryFocus?.unfocus();
-                //SharedPreferences pref = await SharedPreferences.getInstance();
-               
-                bool emailValid = await validateEmail();
-                bool passwordValid = await validatePassword();
-               
+            // Manage keyboard focus
+            child: CustomElevatedButton(
+          height: 60,
+          width: MediaQuery.of(context).orientation == Orientation.landscape
+              ? 70
+              : double.infinity,
+          text: (AppLocalizations.of(context)!.next),
+          isLoading: isLoading,
+          onPressed: () async {
+            FocusManager.instance.primaryFocus?.unfocus();
+            //SharedPreferences pref = await SharedPreferences.getInstance();
 
-                if (
-                    emailValid &&
-                    passwordValid 
-                   ) {
-                  setState(() {
-                    isLoading = true;
-                  });
-                  Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => RegisterForm(
-                                  email: _emailController.text,
-                                  password: _passwordController.text,
-                                 
-                                )),
-                      );
-                      setState(() {
-                        isLoading = false;
-                      });
-                }
+            bool emailValid = await validateEmail();
+            bool passwordValid = await validatePassword();
 
-                /* if (_formStore.canLogin) {
+            if (emailValid && passwordValid) {
+              setState(() {
+                isLoading = true;
+              });
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (context) => RegisterForm(
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                        )),
+              );
+              setState(() {
+                isLoading = false;
+              });
+            }
+
+            /* if (_formStore.canLogin) {
                 DeviceUtils.hideKeyboard(context);
                 _userStore.login(
                     _userEmailController.text, _passwordController.text);
               } else {
                 _showErrorMessage('Please fill in all fields');
               }*/
-              },
-              buttonColor: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.darkEditColor
-                              : AppColors.elevatedColor,
-              textColor: Colors.white,
-            )
-         
-        ),
+          },
+          buttonColor: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkEditColor
+              : AppColors.elevatedColor,
+          textColor: Colors.white,
+        )),
       ),
     );
   }
@@ -683,7 +678,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
   }
 
   Future<bool> validateEmail() async {
-     final email = _emailController.text;
+    final email = _emailController.text;
     bool emailValid = RegExp(
             r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+")
         .hasMatch(email);
@@ -691,10 +686,10 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
     setState(() {
       if (email.isEmpty) {
         emailError = true;
-        emailErrorText = 'Please enter your email address';
+        emailErrorText = (AppLocalizations.of(context)!.emailError);
       } else if (!emailValid) {
         emailError = true;
-        emailErrorText = 'Entered email is not valid';
+        emailErrorText = (AppLocalizations.of(context)!.emailError2);
       } else {
         emailError = false;
       }
@@ -704,13 +699,18 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
   }
 
   Future<bool> validatePassword() async {
-    
     final password = _passwordController.text;
     final passwordConditions = isPasswordValid(password);
     bool isPasswordValids = passwordConditions.every((condition) => condition);
     setState(() {
-      if (!isPasswordValids) {
+      if(password.isEmpty)
+      {
+         passwordError = true;
+        passwordErrorText = (AppLocalizations.of(context)!.passError);
+      }
+     else if (!isPasswordValids) {
         passwordError = true;
+        passwordErrorText = (AppLocalizations.of(context)!.passError2);
       } else {
         passwordError = false;
       }
@@ -726,8 +726,7 @@ class _RegisterAsMemberState extends State<RegisterAsMember> {
       if (confirmpass.isEmpty) {
         confirmPasswordError = true;
         confirmPasswordErrorText = 'Please enter confirm password';
-      } else if (confirmpass !=
-          _passwordController.text) {
+      } else if (confirmpass != _passwordController.text) {
         confirmPasswordError = true;
         confirmPasswordErrorText = 'Passwords do not match';
       } else {

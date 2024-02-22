@@ -4,18 +4,19 @@ import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/language/provider/language_change_controller.dart';
+import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/theme/theme_manager.dart';
 import 'package:tennis_court_booking_app/widgets/step_progress_indicator.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class CustomAppBarsLogin extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final bool isBoarder;
   final bool isProgress;
   final int step;
   final bool isIcon;
 
-  const CustomAppBar(
+  const CustomAppBarsLogin(
       {Key? key,
       required this.title,
       required this.isBoarder,
@@ -56,7 +57,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 ?                IconButton(
                   padding: EdgeInsets.zero,
                   onPressed: () {
-                    Navigator.pop(context, null);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>LoginScreen(
+                                  
+                                )));
                   },
                   icon: languageNotifier.appLocale == Locale("ar")
                               ? Transform.flip(

@@ -11,6 +11,7 @@ import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/widgets/animated_toast.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CongratsScreen extends StatefulWidget {
    final String email;
@@ -149,7 +150,7 @@ class CongratsScreenState extends State<CongratsScreen> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         GradientText(
-        Text(  "Congrats!", style: TextStyle(
+        Text( (AppLocalizations.of(context)!.congrats), style: TextStyle(
             color: AppColors.dotColor,
             fontSize: 38,
             fontFamily: FontFamily.satoshi,
@@ -165,23 +166,23 @@ class CongratsScreenState extends State<CongratsScreen> {
         ),
         const SizedBox(height: 10.0),
         Text(
-          "Your Account was ",
+           (AppLocalizations.of(context)!.accountNote),
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.dark
                 ? AppColors.profileDarkText
                 : AppColors.subheadColor,
-            fontSize: 16,
+            fontSize: 17,
             fontFamily: FontFamily.satoshi,
             fontWeight: FontWeight.w400,
           ),
         ),
         Text(
-          "successfull created.",
+         (AppLocalizations.of(context)!.accountNote2),
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.dark
                 ? AppColors.profileDarkText
                 : AppColors.subheadColor,
-            fontSize: 16,
+            fontSize: 17,
             fontFamily: FontFamily.satoshi,
             fontWeight: FontWeight.w400,
           ),
@@ -251,7 +252,7 @@ class CongratsScreenState extends State<CongratsScreen> {
                   ? 70
                   : double.infinity,
               isLoading: isLoading,
-              text: "Go Home",
+              text:  (AppLocalizations.of(context)!.goHome),
               onPressed:
                    loginButtonPressed,
               buttonColor: AppColors.elevatedColor,

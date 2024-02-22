@@ -4,9 +4,11 @@ import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/forgotPassword/forgot_pass_using_otp.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
+import 'package:tennis_court_booking_app/widgets/animated_toast.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class OtpSendScreen extends StatefulWidget {
   const OtpSendScreen({super.key});
@@ -30,21 +32,24 @@ class OtpSendScreenState extends State<OtpSendScreen> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-          FocusManager.instance.primaryFocus?.unfocus();
-        },
-      child: Scaffold(
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? AppColors.darkThemeback
-            : AppColors.lightThemeback,
-        primary: true,
-        appBar: const CustomAppBar(
-           isIcon: false,
-          isBoarder: true,
-          title: "Forgot password",
-          isProgress: false,
-          step: 0,
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: AbsorbPointer(
+        absorbing: isLoading,
+        child: Scaffold(
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? AppColors.darkThemeback
+              : AppColors.lightThemeback,
+          primary: true,
+          appBar: CustomAppBar(
+            isIcon: true,
+            isBoarder: true,
+            title: (AppLocalizations.of(context)!.forgotPass),
+            isProgress: false,
+            step: 0,
+          ),
+          body: _buildBody(),
         ),
-        body: _buildBody(),
       ),
     );
   }
@@ -117,7 +122,7 @@ class OtpSendScreenState extends State<OtpSendScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Enter Mail id",
+          (AppLocalizations.of(context)!.enterMail),
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.dark
                 ? AppColors.headingTextColor
@@ -130,7 +135,7 @@ class OtpSendScreenState extends State<OtpSendScreen> {
         ),
         const SizedBox(height: 6.0),
         Text(
-          "Enter mail id of your accout to get OTP ",
+          (AppLocalizations.of(context)!.enterMailText),
           style: TextStyle(
               color: Theme.of(context).brightness == Brightness.dark
                   ? AppColors.darkSubHead
@@ -147,7 +152,7 @@ class OtpSendScreenState extends State<OtpSendScreen> {
   Widget _buildUserIdField() {
     return TextFieldWidget(
       read: false,
-      hint: 'E-Mail',
+      hint: (AppLocalizations.of(context)!.email),
       inputType: TextInputType.emailAddress,
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
@@ -185,7 +190,7 @@ class OtpSendScreenState extends State<OtpSendScreen> {
               width: MediaQuery.of(context).orientation == Orientation.landscape
                   ? 70
                   : double.infinity,
-              text: "Get OTP",
+              text: (AppLocalizations.of(context)!.getOtp),
               isLoading: isLoading,
               onPressed: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
@@ -208,7 +213,13 @@ class OtpSendScreenState extends State<OtpSendScreen> {
                       print(val);
                     } else {
                       setState(() {
-                        print(val['errorMessage']);
+                        if (val != null) {
+                          AnimatedToast.showToastMessage(
+                            context,
+                            val["errorMessage"][0],
+                            const Color.fromRGBO(87, 87, 87, 0.93),
+                          );
+                        }
                         isLoading = false;
                       });
                     }
@@ -239,10 +250,10 @@ class OtpSendScreenState extends State<OtpSendScreen> {
     setState(() {
       if (email.text.isEmpty) {
         emailError = true;
-        emailErrorText = 'Please enter your email address';
+        emailErrorText = (AppLocalizations.of(context)!.emailError);
       } else if (!emailValid) {
         emailError = true;
-        emailErrorText = 'Entered email is not valid';
+        emailErrorText =(AppLocalizations.of(context)!.emailError2);
       } else {
         emailError = false;
       }

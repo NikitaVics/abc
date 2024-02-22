@@ -12,13 +12,16 @@ import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/presentation/forgotPassword/reset_pass.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/presentation/register/pageview/congrats_screen.dart';
+import 'package:tennis_court_booking_app/presentation/register/pageview/register_as_member.dart';
 import 'package:tennis_court_booking_app/presentation/register/pageview/register_form.dart';
 import 'package:tennis_court_booking_app/presentation/register/register.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
+import 'package:tennis_court_booking_app/widgets/animated_toast.dart';
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/otp_input.dart';
 import 'package:widget_and_text_animator/widget_and_text_animator.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class VerifyEmailScreen extends StatefulWidget {
   final String email;
@@ -77,11 +80,16 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
     return formattedTime;
   }
 
+  Future _onWilPop() async {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => RegisterAsMember()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        return false; // Prevent going back
+        return await _onWilPop(); // Prevent going back
       },
       child: GestureDetector(
         onTap: () {
@@ -92,10 +100,10 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
               ? AppColors.darkThemeback
               : AppColors.lightThemeback,
           primary: true,
-          appBar: const CustomAppBar(
+          appBar: CustomAppBar(
             isIcon: false,
             isBoarder: true,
-            title: "Verify mail id",
+            title: (AppLocalizations.of(context)!.verifyMail),
             isProgress: false,
             step: 0,
           ),
@@ -162,20 +170,14 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
             _buildLoginText(),
             const SizedBox(height: 24.0),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 OtpInput(_fieldOne, true),
-                const SizedBox(
-                  width: 20,
-                ),
+                
                 OtpInput(_fieldTwo, false),
-                const SizedBox(
-                  width: 20,
-                ),
+                
                 OtpInput(_fieldThree, false),
-                const SizedBox(
-                  width: 20,
-                ),
+                
                 OtpInput(_fieldFour, false),
               ],
             ),
@@ -191,7 +193,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Verify with Otp",
+          (AppLocalizations.of(context)!.verifywithOtp),
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.dark
                 ? AppColors.headingTextColor
@@ -206,7 +208,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
         Row(
           children: [
             Text(
-              "Code sent to ",
+              (AppLocalizations.of(context)!.codeSent),
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.profileDarkText
@@ -217,7 +219,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   height: 24 / 14),
             ),
             Text(
-              widget.email,
+              " ${widget.email} ",
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.profileDarkText
@@ -233,7 +235,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
           children: [
             resendTime != 0
                 ? Text(
-                    "This code will expired in ",
+                    (AppLocalizations.of(context)!.codeExpire),
                     style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
                             ? AppColors.profileDarkText
@@ -244,7 +246,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                         height: 24 / 14),
                   )
                 : Text(
-                    "Your code was expired..Please resend the code... ",
+                    (AppLocalizations.of(context)!.expireNote),
                     style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
                             ? AppColors.profileDarkText
@@ -256,7 +258,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   ),
             resendTime != 0
                 ? Text(
-                    strFormatting(resendTime),
+                   " ${strFormatting(resendTime)} " ,
                     style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
                             ? AppColors.profileDarkText
@@ -273,6 +275,8 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
     );
   }
 
+  bool isLoad = false;
+
   Widget _buildResendText() {
     final signInProvider = Provider.of<SignInProvider>(context, listen: false);
     void restartTimer() {
@@ -286,26 +290,35 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
       alignment: Alignment.topLeft,
       child: TextButton(
         onPressed: () {
+          setState(() {
+            isLoad = false;
+          });
           signInProvider.forgotPasswordApi(widget.email).then((val) {
             if (val["statusCode"] == 200) {
               restartTimer();
             }
+              setState(() {
+            isLoad =false;
+          });
           });
         },
         child: resendTime != 0
-            ? Text(
-                "Resend Code",
-                style: TextStyle(
-                  color: AppColors.dotColor,
-                  fontSize: 14,
-                  fontFamily: FontFamily.satoshi,
-                  fontWeight: FontWeight.w500,
+            ? Visibility(
+               visible:!(resendTime != 0) ,
+              child: Text(
+                  (AppLocalizations.of(context)!.resendCode),
+                  style: TextStyle(
+                    color: AppColors.dotColor,
+                    fontSize: 14,
+                    fontFamily: FontFamily.satoshi,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              )
+            )
             : WidgetAnimator(
                 atRestEffect: WidgetRestingEffects.size(),
-                child: const Text(
-                  "Resend Code",
+                child: Text(
+                  (AppLocalizations.of(context)!.resendCode),
                   style: TextStyle(
                     color: AppColors.dotColor,
                     fontSize: 14,
@@ -317,6 +330,8 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
       ),
     );
   }
+
+  bool yuColor = false;
 
   Widget _buildforgotPassButton() {
     return Align(
@@ -332,8 +347,23 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
               width: MediaQuery.of(context).orientation == Orientation.landscape
                   ? 70
                   : double.infinity,
-              text: "Verify Otp",
-              onPressed:  _verifyOtp,
+              text: (AppLocalizations.of(context)!.verifyOtp),
+              onPressed: () async {
+                bool isValid = await validate();
+                if (isValid) {
+                  setState(() {
+                    yuColor = true;
+                  });
+                  _verifyOtp();
+                }
+                else{
+                   AnimatedToast.showToastMessage(
+                          context,
+                        (AppLocalizations.of(context)!.otpValidation),
+                          const Color.fromRGBO(87, 87, 87, 0.93),
+                        );
+                }
+              },
               buttonColor: AppColors.elevatedColor,
               textColor: Colors.white,
             );
@@ -346,15 +376,10 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
   bool allFieldsFilled = false;
 
   Future<bool> validate() async {
-    setState(() {
-      if (_fieldOne.text.isEmpty &
-          _fieldTwo.text.isEmpty &
-          _fieldThree.text.isEmpty &
-          _fieldFour.text.isEmpty) {
-        allFieldsFilled = true;
-      }
-    });
-    return allFieldsFilled;
+    return _fieldOne.text.isNotEmpty &&
+        _fieldTwo.text.isNotEmpty &&
+        _fieldThree.text.isNotEmpty &&
+        _fieldFour.text.isNotEmpty;
   }
 
   void _verifyOtp() async {
@@ -364,34 +389,42 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
       otp =
           _fieldOne.text + _fieldTwo.text + _fieldThree.text + _fieldFour.text;
     });
-   
-      setState(() {
-        isLoading = true;
-      });
 
-      final signInProvider =
-          Provider.of<SignInProvider>(context, listen: false);
-      signInProvider.verifyEmail(widget.email, otp!).then((val) {
-        if (val["statusCode"] == 200) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => CongratsScreen(
-                email: widget.email,
-                password: widget.password,
-              ),
+    setState(() {
+      isLoading = true;
+    });
+
+    final signInProvider = Provider.of<SignInProvider>(context, listen: false);
+    signInProvider.verifyEmail(widget.email, otp!).then((val) {
+      if (val["statusCode"] == 200) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => CongratsScreen(
+              email: widget.email,
+              password: widget.password,
             ),
-          );
-        }
+          ),
+        );
         setState(() {
           isLoading = false;
         });
-      });
-  
+      } else {
+        setState(() {
+          if (val != null) {
+            AnimatedToast.showToastMessage(
+              context,
+              val["errorMessage"][0],
+              const Color.fromRGBO(87, 87, 87, 0.93),
+            );
+          }
+          isLoading = false;
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
-    
     super.dispose();
   }
 }
