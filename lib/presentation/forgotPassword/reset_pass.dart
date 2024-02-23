@@ -10,10 +10,13 @@ import 'package:tennis_court_booking_app/presentation/forgotPassword/forgot_pass
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
 import 'package:tennis_court_booking_app/presentation/register/register.dart';
+import 'package:tennis_court_booking_app/widgets/animated_toast.dart';
 
 import 'package:tennis_court_booking_app/widgets/custom_appbar.dart';
+import 'package:tennis_court_booking_app/widgets/custom_appbar_login.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:tennis_court_booking_app/widgets/textfield_widget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ResetPassScreen extends StatefulWidget {
   final String email;
@@ -87,29 +90,42 @@ class ResetPassScreenState extends State<ResetPassScreen> {
     provider = Provider.of<SignInProvider>(context, listen: false);
   }
 
+  Future _onWilPop() async {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => LoginScreen()));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Builder(builder: (context) {
-      return GestureDetector(
-        onTap: () {
-          FocusManager.instance.primaryFocus?.unfocus();
+    return AbsorbPointer(
+      absorbing: isLoading,
+      child: WillPopScope(
+        onWillPop: () async {
+          return await _onWilPop(); // Prevent going back
         },
-        child: Scaffold(
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkThemeback
-              : AppColors.lightThemeback,
-          primary: true,
-          appBar: const CustomAppBar(
-             isIcon: false,
-            isBoarder: true,
-            title: "Forgot Password",
-            isProgress: false,
-            step: 0,
-          ),
-          body: _buildBody(),
-        ),
-      );
-    });
+        child: Builder(builder: (context) {
+          return GestureDetector(
+            onTap: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
+            child: Scaffold(
+              backgroundColor: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkThemeback
+                  : AppColors.lightThemeback,
+              primary: true,
+              appBar:  CustomAppBarsLogin(
+                isIcon: true,
+                isBoarder: true,
+                title: (AppLocalizations.of(context)!.forgotPassword),
+                isProgress: false,
+                step: 0,
+              ),
+              body: _buildBody(),
+            ),
+          );
+        }),
+      ),
+    );
   }
 
   // body methods:--------------------------------------------------------------
@@ -184,7 +200,7 @@ class ResetPassScreenState extends State<ResetPassScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Enter New ",
+         (AppLocalizations.of(context)!.newPass),
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.dark
                 ? AppColors.headingTextColor
@@ -196,7 +212,7 @@ class ResetPassScreenState extends State<ResetPassScreen> {
           ),
         ),
         Text(
-          "Password",
+          (AppLocalizations.of(context)!.password),
           style: TextStyle(
             color: Theme.of(context).brightness == Brightness.dark
                 ? AppColors.headingTextColor
@@ -220,14 +236,14 @@ class ResetPassScreenState extends State<ResetPassScreen> {
       children: [
         TextFieldWidget(
           read: false,
-          hint: "Password",
+          hint: (AppLocalizations.of(context)!.password),
           hintColor: Theme.of(context).brightness == Brightness.dark
               ? AppColors.darkhint
               : AppColors.hintColor,
           isObscure: true,
           textController: _password,
           focusNode: _passwordFocusNode,
-          errorText: passwordError ? "Please enter valid password" : " ",
+          errorText: passwordError ? passwordErrorText : " ",
           defaultBoarder: AppColors.textInputField,
           errorBorderColor: AppColors.errorColor,
           focusBorderColor:
@@ -242,7 +258,9 @@ class ResetPassScreenState extends State<ResetPassScreen> {
           Visibility(
             visible: !isPasswordValids,
             child: Card(
-              color: AppColors.textInputField,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkTextInput
+                  : AppColors.textInputField,
               child: Column(
                 children: [
                   const SizedBox(
@@ -293,18 +311,18 @@ class ResetPassScreenState extends State<ResetPassScreen> {
     );
   }
 
-  String _getConditionText(int index) {
+   String _getConditionText(int index) {
     switch (index) {
       case 0:
-        return "At least 8 characters";
+        return (AppLocalizations.of(context)!.atLeast8char);
       case 1:
-        return "Contains lowercase letter";
+        return (AppLocalizations.of(context)!.lowerCase);
       case 2:
-        return "Contains uppercase letter";
+        return (AppLocalizations.of(context)!.upperCase);
       case 3:
-        return "Contains at least 1 number";
+        return (AppLocalizations.of(context)!.atleast1num);
       case 4:
-        return "Contains special character";
+        return (AppLocalizations.of(context)!.specialChar);
       default:
         return "";
     }
@@ -313,7 +331,7 @@ class ResetPassScreenState extends State<ResetPassScreen> {
   Widget _buildConfirmPasswordField() {
     return TextFieldWidget(
       read: false,
-      hint: "Confirm Password",
+      hint:(AppLocalizations.of(context)!.confirmPass),
       hintColor: Theme.of(context).brightness == Brightness.dark
           ? AppColors.darkhint
           : AppColors.hintColor,
@@ -349,7 +367,7 @@ class ResetPassScreenState extends State<ResetPassScreen> {
               width: MediaQuery.of(context).orientation == Orientation.landscape
                   ? 70
                   : double.infinity,
-              text: "Update Password",
+              text: (AppLocalizations.of(context)!.updatePass),
               isLoading: isLoading,
               onPressed: () async {
                 FocusManager.instance.primaryFocus?.unfocus();
@@ -370,14 +388,20 @@ class ResetPassScreenState extends State<ResetPassScreen> {
                         ),
                       );
                       setState(() {
-                    isLoading = false;
-                  });
+                        isLoading = false;
+                      });
                       print(val);
                     } else {
                       setState(() {
-                          isLoading = false;
-                        print(val['errorMessage']);
-                      });
+          if (val != null) {
+            AnimatedToast.showToastMessage(
+              context,
+              val["errorMessage"][0],
+              const Color.fromRGBO(87, 87, 87, 0.93),
+            );
+          }
+          isLoading = false;
+        });
                     }
                   });
                 }
@@ -414,8 +438,14 @@ class ResetPassScreenState extends State<ResetPassScreen> {
     final passwordConditions = isPasswordValid(password);
     bool isPasswordValids = passwordConditions.every((condition) => condition);
     setState(() {
-      if (!isPasswordValids) {
+      if(password.isEmpty)
+      {
+          passwordError = true;
+        passwordErrorText = (AppLocalizations.of(context)!.newPassText);
+      }
+      else if (!isPasswordValids) {
         passwordError = true;
+        passwordErrorText =(AppLocalizations.of(context)!.newPassText2);
       } else {
         passwordError = false;
       }
@@ -428,10 +458,10 @@ class ResetPassScreenState extends State<ResetPassScreen> {
     setState(() {
       if (_confirmpassword.text.isEmpty) {
         confirmPasswordError = true;
-        confirmPasswordErrorText = 'Please enter confirm password';
+        confirmPasswordErrorText = (AppLocalizations.of(context)!.validPass1);
       } else if (_confirmpassword.text != _password.text) {
         confirmPasswordError = true;
-        confirmPasswordErrorText = 'Passwords do not match';
+        confirmPasswordErrorText =(AppLocalizations.of(context)!.validPass2);
       } else {
         confirmPasswordError = false;
       }

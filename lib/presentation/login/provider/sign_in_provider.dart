@@ -73,11 +73,12 @@ class SignInProvider with ChangeNotifier {
     }
   }
 
-  Future sendOtpforlogin(String email, String otp) async {
+  Future sendOtpforlogin(String email, String otp,String deviceToken) async {
     //updateForgotPasswordLoader(true);
     var body = {
       'email': email,
       'otp': otp,
+      'deviceToken': deviceToken
     };
     try {
       var res = await Api.sendOtp(body);
@@ -101,7 +102,7 @@ class SignInProvider with ChangeNotifier {
       'otp': otp,
     };
     try {
-      var res = await Api.emaiVerification(body);
+      var res = await Api.emaiVerificationForgotPassword(body);
       print('Response: $res');
 
       // Parse the 'res' here, if needed.

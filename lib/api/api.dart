@@ -8,6 +8,7 @@ import 'package:tennis_court_booking_app/model/coachshow/Coach_show_model.dart';
 import 'package:tennis_court_booking_app/model/courtInfo/court_info.dart';
 import 'package:tennis_court_booking_app/model/finalBookModel/final_book_model.dart';
 import 'package:tennis_court_booking_app/model/friendShow/friend_show_model.dart';
+import 'package:tennis_court_booking_app/model/repeat/repeat_coach.dart';
 import 'package:tennis_court_booking_app/model/repeat/repeat_freind.dart';
 import 'package:tennis_court_booking_app/model/upComingBooking/upcoming_booking_model.dart';
 import 'package:tennis_court_booking_app/notifications/notification_model.dart';
@@ -329,7 +330,7 @@ class Api {
       headers: headers,
     );
 
-    print(response.body);
+    print("Friend ${response.body}");
 
     return FriendShowModel.fromJson(jsonDecode(response.body));
   }
@@ -879,6 +880,27 @@ class Api {
     print(response.body);
 
     return RepeatFriend.fromJson(jsonDecode(response.body));
+  }
+
+  //Repeat coach
+  static Future<RepeatCoach> repeatCoach(
+      String bearerToken, DateTime date, String time) async {
+    var url = "$baseUrl/api/Booking/Repeat Coach";
+    Uri uri = Uri.parse('$url?bookingDate=$date&Slot=$time');
+    url = uri.toString();
+    // Convert the model to a JSON string
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+    };
+
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: headers,
+    );
+
+    print(response.body);
+
+    return RepeatCoach.fromJson(jsonDecode(response.body));
   }
   
 }

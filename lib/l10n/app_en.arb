@@ -51,6 +51,14 @@
     "enterMailText":"Enter mail id of your accout to get OTP ",
     "getOtp":"Get OTP",
     "otpValidation":"Please enter OTP..Any field can't be empty.",
+    "confirmPass":"Confirm Password",
+    "newPassText":"Please enter new password",
+    "newPassText2":"Please enter valid password",
+    "validPass1":"Please enter confirm password",
+    "validPass2":"Password do not match..Please check..",
+    "updatePass":"Update Password",
+    "newPass":"Enter New",
+    "forgotPassword":"Forgot Password",
 
 
     "home":"Home",

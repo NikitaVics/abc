@@ -78,8 +78,9 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
   }
 
   Future _onWilPop() async {
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => LoginScreen()));
+    Navigator.pop(context);
+    /*Navigator.push(
+        context, MaterialPageRoute(builder: (context) => LoginScreen()));*/
   }
 
   @override
@@ -99,10 +100,10 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
                 ? AppColors.darkThemeback
                 : AppColors.lightThemeback,
             primary: true,
-            appBar: CustomAppBarsLogin(
+            appBar: CustomAppBar(
               isIcon: true,
               isBoarder: true,
-              title: (AppLocalizations.of(context)!.forgotPass),
+              title: (AppLocalizations.of(context)!.forgotPassword),
               isProgress: false,
               step: 0,
             ),
@@ -376,7 +377,7 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
                       });
                       print(val);
                     } else {
-                     setState(() {
+                      setState(() {
                         print(val['errorMessage']);
                         isLoading = false;
                         AnimatedToast.showToastMessage(
@@ -394,13 +395,12 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
               } else {
                 _showErrorMessage('Please fill in all fields');
               }*/
-                }
-                else{
-                   AnimatedToast.showToastMessage(
-                          context,
-                        (AppLocalizations.of(context)!.otpValidation),
-                          const Color.fromRGBO(87, 87, 87, 0.93),
-                        );
+                } else {
+                  AnimatedToast.showToastMessage(
+                    context,
+                    (AppLocalizations.of(context)!.otpValidation),
+                    const Color.fromRGBO(87, 87, 87, 0.93),
+                  );
                 }
               },
               isLoading: isLoading,
@@ -412,7 +412,8 @@ class ForgotPassUsingOtpScreenState extends State<ForgotPassUsingOtpScreen> {
       ),
     );
   }
-   Future<bool> validate() async {
+
+  Future<bool> validate() async {
     return _fieldOne.text.isNotEmpty &&
         _fieldTwo.text.isNotEmpty &&
         _fieldThree.text.isNotEmpty &&

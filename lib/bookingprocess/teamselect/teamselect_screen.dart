@@ -12,6 +12,7 @@ import 'package:tennis_court_booking_app/bookingprocess/final_booking_screen.dar
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/coach_show_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/complete_booking_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/friend_show_provider.dart';
+import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/repeat_coach_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/repeat_friend_provider.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
@@ -23,6 +24,7 @@ import 'package:intl/intl.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 class TeamSelectScreen extends StatefulWidget {
   final DateTime result;
   final String time;
@@ -77,6 +79,9 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
     final repeatfriendShow =
         Provider.of<RepeatFreindShowProvider>(context, listen: false);
     repeatfriendShow.fetchRepeatfriendshow(token, widget.result, widget.time);
+    final repeatCoachShow =
+        Provider.of<RepeatCoachShowProvider>(context, listen: false);
+    repeatCoachShow.fetchRepeatCoachshow(token, widget.result, widget.time);
     final coachShow = Provider.of<CoachShowProvider>(context, listen: false);
     coachShow.fetchfriendshow(widget.result, widget.time);
     print(name);
@@ -87,6 +92,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
   }
 
   List<String> selectedImageUrls = [];
+  List<String> selectedImageUrlCoachs = [];
   List<int> friendId = [];
   int? coachid;
   bool isFirstButtonSelected = false;
@@ -144,28 +150,28 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                                 onPressed: () {
                                   Navigator.pop(context, null);
                                 },
-                                 icon: languageNotifier.appLocale == Locale("ar")
-                              ? Transform.flip(
-                                  flipX: true,
-                                  child: Image.asset(
-                                    "assets/images/leftIcon.png",
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? AppColors.headingTextColor
-                                        : AppColors.profileHead,
-                                    //width: 18,
-                                    height: 26,
-                                  ),
-                                )
-                              : Image.asset(
-                                  "assets/images/leftIcon.png",
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? AppColors.headingTextColor
-                                      : AppColors.profileHead,
-                                  //width: 18,
-                                  height: 26,
-                                ),
+                                icon: languageNotifier.appLocale == Locale("ar")
+                                    ? Transform.flip(
+                                        flipX: true,
+                                        child: Image.asset(
+                                          "assets/images/leftIcon.png",
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? AppColors.headingTextColor
+                                              : AppColors.profileHead,
+                                          //width: 18,
+                                          height: 26,
+                                        ),
+                                      )
+                                    : Image.asset(
+                                        "assets/images/leftIcon.png",
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.headingTextColor
+                                            : AppColors.profileHead,
+                                        //width: 18,
+                                        height: 26,
+                                      ),
                               ),
                               SizedBox(
                                 width: 106,
@@ -283,7 +289,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
   }
 
   Widget _buildDatePick() {
-     final languageNotifier = context.watch<LanguageChangeController>();
+    final languageNotifier = context.watch<LanguageChangeController>();
     DateTime date = DateTime.parse(result.toString());
 
     String formattedDate = DateFormat('MMM d').format(date); // Dec 13
@@ -410,8 +416,9 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
               Padding(
                 padding: EdgeInsets.only(top: 4),
                 child: Align(
-                    alignment:languageNotifier.appLocale == Locale("en")?
- Alignment.centerRight:Alignment.centerLeft,
+                    alignment: languageNotifier.appLocale == Locale("en")
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
                     child: GestureDetector(
                       onTap: () {
                         Navigator.of(context).push(
@@ -435,7 +442,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                           padding: const EdgeInsets.only(
                               left: 13, right: 13, top: 11, bottom: 11),
                           child: Text(
-                           (AppLocalizations.of(context)!.change),
+                            (AppLocalizations.of(context)!.change),
                             style: TextStyle(
                               color: Theme.of(context).brightness ==
                                       Brightness.dark
@@ -466,7 +473,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
   }
 
   Widget _buildAddTeam() {
-     final languageNotifier = context.watch<LanguageChangeController>();
+    final languageNotifier = context.watch<LanguageChangeController>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -490,79 +497,79 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
             Expanded(
               child: SizedBox(
                 height: 48,
-                child:languageNotifier.appLocale == Locale("en")?
-                 Stack(
-                  children: [
-                    Positioned(
-                        left: 0,
-                        top: 0,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(110.0),
-                          child: SilentErrorImage(
-                            width: 48.0,
-                            height: 48.0,
-                            imageUrl: imageUrl!,
+                child: languageNotifier.appLocale == Locale("en")
+                    ? Stack(
+                        children: [
+                          Positioned(
+                              left: 0,
+                              top: 0,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(110.0),
+                                child: SilentErrorImage(
+                                  width: 48.0,
+                                  height: 48.0,
+                                  imageUrl: imageUrl!,
+                                ),
+                              )),
+                          ...List.generate(
+                            3, // Ensure the list has three items
+                            (index) {
+                              String imageUrl = index < selectedImageUrls.length
+                                  ? selectedImageUrls[index]
+                                  : "";
+                              double leftPad = (35 * (index + 1)).toDouble();
+                              return Positioned(
+                                left: leftPad,
+                                top: 0,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(150.0),
+                                  child: SilentErrorImage(
+                                    height: 48,
+                                    width: 48,
+                                    imageUrl: imageUrl,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        )),
-                    ...List.generate(
-                      3, // Ensure the list has three items
-                      (index) {
-                        String imageUrl = index < selectedImageUrls.length
-                            ? selectedImageUrls[index]
-                            : "";
-                        double leftPad = (35 * (index + 1)).toDouble();
-                        return Positioned(
-                          left: leftPad,
-                          top: 0,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(150.0),
-                            child: SilentErrorImage(
-                              height: 48,
-                              width: 48,
-                              imageUrl: imageUrl,
-                            ),
+                        ],
+                      )
+                    : Stack(
+                        children: [
+                          Positioned(
+                              right: 0,
+                              top: 0,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(110.0),
+                                child: SilentErrorImage(
+                                  width: 48.0,
+                                  height: 48.0,
+                                  imageUrl: imageUrl!,
+                                ),
+                              )),
+                          ...List.generate(
+                            3, // Ensure the list has three items
+                            (index) {
+                              String imageUrl = index < selectedImageUrls.length
+                                  ? selectedImageUrls[index]
+                                  : "";
+                              double leftPad = (35 * (index + 1)).toDouble();
+                              return Positioned(
+                                right: leftPad,
+                                top: 0,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(150.0),
+                                  child: SilentErrorImage(
+                                    height: 48,
+                                    width: 48,
+                                    imageUrl: imageUrl,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
-                  ],
-                ):
-                 Stack(
-                  children: [
-                    Positioned(
-                        right: 0,
-                        top: 0,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(110.0),
-                          child: SilentErrorImage(
-                            width: 48.0,
-                            height: 48.0,
-                            imageUrl: imageUrl!,
-                          ),
-                        )),
-                    ...List.generate(
-                      3, // Ensure the list has three items
-                      (index) {
-                        String imageUrl = index < selectedImageUrls.length
-                            ? selectedImageUrls[index]
-                            : "";
-                        double leftPad = (35 * (index + 1)).toDouble();
-                        return Positioned(
-                          right: leftPad,
-                          top: 0,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(150.0),
-                            child: SilentErrorImage(
-                              height: 48,
-                              width: 48,
-                              imageUrl: imageUrl,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                        ],
+                      ),
               ),
             ),
             GestureDetector(
@@ -608,20 +615,20 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
       ],
     );
   }
-  void handleImageSelection(FriendsModel friend) {
-  setState(() {
-    if (selectedImageUrls.contains(friend.imageUrl)) {
-      selectedImageUrls.remove(friend.imageUrl);
-      friendId.remove(friend.id);
-    } else {
-      selectedImageUrls.add(friend.imageUrl);
-      if (friendId.length < 3 && !friendId.contains(friend.id)) {
-        friendId.add(friend.id);
-      }
-    }
-  });
-}
 
+  void handleImageSelection(FriendsModel friend) {
+    setState(() {
+      if (selectedImageUrls.contains(friend.imageUrl)) {
+        selectedImageUrls.remove(friend.imageUrl);
+        friendId.remove(friend.id);
+      } else {
+        selectedImageUrls.add(friend.imageUrl);
+        if (friendId.length < 3 && !friendId.contains(friend.id)) {
+          friendId.add(friend.id);
+        }
+      }
+    });
+  }
 
   Widget _buildImageProfile(bool visibilityShow) {
     final languageNotifier = context.watch<LanguageChangeController>();
@@ -638,7 +645,8 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
           padding: EdgeInsets.only(left: 20, right: 20, bottom: 24, top: 20),
           child: Column(
             children: [
-              Consumer<RepeatFreindShowProvider>(builder: (context, provider, child) {
+              Consumer<RepeatFreindShowProvider>(
+                  builder: (context, provider, child) {
                 final friendResponse = provider.repeatFriend;
                 print('Booking Response: $friendResponse');
 
@@ -659,64 +667,72 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                         Expanded(
                           child: SizedBox(
                             height: 48,
-                            child:languageNotifier.appLocale == Locale("en")?
-                             Stack(
-                              children: List.generate(
-                                friendData.length, // Ensure the list has three items
-                                (index) {
-                                  String imageUrl =
-                                      friendData[index].imageUrl;
-                                  double leftPad = (35 * index).toDouble();
-                                  return Positioned(
-                                    left: leftPad,
-                                    top: 0,
-                                    child: ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(150.0),
-                                      child: SilentErrorImage(
-                                        height: 48,
-                                        width: 48,
-                                        imageUrl: imageUrl,
-                                      ),
+                            child: languageNotifier.appLocale == Locale("en")
+                                ? Stack(
+                                    children: List.generate(
+                                      friendData
+                                          .length, // Ensure the list has three items
+                                      (index) {
+                                        String imageUrl =
+                                            friendData[index].imageUrl;
+                                        double leftPad =
+                                            (35 * index).toDouble();
+                                        return Positioned(
+                                          left: leftPad,
+                                          top: 0,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(150.0),
+                                            child: SilentErrorImage(
+                                              height: 48,
+                                              width: 48,
+                                              imageUrl: imageUrl,
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     ),
-                                  );
-                                },
-                              ),
-                            ): Stack(
-                              children: List.generate(
-                                friendData.length, // Ensure the list has three items
-                                (index) {
-                                  String imageUrl =
-                                      friendData[index].imageUrl;
-                                  double leftPad = (35 * index).toDouble();
-                                  return Positioned(
-                                   right: leftPad,
-                                    top: 0,
-                                    child: ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(150.0),
-                                      child: SilentErrorImage(
-                                        height: 48,
-                                        width: 48,
-                                        imageUrl: imageUrl,
-                                      ),
+                                  )
+                                : Stack(
+                                    children: List.generate(
+                                      friendData
+                                          .length, // Ensure the list has three items
+                                      (index) {
+                                        String imageUrl =
+                                            friendData[index].imageUrl;
+                                        double leftPad =
+                                            (35 * index).toDouble();
+                                        return Positioned(
+                                          right: leftPad,
+                                          top: 0,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(150.0),
+                                            child: SilentErrorImage(
+                                              height: 48,
+                                              width: 48,
+                                              imageUrl: imageUrl,
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     ),
-                                  );
-                                },
-                              ),
-                            ),
+                                  ),
                           ),
                         ),
                         GestureDetector(
                           onTap: () {
-                           setState(() {
-      selectedImageUrls.clear(); // Clear previous selections
-      friendId.clear(); // Clear previous friend IDs
-      for (var friend in friendData) {
-        selectedImageUrls.add(friend.imageUrl); // Add image URL to selectedImageUrls
-        friendId.add(friend.id); // Add friend ID to friendId
-      }
-    });
+                            setState(() {
+                              selectedImageUrls
+                                  .clear(); // Clear previous selections
+                              friendId.clear(); // Clear previous friend IDs
+                              for (var friend in friendData) {
+                                selectedImageUrls.add(friend
+                                    .imageUrl); // Add image URL to selectedImageUrls
+                                friendId.add(
+                                    friend.id); // Add friend ID to friendId
+                              }
+                            });
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -730,7 +746,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                             child: Padding(
                                 padding: EdgeInsets.all(10),
                                 child: Text(
-                                 (AppLocalizations.of(context)!.repeatTeam),
+                                  (AppLocalizations.of(context)!.repeatTeam),
                                   style: TextStyle(
                                     color: Theme.of(context).brightness ==
                                             Brightness.dark
@@ -912,36 +928,35 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
             Expanded(
               child: SizedBox(
                 height: 48,
-                child: 
-                languageNotifier.appLocale == Locale("en")?
-                Stack(
-                  children: [
-                    Positioned(
-                        left: 0,
-                        top: 0,
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(150.0),
-                            child: SilentErrorImage(
-                                height: 48,
-                                width: 48,
-                                imageUrl: coachImage ??
-                                    "assets/images/userTeam.png"))),
-                  ],
-                ):
-                 Stack(
-                  children: [
-                    Positioned(
-                        right: 0,
-                        top: 0,
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(150.0),
-                            child: SilentErrorImage(
-                                height: 48,
-                                width: 48,
-                                imageUrl: coachImage ??
-                                    "assets/images/userTeam.png"))),
-                  ],
-                ),
+                child: languageNotifier.appLocale == Locale("en")
+                    ? Stack(
+                        children: [
+                          Positioned(
+                              left: 0,
+                              top: 0,
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(150.0),
+                                  child: SilentErrorImage(
+                                      height: 48,
+                                      width: 48,
+                                      imageUrl: coachImage ??
+                                          "assets/images/userTeam.png"))),
+                        ],
+                      )
+                    : Stack(
+                        children: [
+                          Positioned(
+                              right: 0,
+                              top: 0,
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(150.0),
+                                  child: SilentErrorImage(
+                                      height: 48,
+                                      width: 48,
+                                      imageUrl: coachImage ??
+                                          "assets/images/userTeam.png"))),
+                        ],
+                      ),
               ),
             ),
             GestureDetector(
@@ -989,7 +1004,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
   }
 
   Widget _buildCoachProfile(bool visibilityShow) {
-     final languageNotifier = context.watch<LanguageChangeController>();
+    final languageNotifier = context.watch<LanguageChangeController>();
     return Visibility(
       visible: visibilityShow,
       child: Container(
@@ -1003,88 +1018,103 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
           padding: EdgeInsets.only(left: 20, right: 20, bottom: 24, top: 20),
           child: Column(
             children: [
-              Container(
-                padding: const EdgeInsets.only(bottom: 10),
-                decoration: BoxDecoration(
-                    border: Border(
-                        bottom: BorderSide(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
+              Consumer<RepeatCoachShowProvider>(
+                  builder: (context, provider, child) {
+                final friendResponse = provider.repeatFriend;
+                print('Booking Response: $friendResponse');
+                if (friendResponse != null) {
+                  final friendData = friendResponse.result;
+                  return Container(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
                                     ? AppColors.darkAppBarboarder
                                     : AppColors.appbarBoarder))),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 48,
-                        child:
-                        languageNotifier.appLocale == Locale("en")?
-                         Stack(
-                          children: [
-                            Positioned(
-                              left: 0,
-                              top: 0,
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(150.0),
-                                  child: SilentErrorImage(
-                                      height: 48,
-                                      width: 48,
-                                      imageUrl: coachImage ??
-                                          "assets/images/userTeam.png")),
-                            ),
-                          ],
-                        ):Stack(
-                          children: [
-                            Positioned(
-                              right: 0,
-                              top: 0,
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(150.0),
-                                  child: SilentErrorImage(
-                                      height: 48,
-                                      width: 48,
-                                      imageUrl: coachImage ??
-                                          "assets/images/userTeam.png")),
-                            ),
-                          ],
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            height: 48,
+                            child: languageNotifier.appLocale == Locale("en")
+                                ? Stack(
+                                    children: [
+                                      Positioned(
+                                        left: 0,
+                                        top: 0,
+                                        child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(150.0),
+                                            child: SilentErrorImage(
+                                                height: 48,
+                                                width: 48,
+                                                imageUrl: friendData.imageUrl ??
+                                                    "assets/images/userTeam.png")),
+                                      ),
+                                    ],
+                                  )
+                                : Stack(
+                                    children: [
+                                      Positioned(
+                                        right: 0,
+                                        top: 0,
+                                        child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(150.0),
+                                            child: SilentErrorImage(
+                                                height: 48,
+                                                width: 48,
+                                                imageUrl: friendData.imageUrl ??
+                                                    "assets/images/userTeam.png")),
+                                      ),
+                                    ],
+                                  ),
+                          ),
                         ),
-                      ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              //isImageVisible = !isImageVisible;
+                              selectedImageUrlCoachs.add(friendData.imageUrl);
+                              coachImage = friendData.imageUrl;
+                              coachid = friendData.id;
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Color(0xff2CC36B)
+                                        : AppColors.dateColor)),
+                            child: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: Text(
+                                  (AppLocalizations.of(context)!.repeatCoach),
+                                  style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Color(0xff5FC388)
+                                        : AppColors.dateColor,
+                                    fontSize: 14,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w500,
+                                    height: 20 / 14,
+                                  ),
+                                )),
+                          ),
+                        ),
+                      ],
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          //isImageVisible = !isImageVisible;
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Color(0xff2CC36B)
-                                    : AppColors.dateColor)),
-                        child: Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Text(
-                              (AppLocalizations.of(context)!.repeatCoach),
-                              style: TextStyle(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Color(0xff5FC388)
-                                    : AppColors.dateColor,
-                                fontSize: 14,
-                                fontFamily: FontFamily.satoshi,
-                                fontWeight: FontWeight.w500,
-                                height: 20 / 14,
-                              ),
-                            )),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  );
+                } else {
+                  return SizedBox();
+                }
+              }),
               Consumer<CoachShowProvider>(
                 builder: (context, provider, child) {
                   final coachResponse = provider.coachShowModel;
@@ -1112,6 +1142,8 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                                   final dataIndex = rowIndex * 4 + indexInRow;
                                   if (dataIndex < friendData.length) {
                                     final court = friendData[dataIndex];
+                                     final isSelected = selectedImageUrls
+                                        .contains(court.imageUrl);
                                     return GestureDetector(
                                       onTap: () {
                                         setState(() {
@@ -1171,7 +1203,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                     return AnimatedTextKit(
                       animatedTexts: [
                         WavyAnimatedText(
-                        '${(AppLocalizations.of(context)!.loading)}...',
+                          '${(AppLocalizations.of(context)!.loading)}...',
                           textStyle: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -1264,7 +1296,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                 ? 70
                 : double.infinity,
             isLoading: false,
-            text:(AppLocalizations.of(context)!.confirmTeam),
+            text: (AppLocalizations.of(context)!.confirmTeam),
             onPressed: () async {
               setState(() {
                 isImageVisible = true;

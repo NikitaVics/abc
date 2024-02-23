@@ -44,7 +44,7 @@ class OtpSendScreenState extends State<OtpSendScreen> {
           appBar: CustomAppBar(
             isIcon: true,
             isBoarder: true,
-            title: (AppLocalizations.of(context)!.forgotPass),
+            title: (AppLocalizations.of(context)!.forgotPassword),
             isProgress: false,
             step: 0,
           ),

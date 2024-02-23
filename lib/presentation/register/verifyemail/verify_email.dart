@@ -293,7 +293,7 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
           setState(() {
             isLoad = false;
           });
-          signInProvider.forgotPasswordApi(widget.email).then((val) {
+          signInProvider.loginWithOtp(widget.email).then((val) {
             if (val["statusCode"] == 200) {
               restartTimer();
             }

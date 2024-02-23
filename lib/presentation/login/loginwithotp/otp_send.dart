@@ -4,8 +4,10 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tennis_court_booking_app/bottomnavbar/bottom_navbar.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/notifications/notification_service.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/login_screen.dart';
 import 'package:tennis_court_booking_app/presentation/login/provider/sign_in_provider.dart';
@@ -35,10 +37,22 @@ class OtpSendScreenState extends State<OtpSendScreen> {
   late Timer countdownTimer;
   String? otp;
   bool isLoading = false;
+  String? devToken;
+  NotificationServices notificationServices = NotificationServices();
   @override
   void initState() {
     startTimer();
     super.initState();
+    notificationServices.requestNotificationPermission();
+    notificationServices.firebaseInit();
+    //notificationServices.isTokenRefresh();
+    notificationServices.getDeviceToken().then((value) async {
+      devToken = value;
+      SharedPreferences pref = await SharedPreferences.getInstance();
+      pref.setString('deviceToken', value);
+      print('device token');
+      print(value);
+    });
   }
 
   bool allowNavigation = true;
@@ -79,9 +93,7 @@ class OtpSendScreenState extends State<OtpSendScreen> {
       child: WillPopScope(
         onWillPop: () async {
           if (allowNavigation) {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (context) => const LoginScreen()),
-            );
+            Navigator.pop(context);
             return true;
           } else {
             // Prevent navigation from this screen.
@@ -97,7 +109,7 @@ class OtpSendScreenState extends State<OtpSendScreen> {
                 ? AppColors.darkThemeback
                 : AppColors.lightThemeback,
             primary: true,
-            appBar: CustomAppBarsLogin(
+            appBar: CustomAppBar(
               isIcon: true,
               isBoarder: true,
               title: (AppLocalizations.of(context)!.loginWithOtp),
@@ -217,7 +229,7 @@ class OtpSendScreenState extends State<OtpSendScreen> {
                   height: 24 / 14),
             ),
             Text(
-             " ${widget.email} "  ,
+              " ${widget.email} ",
               style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.darkSubHead
@@ -256,7 +268,7 @@ class OtpSendScreenState extends State<OtpSendScreen> {
                   ),
             resendTime != 0
                 ? Text(
-                  " ${strFormatting(resendTime)} " ,
+                    " ${strFormatting(resendTime)} ",
                     style: TextStyle(
                         color: Theme.of(context).brightness == Brightness.dark
                             ? AppColors.darkSubHead
@@ -359,29 +371,36 @@ class OtpSendScreenState extends State<OtpSendScreen> {
                     isLoading = true;
                   });
                   value
-                      .sendOtpforlogin(
-                    widget.email,
-                    otp!,
-                  )
+                      .sendOtpforlogin(widget.email, otp!, devToken!)
                       .then((val) {
-                    if (val["statusCode"] == 200) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => const HomeScreen()),
-                      );
+                    if (val != null && val["statusCode"] == 200) {
+                      pref.setString('authToken', val['result']['token']);
+                      pref.setString('email', val['result']['user']['email']);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BottomNavBar(
+                                    initial: 0,
+                                  )));
+                      String? authToken = pref.getString('authToken');
+                      if (authToken != null) {
+                        print("Auth Token: $authToken");
+                      } else {
+                        print("Auth Token is not set.");
+                      }
                       setState(() {
                         isLoading = false;
                       });
-                      print(val);
                     } else {
                       setState(() {
-                        print(val['errorMessage']);
+                        if (val != null) {
+                          AnimatedToast.showToastMessage(
+                            context,
+                            val["errorMessage"][0],
+                            const Color.fromRGBO(87, 87, 87, 0.93),
+                          );
+                        }
                         isLoading = false;
-                        AnimatedToast.showToastMessage(
-                          context,
-                          val["errorMessage"][0],
-                          const Color.fromRGBO(87, 87, 87, 0.93),
-                        );
                       });
                     }
                   });
@@ -392,15 +411,13 @@ class OtpSendScreenState extends State<OtpSendScreen> {
               } else {
                 _showErrorMessage('Please fill in all fields');
               }*/
+                } else {
+                  AnimatedToast.showToastMessage(
+                    context,
+                    (AppLocalizations.of(context)!.otpValidation),
+                    const Color.fromRGBO(87, 87, 87, 0.93),
+                  );
                 }
-                else{
-                   AnimatedToast.showToastMessage(
-                          context,
-                        (AppLocalizations.of(context)!.otpValidation),
-                          const Color.fromRGBO(87, 87, 87, 0.93),
-                        );
-                }
-               
               },
               isLoading: isLoading,
               buttonColor: AppColors.elevatedColor,

@@ -81,27 +81,30 @@ class LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Builder(builder: (context) {
-      return WillPopScope(
-        onWillPop: () async {
-          return false;
-        },
-        child: GestureDetector(
-          onTap: () {
-            FocusManager.instance.primaryFocus?.unfocus();
+      return AbsorbPointer(
+        absorbing: isLoading,
+        child: WillPopScope(
+          onWillPop: () async {
+            return false;
           },
-          child: Scaffold(
-            backgroundColor: Theme.of(context).brightness == Brightness.dark
-                ? AppColors.darkThemeback
-                : AppColors.lightThemeback,
-            primary: true,
-            appBar: CustomAppBar(
-               isIcon: false,
-              isBoarder: true,
-              title:(AppLocalizations.of(context)!.login),
-              isProgress: false,
-              step: 0,
+          child: GestureDetector(
+            onTap: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
+            child: Scaffold(
+              backgroundColor: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkThemeback
+                  : AppColors.lightThemeback,
+              primary: true,
+              appBar: CustomAppBar(
+                 isIcon: false,
+                isBoarder: true,
+                title:(AppLocalizations.of(context)!.login),
+                isProgress: false,
+                step: 0,
+              ),
+              body: _buildBody(),
             ),
-            body: _buildBody(),
           ),
         ),
       );
