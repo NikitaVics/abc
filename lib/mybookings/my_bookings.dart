@@ -81,7 +81,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
     tokens = await SharePref.fetchAuthToken();
     upComingProvider.fetchupComingData(token);
     previousBookingProvider.fetchupComingData(token);
-    print(name);
+   
     setState(() {
       isLoad = false;
     });
@@ -103,7 +103,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                 : AppColors.lightThemeback,
             primary: true,
             appBar: AppBar(
-              toolbarHeight: 60,
+              toolbarHeight: 70,
               automaticallyImplyLeading: false,
               title: Padding(
                 padding: const EdgeInsets.only(left: 24),
@@ -166,8 +166,8 @@ class MyBookingScreenState extends State<MyBookingScreen> {
           children: <Widget>[
             _buildBookingButton(),
             isFirstButtonSelected
-                ? _buildUpcomingBookings()
-                : _buildPreviousBookings(),
+                ? Expanded(child: _buildUpcomingBookings())
+                : Expanded(child: _buildPreviousBookings()),
           ],
         ),
       ),
@@ -175,151 +175,38 @@ class MyBookingScreenState extends State<MyBookingScreen> {
   }
 
   Widget _buildUpcomingBookings() {
-    return Expanded(
-      child: Consumer<UpcomingBookProvider>(
-        builder: (context, provider, child) {
-          final bookingResponse = provider.upComingBookModel;
-          if (bookingResponse != null) {
-            if (bookingResponse.result.isNotEmpty) {
-              List<Booking> bookings = bookingResponse.result;
-
-              /* List<Booking> filteredBookings = bookings
-                  .where((booking) => booking.bookingStatus == "0")
-                  .toList();*/
-              //print(filteredBookings.length);
-              return ListView.builder(
-                scrollDirection: Axis.vertical,
-                itemCount: bookings.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      print(bookings[index].bookingStatus);
-                      context.read<BookResultShowProvider>().clearStateList();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BookingDetailsScreen(
-                              id: bookings[index].bookingId, valid: true),
-                        ),
-                      );
-                    },
-                    child: Visibility(
-                      visible:bookings[index].bookingStatus=="Booked",
-                      child: _buildupComingbooking(
-                          index, bookings.length, bookings[index]),
-                    ),
-                  );
-                },
-              );
-            } else {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 215,
-                      child: Image.asset(
-                        "assets/images/loadinggif.gif",
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 28,
-                    ),
-                    AnimatedTextKit(
-                      animatedTexts: [
-                        WavyAnimatedText(
-                          'Sorry no bookings to show!...',
-                          textStyle: TextStyle(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? AppColors.headingTextColor
-                                    : AppColors.subheadColor,
-                            fontSize: 16,
-                            fontFamily: FontFamily.satoshi,
-                            fontWeight: FontWeight.w400,
-                            height: 24 / 16,
-                          ),
-                        ),
-                      ],
-                      repeatForever: true,
-                      isRepeatingAnimation: true,
-                    ),
-                  ],
-                ),
-              );
-            }
-          } else {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 215,
-                    child: Image.asset(
-                      "assets/images/loadinggif.gif",
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  AnimatedTextKit(
-                    animatedTexts: [
-                      WavyAnimatedText(
-                        'Loading...',
-                        textStyle: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.headingTextColor
-                              : AppColors.subheadColor,
-                          fontSize: 20,
-                          fontFamily: FontFamily.satoshi,
-                          fontWeight: FontWeight.w500,
-                          height: 34 / 20,
-                        ),
-                      ),
-                    ],
-                    repeatForever: true,
-                    isRepeatingAnimation: true,
-                  ),
-                ],
-              ),
-            );
-          }
-        },
-      ),
-    );
-  }
-
-  Widget _buildPreviousBookings() {
-    return Expanded(
-      child: Consumer<PreviousBookProvider>(
-        builder: (context, provider, child) {
-          final bookingResponse = provider.upComingBookModel;
-
-          if (bookingResponse != null && bookingResponse.result.isNotEmpty) {
+    return Consumer<UpcomingBookProvider>(
+      builder: (context, provider, child) {
+        final bookingResponse = provider.upComingBookModel;
+        if (bookingResponse != null) {
+          if (bookingResponse.result.isNotEmpty) {
             List<Booking> bookings = bookingResponse.result;
-
-            print(bookings.length);
+    
+            /* List<Booking> filteredBookings = bookings
+                .where((booking) => booking.bookingStatus == "0")
+                .toList();*/
+            //print(filteredBookings.length);
             return ListView.builder(
               scrollDirection: Axis.vertical,
               itemCount: bookings.length,
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
+                  
                     context.read<BookResultShowProvider>().clearStateList();
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => BookingDetailsScreen(
-                          id: bookings[index].bookingId,
-                          valid: false,
-                        ),
+                            id: bookings[index].bookingId, valid: true),
                       ),
                     );
                   },
-                  child: _buildupComingbooking(
-                      index, bookings.length, bookings[index]),
+                  child: Visibility(
+                    visible:bookings[index].bookingStatus=="Booked",
+                    child: _buildupComingbooking(
+                        index, bookings.length, bookings[index]),
+                  ),
                 );
               },
             );
@@ -343,9 +230,10 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                       WavyAnimatedText(
                         'Sorry no bookings to show!...',
                         textStyle: TextStyle(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? AppColors.headingTextColor
-                              : AppColors.subheadColor,
+                          color:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? AppColors.headingTextColor
+                                  : AppColors.subheadColor,
                           fontSize: 16,
                           fontFamily: FontFamily.satoshi,
                           fontWeight: FontWeight.w400,
@@ -360,8 +248,116 @@ class MyBookingScreenState extends State<MyBookingScreen> {
               ),
             );
           }
-        },
-      ),
+        } else {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: 215,
+                  child: Image.asset(
+                    "assets/images/loadinggif.gif",
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                AnimatedTextKit(
+                  animatedTexts: [
+                    WavyAnimatedText(
+                      'Loading...',
+                      textStyle: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.headingTextColor
+                            : AppColors.subheadColor,
+                        fontSize: 20,
+                        fontFamily: FontFamily.satoshi,
+                        fontWeight: FontWeight.w500,
+                        height: 34 / 20,
+                      ),
+                    ),
+                  ],
+                  repeatForever: true,
+                  isRepeatingAnimation: true,
+                ),
+              ],
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  Widget _buildPreviousBookings() {
+    return Consumer<PreviousBookProvider>(
+      builder: (context, provider, child) {
+        final bookingResponse = provider.upComingBookModel;
+    
+        if (bookingResponse != null && bookingResponse.result.isNotEmpty) {
+          List<Booking> bookings = bookingResponse.result;
+    
+        
+          return ListView.builder(
+            scrollDirection: Axis.vertical,
+            itemCount: bookings.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  context.read<BookResultShowProvider>().clearStateList();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BookingDetailsScreen(
+                        id: bookings[index].bookingId,
+                        valid: false,
+                      ),
+                    ),
+                  );
+                },
+                child: _buildupComingbooking(
+                    index, bookings.length, bookings[index]),
+              );
+            },
+          );
+        } else {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: 215,
+                  child: Image.asset(
+                    "assets/images/loadinggif.gif",
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(
+                  height: 28,
+                ),
+                AnimatedTextKit(
+                  animatedTexts: [
+                    WavyAnimatedText(
+                      'Sorry no bookings to show!...',
+                      textStyle: TextStyle(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.headingTextColor
+                            : AppColors.subheadColor,
+                        fontSize: 16,
+                        fontFamily: FontFamily.satoshi,
+                        fontWeight: FontWeight.w400,
+                        height: 24 / 16,
+                      ),
+                    ),
+                  ],
+                  repeatForever: true,
+                  isRepeatingAnimation: true,
+                ),
+              ],
+            ),
+          );
+        }
+      },
     );
   }
 
@@ -540,7 +536,7 @@ class MyBookingScreenState extends State<MyBookingScreen> {
     List<String> splitString = timeString.split(' ');
     String timePart = splitString[0];
     String formattedTime = convertTo24HourFormat(timePart, splitString[1]);
-    print(formattedTime);
+   
     DateTime dateTime = DateTime.parse('$formattedDates $formattedTime:00');
 
     // Add 1 hour
@@ -573,12 +569,12 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                           ? Image.asset(
                               "assets/images/DarkShape.png",
                             )
-                          : Transform.flip(
-                              flipX: true,
-                              child: Image.asset(
+                          :  Transform.flip(
+                            flipX: true,
+                            child: Image.asset(
                                 "assets/images/DarkShape.png",
                               ),
-                            ),
+                          )
                     )
                   : ClipRRect(
                       borderRadius: BorderRadius.circular(12.0),
@@ -811,57 +807,55 @@ class MyBookingScreenState extends State<MyBookingScreen> {
                       top: 37.5,
                       left: 15,
                       //  right:languageNotifier.appLocale == Locale("ar")?0:15,
-                      child: Expanded(
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  textScaler: const TextScaler.linear(1.0),
-                                  "${month}".toUpperCase(),
-                                  style: TextStyle(
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.white
-                                        : AppColors.allHeadColor,
-                                    fontSize: 24,
-                                    fontFamily: FontFamily.satoshi,
-                                    fontWeight: FontWeight.w700,
-                                    height: 32 / 24,
-                                  ),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                textScaler: const TextScaler.linear(1.0),
+                                "${month}".toUpperCase(),
+                                style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : AppColors.allHeadColor,
+                                  fontSize: 24,
+                                  fontFamily: FontFamily.satoshi,
+                                  fontWeight: FontWeight.w700,
+                                  height: 32 / 24,
                                 ),
-                                Text(
-                                  textScaler: const TextScaler.linear(1.0),
-                                  " ${day}",
-                                  style: TextStyle(
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? AppColors.elevatedColor
-                                        : AppColors.elevatedColor,
-                                    fontSize: 24,
-                                    fontFamily: FontFamily.satoshi,
-                                    fontWeight: FontWeight.w700,
-                                    height: 32 / 24,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              textScaler: const TextScaler.linear(1.0),
-                              "$timePart - $results",
-                              style: TextStyle(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Colors.white
-                                    : AppColors.subheadColor,
-                                fontSize: 12,
-                                fontFamily: FontFamily.satoshi,
-                                fontWeight: FontWeight.w400,
-                                height: 16 / 12,
                               ),
+                              Text(
+                                textScaler: const TextScaler.linear(1.0),
+                                " ${day}",
+                                style: TextStyle(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? AppColors.elevatedColor
+                                      : AppColors.elevatedColor,
+                                  fontSize: 24,
+                                  fontFamily: FontFamily.satoshi,
+                                  fontWeight: FontWeight.w700,
+                                  height: 32 / 24,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            textScaler: const TextScaler.linear(1.0),
+                            "$timePart - $results",
+                            style: TextStyle(
+                              color: Theme.of(context).brightness ==
+                                      Brightness.dark
+                                  ? Colors.white
+                                  : AppColors.subheadColor,
+                              fontSize: 12,
+                              fontFamily: FontFamily.satoshi,
+                              fontWeight: FontWeight.w400,
+                              height: 16 / 12,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     )
                   : Positioned(

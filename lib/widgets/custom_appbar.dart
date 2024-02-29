@@ -98,7 +98,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                 ),
                 GestureDetector(
-                  child: themeNotifier.themeMode == ThemeMode.dark
+                  child: Theme.of(context).brightness ==
+                                      Brightness.dark
                       ? Image.asset(
                           "assets/images/sun.png",
                           height: 23,

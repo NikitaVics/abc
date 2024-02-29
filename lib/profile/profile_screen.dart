@@ -80,7 +80,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               : AppColors.lightThemeback,
           primary: true,
           appBar: AppBar(
-            toolbarHeight: 60,
+            toolbarHeight: 70,
             automaticallyImplyLeading: false,
             title: Row(
               children: [
@@ -570,79 +570,78 @@ class ProfileScreenState extends State<ProfileScreen> {
                   SizedBox(
                     height: 26,
                   ),
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 21,
-                      ),
-                      Container(
-                        height: 17,
-                        width: 17,
-                        child: GestureDetector(
-                            onTap: () async {},
-                            child: Image.asset(
-                              "assets/images/Document5.png",
-                              height: 15,
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.profileDarkText
-                                  : AppColors.subheadColor,
-                            )),
-                      ),
-                      const SizedBox(width: 25),
-                      GestureDetector(
-                        onTap: () async {},
-                        child: MediaQuery(
-                          data: MediaQuery.of(context)
-                              .copyWith(textScaleFactor: 1.0),
-                          child: Text(
-                            (AppLocalizations.of(context)!.language),
-                            style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.profileDarkText
-                                  : AppColors.subheadColor,
-                              fontSize: 16 * textScaleFactor,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w500,
-                              height: 24 / 16,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 10, top: 0),
-                        child: Align(
-                            alignment: Alignment.centerRight,
-                            child: Transform.scale(
-                              scale: 0.6,
-                              child: SizedBox(
-                                height: 20,
-                                child: CupertinoSwitch(
-                                  trackColor: AppColors.disableSwitch,
-                                  thumbColor: Colors.white,
-                                  activeColor: AppColors.confirmValid,
-                                  value: languageNotifier.appLocale ==
-                                      Locale("en"),
-                                  onChanged: (value) {
-                                    print("hi");
-                                    setState(() {
-                                      final newLocale =
-                                          value ? Locale("en") : Locale("ar");
-                                      print(newLocale);
-                                      languageNotifier
-                                          .changeLanguage(newLocale);
-                                    });
-                                  },
-                                ),
-                              ),
-                            )),
-                      ),
-                    ],
-                  ),
+                  Consumer<LanguageChangeController>(
+  builder: (context, languageNotifier, _) {
+    return Row(
+      children: [
+        SizedBox(width: 21),
+        Container(
+          height: 17,
+          width: 17,
+          child: GestureDetector(
+            onTap: () async {},
+            child: Image.asset(
+              "assets/images/Document5.png",
+              height: 15,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.profileDarkText
+                  : AppColors.subheadColor,
+            ),
+          ),
+        ),
+        const SizedBox(width: 25),
+        GestureDetector(
+          onTap: () async {},
+          child: MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+            child: Text(
+              (AppLocalizations.of(context)!.language),
+              style: TextStyle(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.profileDarkText
+                    : AppColors.subheadColor,
+                fontSize: 16 * textScaleFactor,
+                fontFamily: FontFamily.satoshi,
+                fontWeight: FontWeight.w500,
+                height: 24 / 16,
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: Container(),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(right: 10, top: 0),
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: Transform.scale(
+              scale: 0.6,
+              child: SizedBox(
+                height: 20,
+                child: CupertinoSwitch(
+                  trackColor: AppColors.disableSwitch,
+                  thumbColor: Colors.white,
+                  activeColor: AppColors.confirmValid,
+                  value: languageNotifier.appLocale == Locale("en"),
+                  onChanged: (value) {
+                    print("hi");
+                    setState(() {
+                      final newLocale = value ? Locale("en") : Locale("ar");
+                      print(newLocale);
+                      languageNotifier.changeLanguage(newLocale);
+                    });
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  },
+),
+
                   SizedBox(
                     height: 26,
                   ),
@@ -808,6 +807,8 @@ class ProfileScreenState extends State<ProfileScreen> {
                               await SharedPreferences.getInstance();
 
                           pref.remove('authToken');
+                        
+
                           Provider.of<ProfileProvider>(context, listen: false)
                               .clearStateList();
                           Provider.of<CheckStatusProvider>(context,

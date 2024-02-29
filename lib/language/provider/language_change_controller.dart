@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class LanguageChangeController extends ChangeNotifier {
   Locale? _appLocale;
   Locale? get appLocale => _appLocale;
-
+String initialLanguageCode='en';
   // Constructor to initialize the language preference
   LanguageChangeController([String? initialLanguageCode]) {
     _loadLanguagePreference(initialLanguageCode);

@@ -12,15 +12,18 @@ import 'package:tennis_court_booking_app/bookingprocess/final_booking_screen.dar
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/coach_show_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/complete_booking_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/friend_show_provider.dart';
+import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/repeat_coach_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/repeat_friend_provider.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
+import 'package:tennis_court_booking_app/language/provider/language_change_controller.dart';
 import 'package:tennis_court_booking_app/model/repeat/repeat_freind.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/profile_provider.dart';
 import 'package:tennis_court_booking_app/provider/booking_response_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
 import 'package:tennis_court_booking_app/widgets/custom_elevated_button.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class EditTeamScreen extends StatefulWidget {
   final DateTime result;
@@ -44,8 +47,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
   //stores:---------------------------------------------------------------------
 
   //focus node:-----------------------------------------------------------------
-
-  bool juniorColor = false, seniorColor = false;
+bool juniorColor = false, seniorColor = false;
   int selectedImageIndex = -1;
 
   DateTime? dateTime;
@@ -76,6 +78,9 @@ class EditTeamScreenState extends State<EditTeamScreen> {
     final repeatfriendShow =
         Provider.of<RepeatFreindShowProvider>(context, listen: false);
     repeatfriendShow.fetchRepeatfriendshow(token, widget.result, widget.time);
+    final repeatCoachShow =
+        Provider.of<RepeatCoachShowProvider>(context, listen: false);
+    repeatCoachShow.fetchRepeatCoachshow(token, widget.result, widget.time);
     final coachShow = Provider.of<CoachShowProvider>(context, listen: false);
     coachShow.fetchfriendshow(widget.result, widget.time);
     print(name);
@@ -86,6 +91,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
   }
 
   List<String> selectedImageUrls = [];
+  List<String> selectedImageUrlCoachs = [];
   List<int> friendId = [];
   int? coachid;
   bool isFirstButtonSelected = false;
@@ -102,6 +108,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final languageNotifier = context.watch<LanguageChangeController>();
     return Builder(builder: (context) {
       return WillPopScope(
         onWillPop: () async {
@@ -142,15 +149,28 @@ class EditTeamScreenState extends State<EditTeamScreen> {
                                 onPressed: () {
                                   Navigator.pop(context, null);
                                 },
-                                icon: Image.asset(
-                                  "assets/images/leftIcon.png",
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? AppColors.headingTextColor
-                                      : AppColors.profileHead,
-                                  //width: 18,
-                                  height: 26,
-                                ),
+                                icon: languageNotifier.appLocale == Locale("ar")
+                                    ? Transform.flip(
+                                        flipX: true,
+                                        child: Image.asset(
+                                          "assets/images/leftIcon.png",
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? AppColors.headingTextColor
+                                              : AppColors.profileHead,
+                                          //width: 18,
+                                          height: 26,
+                                        ),
+                                      )
+                                    : Image.asset(
+                                        "assets/images/leftIcon.png",
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.headingTextColor
+                                            : AppColors.profileHead,
+                                        //width: 18,
+                                        height: 26,
+                                      ),
                               ),
                               SizedBox(
                                 width: 106,
@@ -224,7 +244,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                 
+                  _buildDatePick(),
                   _buildImage(isImageVisible, isImage),
                   _buildAddTeam(),
                   Padding(
@@ -268,6 +288,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
   }
 
   Widget _buildDatePick() {
+    final languageNotifier = context.watch<LanguageChangeController>();
     DateTime date = DateTime.parse(result.toString());
 
     String formattedDate = DateFormat('MMM d').format(date); // Dec 13
@@ -302,7 +323,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
                 : AppColors.homeBack,
             borderRadius: BorderRadius.circular(8),
           ),
-          height: 78,
+          height: 88,
           child: Padding(
             padding:
                 const EdgeInsets.only(left: 28, right: 28, top: 15, bottom: 15),
@@ -312,7 +333,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
                   Row(
                     children: [
                       Text(
-                        "Date - ",
+                        "${(AppLocalizations.of(context)!.date)} - ",
                         style: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark
                               ? AppColors.profileDarkText
@@ -352,7 +373,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
                   Row(
                     children: [
                       Text(
-                        "Time - ",
+                        "${(AppLocalizations.of(context)!.time)} - ",
                         style: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark
                               ? AppColors.profileDarkText
@@ -391,49 +412,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
                   ),
                 ],
               ),
-              Padding(
-                padding: EdgeInsets.only(top: 4),
-                child: Align(
-                    alignment: Alignment.centerRight,
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                BookingCourtScreen(result: widget.result),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(4),
-                            border: Border.all(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.darkEditColor
-                                  : AppColors.confirmValid,
-                            )),
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 13, right: 13, top: 11, bottom: 11),
-                          child: Text(
-                            "Change",
-                            style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.darkEditColor
-                                  : AppColors.confirmValid,
-                              fontSize: 12,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w400,
-                              height: 16 / 12,
-                            ),
-                          ),
-                        ),
-                      ),
-                    )),
-              ),
+             
             ]),
           ),
         ));
@@ -449,13 +428,14 @@ class EditTeamScreenState extends State<EditTeamScreen> {
   }
 
   Widget _buildAddTeam() {
+    final languageNotifier = context.watch<LanguageChangeController>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 31, bottom: 21),
           child: Text(
-            "Add team",
+            (AppLocalizations.of(context)!.addTeam),
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.dark
                   ? AppColors.headingTextColor
@@ -472,42 +452,79 @@ class EditTeamScreenState extends State<EditTeamScreen> {
             Expanded(
               child: SizedBox(
                 height: 48,
-                child: Stack(
-                  children: [
-                    Positioned(
-                        left: 0,
-                        top: 0,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(110.0),
-                          child: SilentErrorImage(
-                            width: 48.0,
-                            height: 48.0,
-                            imageUrl: imageUrl!,
+                child: languageNotifier.appLocale == Locale("en")
+                    ? Stack(
+                        children: [
+                          Positioned(
+                              left: 0,
+                              top: 0,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(110.0),
+                                child: SilentErrorImage(
+                                  width: 48.0,
+                                  height: 48.0,
+                                  imageUrl: imageUrl!,
+                                ),
+                              )),
+                          ...List.generate(
+                            3, // Ensure the list has three items
+                            (index) {
+                              String imageUrl = index < selectedImageUrls.length
+                                  ? selectedImageUrls[index]
+                                  : "";
+                              double leftPad = (35 * (index + 1)).toDouble();
+                              return Positioned(
+                                left: leftPad,
+                                top: 0,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(150.0),
+                                  child: SilentErrorImage(
+                                    height: 48,
+                                    width: 48,
+                                    imageUrl: imageUrl,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        )),
-                    ...List.generate(
-                      3, // Ensure the list has three items
-                      (index) {
-                        String imageUrl = index < selectedImageUrls.length
-                            ? selectedImageUrls[index]
-                            : "";
-                        double leftPad = (35 * (index + 1)).toDouble();
-                        return Positioned(
-                          left: leftPad,
-                          top: 0,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(150.0),
-                            child: SilentErrorImage(
-                              height: 48,
-                              width: 48,
-                              imageUrl: imageUrl,
-                            ),
+                        ],
+                      )
+                    : Stack(
+                        children: [
+                          Positioned(
+                              right: 0,
+                              top: 0,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(110.0),
+                                child: SilentErrorImage(
+                                  width: 48.0,
+                                  height: 48.0,
+                                  imageUrl: imageUrl!,
+                                ),
+                              )),
+                          ...List.generate(
+                            3, // Ensure the list has three items
+                            (index) {
+                              String imageUrl = index < selectedImageUrls.length
+                                  ? selectedImageUrls[index]
+                                  : "";
+                              double leftPad = (35 * (index + 1)).toDouble();
+                              return Positioned(
+                                right: leftPad,
+                                top: 0,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(150.0),
+                                  child: SilentErrorImage(
+                                    height: 48,
+                                    width: 48,
+                                    imageUrl: imageUrl,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                        ],
+                      ),
               ),
             ),
             GestureDetector(
@@ -553,22 +570,23 @@ class EditTeamScreenState extends State<EditTeamScreen> {
       ],
     );
   }
-  void handleImageSelection(FriendsModel friend) {
-  setState(() {
-    if (selectedImageUrls.contains(friend.imageUrl)) {
-      selectedImageUrls.remove(friend.imageUrl);
-      friendId.remove(friend.id);
-    } else {
-      selectedImageUrls.add(friend.imageUrl);
-      if (friendId.length < 3 && !friendId.contains(friend.id)) {
-        friendId.add(friend.id);
-      }
-    }
-  });
-}
 
+  void handleImageSelection(FriendsModel friend) {
+    setState(() {
+      if (selectedImageUrls.contains(friend.imageUrl)) {
+        selectedImageUrls.remove(friend.imageUrl);
+        friendId.remove(friend.id);
+      } else {
+        selectedImageUrls.add(friend.imageUrl);
+        if (friendId.length < 3 && !friendId.contains(friend.id)) {
+          friendId.add(friend.id);
+        }
+      }
+    });
+  }
 
   Widget _buildImageProfile(bool visibilityShow) {
+    final languageNotifier = context.watch<LanguageChangeController>();
     return Visibility(
       visible: visibilityShow,
       child: Container(
@@ -582,7 +600,8 @@ class EditTeamScreenState extends State<EditTeamScreen> {
           padding: EdgeInsets.only(left: 20, right: 20, bottom: 24, top: 20),
           child: Column(
             children: [
-              Consumer<RepeatFreindShowProvider>(builder: (context, provider, child) {
+              Consumer<RepeatFreindShowProvider>(
+                  builder: (context, provider, child) {
                 final friendResponse = provider.repeatFriend;
                 print('Booking Response: $friendResponse');
 
@@ -603,41 +622,72 @@ class EditTeamScreenState extends State<EditTeamScreen> {
                         Expanded(
                           child: SizedBox(
                             height: 48,
-                            child: Stack(
-                              children: List.generate(
-                                friendData.length, // Ensure the list has three items
-                                (index) {
-                                  String imageUrl =
-                                      friendData[index].imageUrl;
-                                  double leftPad = (35 * index).toDouble();
-                                  return Positioned(
-                                    left: leftPad,
-                                    top: 0,
-                                    child: ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(150.0),
-                                      child: SilentErrorImage(
-                                        height: 48,
-                                        width: 48,
-                                        imageUrl: imageUrl,
-                                      ),
+                            child: languageNotifier.appLocale == Locale("en")
+                                ? Stack(
+                                    children: List.generate(
+                                      friendData
+                                          .length, // Ensure the list has three items
+                                      (index) {
+                                        String imageUrl =
+                                            friendData[index].imageUrl;
+                                        double leftPad =
+                                            (35 * index).toDouble();
+                                        return Positioned(
+                                          left: leftPad,
+                                          top: 0,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(150.0),
+                                            child: SilentErrorImage(
+                                              height: 48,
+                                              width: 48,
+                                              imageUrl: imageUrl,
+                                            ),
+                                          ),
+                                        );
+                                      },
                                     ),
-                                  );
-                                },
-                              ),
-                            ),
+                                  )
+                                : Stack(
+                                    children: List.generate(
+                                      friendData
+                                          .length, // Ensure the list has three items
+                                      (index) {
+                                        String imageUrl =
+                                            friendData[index].imageUrl;
+                                        double leftPad =
+                                            (35 * index).toDouble();
+                                        return Positioned(
+                                          right: leftPad,
+                                          top: 0,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(150.0),
+                                            child: SilentErrorImage(
+                                              height: 48,
+                                              width: 48,
+                                              imageUrl: imageUrl,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
                           ),
                         ),
                         GestureDetector(
                           onTap: () {
-                           setState(() {
-      selectedImageUrls.clear(); // Clear previous selections
-      friendId.clear(); // Clear previous friend IDs
-      for (var friend in friendData) {
-        selectedImageUrls.add(friend.imageUrl); // Add image URL to selectedImageUrls
-        friendId.add(friend.id); // Add friend ID to friendId
-      }
-    });
+                            setState(() {
+                              selectedImageUrls
+                                  .clear(); // Clear previous selections
+                              friendId.clear(); // Clear previous friend IDs
+                              for (var friend in friendData) {
+                                selectedImageUrls.add(friend
+                                    .imageUrl); // Add image URL to selectedImageUrls
+                                friendId.add(
+                                    friend.id); // Add friend ID to friendId
+                              }
+                            });
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -651,7 +701,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
                             child: Padding(
                                 padding: EdgeInsets.all(10),
                                 child: Text(
-                                  "Repeat Team",
+                                  (AppLocalizations.of(context)!.repeatTeam),
                                   style: TextStyle(
                                     color: Theme.of(context).brightness ==
                                             Brightness.dark
@@ -782,7 +832,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
                     return AnimatedTextKit(
                       animatedTexts: [
                         WavyAnimatedText(
-                          'Loading...',
+                          '${(AppLocalizations.of(context)!.loading)}...',
                           textStyle: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -809,13 +859,14 @@ class EditTeamScreenState extends State<EditTeamScreen> {
   }
 
   Widget _buildCoach() {
+    final languageNotifier = context.watch<LanguageChangeController>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 31, bottom: 21),
           child: Text(
-            "Add coach",
+            (AppLocalizations.of(context)!.addCoach),
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.dark
                   ? AppColors.headingTextColor
@@ -832,20 +883,35 @@ class EditTeamScreenState extends State<EditTeamScreen> {
             Expanded(
               child: SizedBox(
                 height: 48,
-                child: Stack(
-                  children: [
-                    Positioned(
-                        left: 0,
-                        top: 0,
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(150.0),
-                            child: SilentErrorImage(
-                                height: 48,
-                                width: 48,
-                                imageUrl: coachImage ??
-                                    "assets/images/userTeam.png"))),
-                  ],
-                ),
+                child: languageNotifier.appLocale == Locale("en")
+                    ? Stack(
+                        children: [
+                          Positioned(
+                              left: 0,
+                              top: 0,
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(150.0),
+                                  child: SilentErrorImage(
+                                      height: 48,
+                                      width: 48,
+                                      imageUrl: coachImage ??
+                                          "assets/images/userTeam.png"))),
+                        ],
+                      )
+                    : Stack(
+                        children: [
+                          Positioned(
+                              right: 0,
+                              top: 0,
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(150.0),
+                                  child: SilentErrorImage(
+                                      height: 48,
+                                      width: 48,
+                                      imageUrl: coachImage ??
+                                          "assets/images/userTeam.png"))),
+                        ],
+                      ),
               ),
             ),
             GestureDetector(
@@ -893,6 +959,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
   }
 
   Widget _buildCoachProfile(bool visibilityShow) {
+    final languageNotifier = context.watch<LanguageChangeController>();
     return Visibility(
       visible: visibilityShow,
       child: Container(
@@ -906,72 +973,103 @@ class EditTeamScreenState extends State<EditTeamScreen> {
           padding: EdgeInsets.only(left: 20, right: 20, bottom: 24, top: 20),
           child: Column(
             children: [
-              Container(
-                padding: const EdgeInsets.only(bottom: 10),
-                decoration: BoxDecoration(
-                    border: Border(
-                        bottom: BorderSide(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
+              Consumer<RepeatCoachShowProvider>(
+                  builder: (context, provider, child) {
+                final friendResponse = provider.repeatFriend;
+                print('Booking Response: $friendResponse');
+                if (friendResponse != null) {
+                  final friendData = friendResponse.result;
+                  return Container(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
                                     ? AppColors.darkAppBarboarder
                                     : AppColors.appbarBoarder))),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 48,
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              left: 0,
-                              top: 0,
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(150.0),
-                                  child: SilentErrorImage(
-                                      height: 48,
-                                      width: 48,
-                                      imageUrl: coachImage ??
-                                          "assets/images/userTeam.png")),
-                            ),
-                          ],
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            height: 48,
+                            child: languageNotifier.appLocale == Locale("en")
+                                ? Stack(
+                                    children: [
+                                      Positioned(
+                                        left: 0,
+                                        top: 0,
+                                        child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(150.0),
+                                            child: SilentErrorImage(
+                                                height: 48,
+                                                width: 48,
+                                                imageUrl: friendData.imageUrl ??
+                                                    "assets/images/userTeam.png")),
+                                      ),
+                                    ],
+                                  )
+                                : Stack(
+                                    children: [
+                                      Positioned(
+                                        right: 0,
+                                        top: 0,
+                                        child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(150.0),
+                                            child: SilentErrorImage(
+                                                height: 48,
+                                                width: 48,
+                                                imageUrl: friendData.imageUrl ??
+                                                    "assets/images/userTeam.png")),
+                                      ),
+                                    ],
+                                  ),
+                          ),
                         ),
-                      ),
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              //isImageVisible = !isImageVisible;
+                              selectedImageUrlCoachs.add(friendData.imageUrl);
+                              coachImage = friendData.imageUrl;
+                              coachid = friendData.id;
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Color(0xff2CC36B)
+                                        : AppColors.dateColor)),
+                            child: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: Text(
+                                  (AppLocalizations.of(context)!.repeatCoach),
+                                  style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Color(0xff5FC388)
+                                        : AppColors.dateColor,
+                                    fontSize: 14,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w500,
+                                    height: 20 / 14,
+                                  ),
+                                )),
+                          ),
+                        ),
+                      ],
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          //isImageVisible = !isImageVisible;
-                        });
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Color(0xff2CC36B)
-                                    : AppColors.dateColor)),
-                        child: Padding(
-                            padding: EdgeInsets.all(10),
-                            child: Text(
-                              "Repeat Coach",
-                              style: TextStyle(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Color(0xff5FC388)
-                                    : AppColors.dateColor,
-                                fontSize: 14,
-                                fontFamily: FontFamily.satoshi,
-                                fontWeight: FontWeight.w500,
-                                height: 20 / 14,
-                              ),
-                            )),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  );
+                } else {
+                  return SizedBox();
+                }
+              }),
               Consumer<CoachShowProvider>(
                 builder: (context, provider, child) {
                   final coachResponse = provider.coachShowModel;
@@ -999,6 +1097,8 @@ class EditTeamScreenState extends State<EditTeamScreen> {
                                   final dataIndex = rowIndex * 4 + indexInRow;
                                   if (dataIndex < friendData.length) {
                                     final court = friendData[dataIndex];
+                                     final isSelected = selectedImageUrls
+                                        .contains(court.imageUrl);
                                     return GestureDetector(
                                       onTap: () {
                                         setState(() {
@@ -1058,7 +1158,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
                     return AnimatedTextKit(
                       animatedTexts: [
                         WavyAnimatedText(
-                          'Loading...',
+                          '${(AppLocalizations.of(context)!.loading)}...',
                           textStyle: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -1100,7 +1200,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
                 ? 70
                 : double.infinity,
             isLoading: isProcessing,
-            text: "Confirm Booking",
+            text: (AppLocalizations.of(context)!.confirmbooking),
             onPressed: () async {
               setState(() {
                 isProcessing = true;
@@ -1151,7 +1251,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
                 ? 70
                 : double.infinity,
             isLoading: false,
-            text: "Confirm Team",
+            text: (AppLocalizations.of(context)!.confirmTeam),
             onPressed: () async {
               setState(() {
                 isImageVisible = true;

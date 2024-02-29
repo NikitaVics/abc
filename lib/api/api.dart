@@ -351,8 +351,7 @@ class Api {
       Uri.parse(url),
       headers: headers,
     );
-
-    print(response.body);
+    print("coach ${response.body}");
 
     if (response.statusCode == 200) {
       print(response.body);
@@ -759,6 +758,7 @@ class Api {
       return SearchModel.fromJson(jsonDecode(response.body));
     }
   }
+
   //Send friend Request
   static Future<int> sendFriendRequest(String bearerToken, int id) async {
     var url = "$baseUrl/api/Friend/Send request?receiverId=$id";
@@ -789,10 +789,11 @@ class Api {
       return 0;
     }
   }
-   static Future<AnnouncementModel> allAnnouncementResponse() async {
+
+  static Future<AnnouncementModel> allAnnouncementResponse() async {
     var url = "$baseUrl/api/MobileAnnouncement/Announcements";
     Map<String, String> headers = {
-       "content-Type": "application/json; charset=UTF-8",
+      "content-Type": "application/json; charset=UTF-8",
     };
 
     http.Response response = await http.get(
@@ -804,6 +805,7 @@ class Api {
 
     return AnnouncementModel.fromJson(jsonDecode(response.body));
   }
+
   //Delete Booking
   static Future<int> deleteBooking(String bearerToken, int id) async {
     var url = "$baseUrl/api/Booking?bookingId=$id";
@@ -828,12 +830,13 @@ class Api {
       return response.statusCode;
     }
   }
+
 //Notification
- static Future<NotificationModel> allNotificationResponse(String token) async {
+  static Future<NotificationModel> allNotificationResponse(String token) async {
     var url = "$baseUrl/api/Profile/All Notifications";
     Map<String, String> headers = {
       'Authorization': 'Bearer $token',
-       "content-Type": "application/json; charset=UTF-8",
+      "content-Type": "application/json; charset=UTF-8",
     };
 
     http.Response response = await http.get(
@@ -845,11 +848,12 @@ class Api {
 
     return NotificationModel.fromJson(jsonDecode(response.body));
   }
+
   static Future<ProfileCreateTimeModel> createTime(String token) async {
     var url = "$baseUrl/api/Profile/MemberSince";
     Map<String, String> headers = {
       'Authorization': 'Bearer $token',
-       "content-Type": "application/json; charset=UTF-8",
+      "content-Type": "application/json; charset=UTF-8",
     };
 
     http.Response response = await http.get(
@@ -861,8 +865,9 @@ class Api {
 
     return ProfileCreateTimeModel.fromJson(jsonDecode(response.body));
   }
+
 //Repeat Team
- static Future<RepeatFriend> repeatFrined(
+  static Future<RepeatFriend> repeatFrined(
       String bearerToken, DateTime date, String time) async {
     var url = "$baseUrl/api/Booking/Repeat Team";
     Uri uri = Uri.parse('$url?bookingDate=$date&Slot=$time');
@@ -902,5 +907,4 @@ class Api {
 
     return RepeatCoach.fromJson(jsonDecode(response.body));
   }
-  
 }

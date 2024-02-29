@@ -64,7 +64,7 @@ class AnnouncementScreenState extends State<AnnouncementScreen> {
           primary: true,
           appBar: AppBar(
             
-            toolbarHeight: 60,
+            toolbarHeight: 70,
             automaticallyImplyLeading: false,
             title: Row(
               children: [

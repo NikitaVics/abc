@@ -28,6 +28,7 @@ import 'package:tennis_court_booking_app/model/courtInfo/court_info.dart';
 import 'package:tennis_court_booking_app/model/upComingBooking/upcoming_booking_model.dart';
 import 'package:tennis_court_booking_app/mybookings/bookingDetails/booking_details.dart';
 import 'package:tennis_court_booking_app/mybookings/provider/upComing_provider.dart';
+import 'package:tennis_court_booking_app/notifications/notification_screen_home.dart';
 import 'package:tennis_court_booking_app/notifications/notification_service.dart';
 import 'package:tennis_court_booking_app/presentation/home/courtinfo/court_info.dart';
 import 'package:tennis_court_booking_app/presentation/home/home_provider/check_status.dart';
@@ -175,30 +176,21 @@ class HomeScreenState extends State<HomeScreen>
                             ? AppColors.darkThemeback
                             : AppColors.lightThemeback,
                     primary: true,
-                    body: Column(
-                      children: [
-                        AnimatedBuilder(
-                          animation: _animationController,
-                          builder: (context, child) {
-                            return Transform.translate(
-                              offset: Offset(0.0, -100 * (1 - _animation.value)),
-                              child: child,
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 12),
-                            child: Container(
-                              color:
-                                  Theme.of(context).brightness == Brightness.dark
-                                      ? AppColors.darkTextInput
-                                      : Colors.white,
-                              height: 82,
-                              width: MediaQuery.of(context).size.width,
-                              child: Center(
-                                child: MediaQuery(
+                    appBar:   AppBar(
+              toolbarHeight: 70,
+              automaticallyImplyLeading: false,
+              title: Padding(
+                padding: const EdgeInsets.only(left: 0),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 20,
+                    ),
+                    MediaQuery(
                                   data: MediaQuery.of(context)
                                       .copyWith(textScaleFactor: 1.0),
                                   child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                     children: [
                                       GestureDetector(
                                         onTap: () async {
@@ -224,9 +216,9 @@ class HomeScreenState extends State<HomeScreen>
                                           child: Padding(
                                             padding: languageNotifier.appLocale ==
                                                     Locale("en")
-                                                ? const EdgeInsets.only(left: 24)
+                                                ? const EdgeInsets.only(left: 7)
                                                 : const EdgeInsets.only(
-                                                    right: 24),
+                                                    right: 7),
                                             child: isDeleting
                                                 ? SilentErrorImage(
                                                     width: 48.0,
@@ -357,13 +349,17 @@ class HomeScreenState extends State<HomeScreen>
                                       Padding(
                                         padding: languageNotifier.appLocale ==
                                                 Locale("en")
-                                            ? const EdgeInsets.only(right: 24)
-                                            : const EdgeInsets.only(left: 24),
+                                            ? const EdgeInsets.only(right: 7)
+                                            : const EdgeInsets.only(left: 7),
                                         child: Align(
                                           alignment: Alignment.centerRight,
                                           child: GestureDetector(
                                             onTap: () {
-                                              showAlertDialog(context);
+                                                                              Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (context) =>NotificationScreenForHome(pageName: "Notification")),
+                                );
+                                              //showAlertDialog(context);
                                             },
                                             child: Image.asset(
                                               "assets/images/notification1.png",
@@ -380,10 +376,20 @@ class HomeScreenState extends State<HomeScreen>
                                     ],
                                   ),
                                 ),
-                              ),
-                            ),
-                          ),
-                        ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                  ],
+                ),
+              ),
+              backgroundColor: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkTextInput
+                  : Colors.white,
+              elevation: 0,
+            ),
+                    body: Column(
+                      children: [
+                        
                         Expanded(child: _buildBody()),
                       ],
                     ),
@@ -1061,9 +1067,12 @@ class HomeScreenState extends State<HomeScreen>
                           ),
                           Padding(
                             padding: const EdgeInsets.only(
-                                left: 102, right: 102, bottom: 63),
+                                left: 25, right: 25, bottom: 63),
                             child: SizedBox(
-                              height: 34,
+                              height: 60,
+                              width:  MediaQuery.of(context).orientation == Orientation.landscape
+                        ? 70
+                        : double.infinity,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   elevation: 0,

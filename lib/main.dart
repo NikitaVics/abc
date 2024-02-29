@@ -45,7 +45,7 @@ Future<void> main() async {
   );
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   SharedPreferences sp = await SharedPreferences.getInstance();
-  final String languageCode = sp.getString('language_code') ?? '';
+  final String languageCode = sp.getString('language_code') ?? 'en';
   print(languageCode);
   runApp(MyApp(
     locale: languageCode,
