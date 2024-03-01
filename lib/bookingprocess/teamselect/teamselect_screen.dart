@@ -346,7 +346,7 @@ class TeamSelectScreenState extends State<TeamSelectScreen> {
                         ),
                       ),
                       Text(
-                        "$formattedDate ,",
+                        "$formattedDate , ",
                         style: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark
                               ? AppColors.profileDarkText

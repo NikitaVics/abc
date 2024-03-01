@@ -143,14 +143,16 @@ class HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     final languageNotifier = context.watch<LanguageChangeController>();
-    return Consumer< ProfileProvider>(
-      builder: (context,  profileProvider, child) {
+    return Consumer<ProfileProvider>(
+      builder: (context, profileProvider, child) {
         if (profileProvider.profileModel == null) {
           profileProvider.fetchProfile(tokens ?? "");
           //checkStatusProvider.checkRegistrationStatus(tokens ?? "");
 
           return const Center(
-            child: CircularProgressIndicator(   color: AppColors.dotColor,),
+            child: CircularProgressIndicator(
+              color: AppColors.dotColor,
+            ),
           );
         } else {
           imageUrl = profileProvider.profileModel?.result.imageUrl;
@@ -166,237 +168,272 @@ class HomeScreenState extends State<HomeScreen>
 
           return loading == true && _isInitializationComplete == true
               ? const Center(
-                  child: CircularProgressIndicator(   color: AppColors.dotColor,),
+                  child: CircularProgressIndicator(
+                    color: AppColors.dotColor,
+                  ),
                 )
               : MediaQuery(
-                 data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-                child: Scaffold(
+                  data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                  child: Scaffold(
                     backgroundColor:
                         Theme.of(context).brightness == Brightness.dark
                             ? AppColors.darkThemeback
                             : AppColors.lightThemeback,
                     primary: true,
-                    appBar:   AppBar(
-              toolbarHeight: 70,
-              automaticallyImplyLeading: false,
-              title: Padding(
-                padding: const EdgeInsets.only(left: 0),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 20,
-                    ),
-                    MediaQuery(
-                                  data: MediaQuery.of(context)
-                                      .copyWith(textScaleFactor: 1.0),
-                                  child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () async {
-                                          Map<Permission, PermissionStatus>
-                                              statuses = await [
-                                            Permission.storage,
-                                            Permission.camera,
-                                          ].request();
-                                          if (statuses[Permission.storage]!
-                                                  .isGranted &&
-                                              statuses[Permission.camera]!
-                                                  .isGranted) {
-                                            showModalBottomSheet(
-                                              context: context,
-                                              isScrollControlled: true,
-                                              backgroundColor: Colors.transparent,
-                                              builder: (context) => changeImage(),
-                                            );
-                                          } else {}
-                                        },
-                                        child: SizedBox(
-                                          height: 48,
-                                          child: Padding(
-                                            padding: languageNotifier.appLocale ==
-                                                    Locale("en")
-                                                ? const EdgeInsets.only(left: 7)
-                                                : const EdgeInsets.only(
-                                                    right: 7),
-                                            child: isDeleting
-                                                ? SilentErrorImage(
-                                                    width: 48.0,
-                                                    height: 48.0,
-                                                    imageUrl: tempImageUrl!)
-                                                : ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            150.0),
-                                                    child: imageFile == null
-                                                        ? SilentErrorImage(
-                                                            width: 48.0,
-                                                            height: 48.0,
-                                                            imageUrl: imageUrl!,
-                                                          )
-                                                        : ClipRRect(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        150.0),
-                                                            child: Image.file(
-                                                              imageFile!,
-                                                              height: 48.0,
-                                                              width: 48.0,
-                                                              fit: BoxFit.fill,
-                                                            ))),
-                                          ),
-                                        ),
-                                      ),
-                                      hasErrorMessage!
-                                          ? const SizedBox(
-                                              width: 20,
-                                            )
-                                          : const SizedBox(
-                                              width: 10,
-                                            ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 10),
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              (AppLocalizations.of(context)!
-                                                  .hello),
-                                              style: TextStyle(
-                                                color: Theme.of(context)
-                                                            .brightness ==
-                                                        Brightness.dark
-                                                    ? AppColors.headingTextColor
-                                                    : AppColors.allHeadColor,
-                                                fontFamily: FontFamily.satoshi,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w400,
-                                                height: 24 / 16,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              width: 3,
-                                            ),
-                                            Text(
-                                              firstName ?? " ",
-                                              style: TextStyle(
-                                                color: Theme.of(context)
-                                                            .brightness ==
-                                                        Brightness.dark
-                                                    ? AppColors.headingTextColor
-                                                    : AppColors.allHeadColor,
-                                                fontFamily: FontFamily.satoshi,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w400,
-                                                height: 24 / 16,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(child: Container()),
-                                      Padding(
-                                        padding: const EdgeInsets.only(right: 20),
-                                        child: hasErrorMessage!
-                                            ? const SizedBox()
-                                            : SizedBox(
-                                                height: 34,
-                                                child: OutlinedButton(
-                                                  onPressed: () async {
-                                                    SharedPreferences pref =
-                                                        await SharedPreferences
-                                                            .getInstance();
-                                                    String? email =
-                                                        await SharePref
-                                                            .fetchEmail();
-                                                    Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            RegisterForm(
-                                                          email: email!,
-                                                          password: '',
-                                                        ),
-                                                      ),
-                                                    );
-                                                  },
-                                                  style: OutlinedButton.styleFrom(
-                                                    backgroundColor:
-                                                        AppColors.errorback,
-                                                    foregroundColor:
-                                                        AppColors.errorColor,
-                                                    side: BorderSide(
-                                                        color:
-                                                            AppColors.errorColor),
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              20),
-                                                    ),
-                                                  ),
-                                                  child: const Text(
-                                                    'Complete profile',
-                                                    style: TextStyle(
-                                                      fontFamily:
-                                                          FontFamily.satoshi,
-                                                      fontSize: 14,
-                                                      fontWeight: FontWeight.w400,
-                                                      height: 24 / 14,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                      ),
-                                      Padding(
+                    appBar: AppBar(
+                      toolbarHeight: 70,
+                      automaticallyImplyLeading: false,
+                      title: Padding(
+                        padding: const EdgeInsets.only(left: 0),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 20,
+                            ),
+                            MediaQuery(
+                              data: MediaQuery.of(context)
+                                  .copyWith(textScaleFactor: 1.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  GestureDetector(
+                                    onTap: () async {
+                                      Map<Permission, PermissionStatus>
+                                          statuses = await [
+                                        Permission.storage,
+                                        Permission.camera,
+                                      ].request();
+                                      if (statuses[Permission.storage]!
+                                              .isGranted &&
+                                          statuses[Permission.camera]!
+                                              .isGranted) {
+                                        showModalBottomSheet(
+                                          context: context,
+                                          isScrollControlled: true,
+                                          backgroundColor: Colors.transparent,
+                                          builder: (context) => changeImage(),
+                                        );
+                                      } else {}
+                                    },
+                                    child: SizedBox(
+                                      height: 48,
+                                      child: Padding(
                                         padding: languageNotifier.appLocale ==
                                                 Locale("en")
-                                            ? const EdgeInsets.only(right: 7)
-                                            : const EdgeInsets.only(left: 7),
-                                        child: Align(
-                                          alignment: Alignment.centerRight,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                                                              Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (context) =>NotificationScreenForHome(pageName: "Notification")),
-                                );
-                                              //showAlertDialog(context);
-                                            },
-                                            child: Image.asset(
-                                              "assets/images/notification1.png",
-                                              height: 25,
-                                              color:
-                                                  Theme.of(context).brightness ==
-                                                          Brightness.dark
-                                                      ? AppColors.headingTextColor
-                                                      : Colors.black,
-                                            ),
+                                            ? const EdgeInsets.only(left: 7)
+                                            : const EdgeInsets.only(right: 7),
+                                        child: isDeleting
+                                            ? SilentErrorImage(
+                                                width: 48.0,
+                                                height: 48.0,
+                                                imageUrl: tempImageUrl!)
+                                            : ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        150.0),
+                                                child: imageFile == null
+                                                    ? SilentErrorImage(
+                                                        width: 48.0,
+                                                        height: 48.0,
+                                                        imageUrl: imageUrl!,
+                                                      )
+                                                    : ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(
+                                                                    150.0),
+                                                        child: Image.file(
+                                                          imageFile!,
+                                                          height: 48.0,
+                                                          width: 48.0,
+                                                          fit: BoxFit.fill,
+                                                        ))),
+                                      ),
+                                    ),
+                                  ),
+                                  hasErrorMessage!
+                                      ? const SizedBox(
+                                          width: 20,
+                                        )
+                                      : const SizedBox(
+                                          width: 10,
+                                        ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 10),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          (AppLocalizations.of(context)!.hello),
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? AppColors.headingTextColor
+                                                    : AppColors.allHeadColor,
+                                            fontFamily: FontFamily.satoshi,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                            height: 24 / 16,
                                           ),
                                         ),
-                                      )
-                                    ],
+                                        SizedBox(
+                                          width: 3,
+                                        ),
+                                        Text(
+                                          firstName ?? " ",
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).brightness ==
+                                                        Brightness.dark
+                                                    ? AppColors.headingTextColor
+                                                    : AppColors.allHeadColor,
+                                            fontFamily: FontFamily.satoshi,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                            height: 24 / 16,
+                                          ),
+                                        ),
+                                         SizedBox(
+                                          width: 1,
+                                        ),
+                                        Image.asset("assets/images/hi.gif",
+                                        height: 24,)
+                                      ],
+                                    ),
                                   ),
-                                ),
-                    SizedBox(
-                      height: 20,
+                                  Expanded(child: Container()),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 20),
+                                    child: hasErrorMessage!
+                                        ? const SizedBox()
+                                        : SizedBox(
+                                            height: 34,
+                                            child: OutlinedButton(
+                                              onPressed: () async {
+                                                SharedPreferences pref =
+                                                    await SharedPreferences
+                                                        .getInstance();
+                                                String? email = await SharePref
+                                                    .fetchEmail();
+                                                Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        RegisterForm(
+                                                      email: email!,
+                                                      password: '',
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              style: OutlinedButton.styleFrom(
+                                                backgroundColor:
+                                                    AppColors.errorback,
+                                                foregroundColor:
+                                                    AppColors.errorColor,
+                                                side: BorderSide(
+                                                    color:
+                                                        AppColors.errorColor),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                              ),
+                                              child: const Text(
+                                                'Complete profile',
+                                                style: TextStyle(
+                                                  fontFamily:
+                                                      FontFamily.satoshi,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.w400,
+                                                  height: 24 / 14,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                  ),
+                                  Padding(
+                                    padding: languageNotifier.appLocale ==
+                                            Locale("en")
+                                        ? const EdgeInsets.only(right: 7)
+                                        : const EdgeInsets.only(left: 7),
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          showModalBottomSheet(
+
+                                            context: context,
+                                            isScrollControlled: true,
+                                            isDismissible: true,
+                                            backgroundColor: Colors.transparent,
+                                            builder: (context) =>
+                                                changeNotification(),
+                                          );
+
+                                          //showAlertDialog(context);
+                                        },
+                                        child: Image.asset(
+                                          "assets/images/notification1.png",
+                                          height: 25,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? AppColors.headingTextColor
+                                              : Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                          ],
+                        ),
+                      ),
+                      backgroundColor:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? AppColors.darkTextInput
+                              : Colors.white,
+                      elevation: 0,
                     ),
-                  ],
-                ),
-              ),
-              backgroundColor: Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.darkTextInput
-                  : Colors.white,
-              elevation: 0,
-            ),
                     body: Column(
                       children: [
-                        
                         Expanded(child: _buildBody()),
                       ],
                     ),
                   ),
-              );
+                );
         }
       },
+    );
+  }
+
+  Widget changeNotification() {
+    final languageNotifier = context.watch<LanguageChangeController>();
+    return DraggableScrollableSheet(
+      initialChildSize: 0.85,
+      maxChildSize: 0.9,
+      minChildSize: 0.45,
+      
+      builder: (_, controller) => Padding(
+        padding: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
+        child: GestureDetector(
+          onTap: () {
+            // Dismiss the keyboard by unfocusing the current focus.
+            FocusScope.of(_).unfocus();
+          },
+          child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: Colors.transparent,
+              ),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: NotificationScreenForHome(pageName: "Notification"))),
+        ),
+      ),
     );
   }
 
@@ -615,9 +652,11 @@ class HomeScreenState extends State<HomeScreen>
 
               // You can show a loading indicator here if needed
               return Padding(
-                padding: const EdgeInsets.only(top:180),
+                padding: const EdgeInsets.only(top: 180),
                 child: Center(
-                  child: CircularProgressIndicator(   color: AppColors.dotColor,),
+                  child: CircularProgressIndicator(
+                    color: AppColors.dotColor,
+                  ),
                 ),
               );
             } else {
@@ -661,14 +700,17 @@ class HomeScreenState extends State<HomeScreen>
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   BookingDetailsScreen(
-                                                      id: bookings[index]
-                                                          .bookingId,valid: true,)));
+                                                    id: bookings[index]
+                                                        .bookingId,
+                                                    valid: true,
+                                                  )));
                                     },
                                     child: Visibility(
-                      visible:bookings[index].bookingStatus=="Booked",
-                      child: _buildupComingbooking(
-                          index, bookings.length, bookings[index]),
-                    ),
+                                      visible: bookings[index].bookingStatus ==
+                                          "Booked",
+                                      child: _buildupComingbooking(index,
+                                          bookings.length, bookings[index]),
+                                    ),
                                   );
                                 },
                               ),
@@ -1070,9 +1112,10 @@ class HomeScreenState extends State<HomeScreen>
                                 left: 25, right: 25, bottom: 63),
                             child: SizedBox(
                               height: 60,
-                              width:  MediaQuery.of(context).orientation == Orientation.landscape
-                        ? 70
-                        : double.infinity,
+                              width: MediaQuery.of(context).orientation ==
+                                      Orientation.landscape
+                                  ? 70
+                                  : double.infinity,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   elevation: 0,
@@ -1291,12 +1334,13 @@ class HomeScreenState extends State<HomeScreen>
           String endTime = DateFormat('h a').format(
             DateFormat('HH:mm:ss').parse(court.endTime),
           );
-        
+
           String timeRange = '$endTime - $startTime';
-            print(timeRange);
+          print(timeRange);
           return Padding(
-            padding:    languageNotifier.appLocale == Locale("en")
-                                      ?EdgeInsets.only(right: 20):EdgeInsets.only(left: 20),
+            padding: languageNotifier.appLocale == Locale("en")
+                ? EdgeInsets.only(right: 20)
+                : EdgeInsets.only(left: 20),
             child: MediaQuery(
               data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
               child: GestureDetector(
@@ -1323,7 +1367,7 @@ class HomeScreenState extends State<HomeScreen>
                                 child: AnimatedTextKit(
                                   animatedTexts: [
                                     WavyAnimatedText(
-(AppLocalizations.of(context)!.loading),
+                                      (AppLocalizations.of(context)!.loading),
                                       textStyle: TextStyle(
                                           color: Theme.of(context).brightness ==
                                                   Brightness.dark
@@ -1446,7 +1490,6 @@ class HomeScreenState extends State<HomeScreen>
                                             children: [
                                               Text(
                                                 "${startTime} \u2013 ",
-                                                                                       
                                                 style: TextStyle(
                                                   color: Theme.of(context)
                                                               .brightness ==
@@ -1454,15 +1497,14 @@ class HomeScreenState extends State<HomeScreen>
                                                       ? AppColors.darkSubHead
                                                       : AppColors.hintColor,
                                                   fontSize: 12,
-                                                  fontFamily: FontFamily.satoshi,
+                                                  fontFamily:
+                                                      FontFamily.satoshi,
                                                   fontWeight: FontWeight.w400,
                                                   height: 16 / 12,
                                                 ),
-                                                 
                                               ),
-                                                Text(
+                                              Text(
                                                 "${endTime}",
-                                                                                       
                                                 style: TextStyle(
                                                   color: Theme.of(context)
                                                               .brightness ==
@@ -1470,11 +1512,11 @@ class HomeScreenState extends State<HomeScreen>
                                                       ? AppColors.darkSubHead
                                                       : AppColors.hintColor,
                                                   fontSize: 12,
-                                                  fontFamily: FontFamily.satoshi,
+                                                  fontFamily:
+                                                      FontFamily.satoshi,
                                                   fontWeight: FontWeight.w400,
                                                   height: 16 / 12,
                                                 ),
-                                                 
                                               ),
                                             ],
                                           ),
@@ -1483,28 +1525,30 @@ class HomeScreenState extends State<HomeScreen>
                               ),
                               Padding(
                                 padding: EdgeInsets.only(top: 4),
-                                child:    languageNotifier.appLocale == Locale("en")?
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Image.asset(
-                                    "assets/images/Right.png",
-                                    height: 24,
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? AppColors.headingTextColor
-                                        : Colors.black,
-                                  ),
-                                ): Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Image.asset(
-                                    "assets/images/rightarabic.png",
-                                    height: 24,
-                                    color: Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? AppColors.headingTextColor
-                                        : Colors.black,
-                                  ),
-                                ),
+                                child: languageNotifier.appLocale ==
+                                        Locale("en")
+                                    ? Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Image.asset(
+                                          "assets/images/Right.png",
+                                          height: 24,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? AppColors.headingTextColor
+                                              : Colors.black,
+                                        ),
+                                      )
+                                    : Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Image.asset(
+                                          "assets/images/rightarabic.png",
+                                          height: 24,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? AppColors.headingTextColor
+                                              : Colors.black,
+                                        ),
+                                      ),
                               ),
                             ],
                           ),
@@ -1531,7 +1575,7 @@ class HomeScreenState extends State<HomeScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-               (AppLocalizations.of(context)!.recentBookings),
+                (AppLocalizations.of(context)!.recentBookings),
                 style: TextStyle(
                   color: Theme.of(context).brightness == Brightness.dark
                       ? AppColors.headingTextColor
@@ -1551,8 +1595,8 @@ class HomeScreenState extends State<HomeScreen>
                     ),
                   );
                 },
-                child:  Text(
-                 (AppLocalizations.of(context)!.seeAll),
+                child: Text(
+                  (AppLocalizations.of(context)!.seeAll),
                   style: TextStyle(
                     decoration: TextDecoration.underline,
                     decorationColor: AppColors.dotColor,
@@ -1621,435 +1665,435 @@ class HomeScreenState extends State<HomeScreen>
     // Format day (23)
     String day = DateFormat("d").format(dateTiming);
 
-    return  languageNotifier.appLocale == Locale("en")
-                                      ?
-    Padding(
-      padding: const EdgeInsets.only(right: 20),
-      child: Container(
-        height: MediaQuery.of(context).size.height,
-        width: 250,
-        decoration: BoxDecoration(
-          color: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkTextInput
-              : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  right: 2,
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: SilentErrorImage(
-                    height: 102,
-                    width: 82,
-                    imageUrl: booking?.tennisCourt.courtImageURLs[0] ??
-                        'assets/images/ProfileImage.png',
-                  ),
-                ),
+    return languageNotifier.appLocale == Locale("en")
+        ? Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              width: 250,
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkTextInput
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(12),
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 14),
-                child: Stack(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            booking?.tennisCourt.name ?? "",
-                            style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.booklight
-                                  : AppColors.allHeadColor,
-                              fontSize: 16,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w500,
-                              height: 24 / 16,
-                            ),
-                          ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        right: 2,
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: SilentErrorImage(
+                          height: 102,
+                          width: 82,
+                          imageUrl: booking?.tennisCourt.courtImageURLs[0] ??
+                              'assets/images/ProfileImage.png',
                         ),
-                        SizedBox(
-                          height: 2,
-                        ),
-                        Container(
-                          /// color: Colors.pink,
-                          height: 16,
-                          child: Row(
-                            //crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 14),
+                      child: Stack(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Image.asset(
-                                "assets/images/calender.png",
-                                height: 12,
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.profileDarkText
-                                    : AppColors.subheadColor,
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  booking?.tennisCourt.name ?? "",
+                                  style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.booklight
+                                        : AppColors.allHeadColor,
+                                    fontSize: 16,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w500,
+                                    height: 24 / 16,
+                                  ),
+                                ),
                               ),
                               SizedBox(
-                                width: 7,
+                                height: 2,
                               ),
-                              Text(
-                                "${month}".toUpperCase(),
-                                style: TextStyle(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? AppColors.profileDarkText
-                                      : Colors.black.withOpacity(0.5),
-                                  fontSize: 10,
-                                  fontFamily: FontFamily.roboto,
-                                  fontWeight: FontWeight.w400,
-                                  //height: 0.16,
+                              Container(
+                                /// color: Colors.pink,
+                                height: 16,
+                                child: Row(
+                                  //crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/calender.png",
+                                      height: 12,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? AppColors.profileDarkText
+                                          : AppColors.subheadColor,
+                                    ),
+                                    SizedBox(
+                                      width: 7,
+                                    ),
+                                    Text(
+                                      "${month}".toUpperCase(),
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : Colors.black.withOpacity(0.5),
+                                        fontSize: 10,
+                                        fontFamily: FontFamily.roboto,
+                                        fontWeight: FontWeight.w400,
+                                        //height: 0.16,
+                                      ),
+                                    ),
+                                    Text(
+                                      " ${day}",
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : Colors.black.withOpacity(0.5),
+                                        fontSize: 10,
+                                        fontFamily: FontFamily.roboto,
+                                        fontWeight: FontWeight.w400,
+                                        // height: 0.16,
+                                      ),
+                                    ),
+                                    Text(
+                                      " ${timePart} ${dateTime.hour < 12 ? 'am' : 'pm'}",
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : Colors.black.withOpacity(0.5),
+                                        fontSize: 10,
+                                        fontFamily: FontFamily.roboto,
+                                        fontWeight: FontWeight.w400,
+                                        // height: 0.16,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              Text(
-                                " ${day}",
-                                style: TextStyle(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? AppColors.profileDarkText
-                                      : Colors.black.withOpacity(0.5),
-                                  fontSize: 10,
-                                  fontFamily: FontFamily.roboto,
-                                  fontWeight: FontWeight.w400,
-                                  // height: 0.16,
-                                ),
-                              ),
-                              Text(
-                                " ${timePart} ${dateTime.hour < 12 ? 'am' : 'pm'}",
-                                style: TextStyle(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? AppColors.profileDarkText
-                                      : Colors.black.withOpacity(0.5),
-                                  fontSize: 10,
-                                  fontFamily: FontFamily.roboto,
-                                  fontWeight: FontWeight.w400,
-                                  // height: 0.16,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 3,
-                        ),
-                        Container(
-                          /// color: Colors.pink,
-                          height: 16,
-                          child: Row(
-                            //crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Image.asset(
-                                "assets/images/Group3.png",
-                                height: 12,
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.profileDarkText
-                                    : Colors.black.withOpacity(0.5),
                               ),
                               SizedBox(
-                                width: 7,
+                                height: 3,
                               ),
-                              Text(
-                                " Team Members",
-                                style: TextStyle(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? AppColors.profileDarkText
-                                      : Colors.black.withOpacity(0.5),
-                                  fontSize: 10,
-                                  fontFamily: FontFamily.roboto,
-                                  fontWeight: FontWeight.w400,
-                                  // height: 0.16,
+                              Container(
+                                /// color: Colors.pink,
+                                height: 16,
+                                child: Row(
+                                  //crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/Group3.png",
+                                      height: 12,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? AppColors.profileDarkText
+                                          : Colors.black.withOpacity(0.5),
+                                    ),
+                                    SizedBox(
+                                      width: 7,
+                                    ),
+                                    Text(
+                                      " Team Members",
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : Colors.black.withOpacity(0.5),
+                                        fontSize: 10,
+                                        fontFamily: FontFamily.roboto,
+                                        fontWeight: FontWeight.w400,
+                                        // height: 0.16,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 4,
-                        ),
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: 100,
-                              height: 36,
-                              child: Stack(
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Row(
                                 children: [
-                                  Positioned(
-                                      left: 0,
-                                      top: 0,
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(110.0),
-                                        child: SilentErrorImage(
-                                          width: 30,
-                                          height: 30,
-                                          imageUrl: booking?.userImage ??
-                                              'assets/images/ProfileImage.png',
+                                  SizedBox(
+                                    width: 100,
+                                    height: 36,
+                                    child: Stack(
+                                      children: [
+                                        Positioned(
+                                            left: 0,
+                                            top: 0,
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(110.0),
+                                              child: SilentErrorImage(
+                                                width: 30,
+                                                height: 30,
+                                                imageUrl: booking?.userImage ??
+                                                    'assets/images/ProfileImage.png',
+                                              ),
+                                            )),
+                                        ...List.generate(
+                                          booking?.teamMembers.length ??
+                                              0, // Ensure the list has three items
+                                          (index) {
+                                            TeamMember teamMember =
+                                                booking!.teamMembers[index];
+                                            double leftPad =
+                                                (23 * (index + 1)).toDouble();
+                                            return Positioned(
+                                              left: leftPad,
+                                              top: 0,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        150.0),
+                                                child: SilentErrorImage(
+                                                  width: 30,
+                                                  height: 30,
+                                                  imageUrl: teamMember.imageUrl,
+                                                ),
+                                              ),
+                                            );
+                                          },
                                         ),
-                                      )),
-                                  ...List.generate(
-                                    booking?.teamMembers.length ??
-                                        0, // Ensure the list has three items
-                                    (index) {
-                                      TeamMember teamMember =
-                                          booking!.teamMembers[index];
-                                      double leftPad =
-                                          (23 * (index + 1)).toDouble();
-                                      return Positioned(
-                                        left: leftPad,
-                                        top: 0,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(150.0),
-                                          child: SilentErrorImage(
-                                            width: 30,
-                                            height: 30,
-                                            imageUrl: teamMember.imageUrl,
-                                          ),
-                                        ),
-                                      );
-                                    },
+                                      ],
+                                    ),
                                   ),
                                 ],
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    ): Padding(
-      padding: const EdgeInsets.only(left: 20),
-      child: Container(
-        height: MediaQuery.of(context).size.height,
-        width: 250,
-        decoration: BoxDecoration(
-          color: Theme.of(context).brightness == Brightness.dark
-              ? AppColors.darkTextInput
-              : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 2,
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(6),
-                  child: SilentErrorImage(
-                    height: 102,
-                    width: 82,
-                    imageUrl: booking?.tennisCourt.courtImageURLs[0] ??
-                        'assets/images/ProfileImage.png',
-                  ),
-                ),
+            ),
+          )
+        : Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: Container(
+              height: MediaQuery.of(context).size.height,
+              width: 250,
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkTextInput
+                    : Colors.white,
+                borderRadius: BorderRadius.circular(12),
               ),
-              Padding(
-                padding: EdgeInsets.only(right: 14),
-                child: Stack(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            booking?.tennisCourt.name ?? "",
-                            style: TextStyle(
-                              color: Theme.of(context).brightness ==
-                                      Brightness.dark
-                                  ? AppColors.booklight
-                                  : AppColors.allHeadColor,
-                              fontSize: 16,
-                              fontFamily: FontFamily.satoshi,
-                              fontWeight: FontWeight.w500,
-                              height: 24 / 16,
-                            ),
-                          ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 2,
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: SilentErrorImage(
+                          height: 102,
+                          width: 82,
+                          imageUrl: booking?.tennisCourt.courtImageURLs[0] ??
+                              'assets/images/ProfileImage.png',
                         ),
-                        SizedBox(
-                          height: 2,
-                        ),
-                        Container(
-                          /// color: Colors.pink,
-                          height: 16,
-                          child: Row(
-                            //crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(right: 14),
+                      child: Stack(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Image.asset(
-                                "assets/images/calender.png",
-                                height: 12,
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.profileDarkText
-                                    : AppColors.subheadColor,
-                              ),
-                              SizedBox(
-                                width: 7,
-                              ),
-                               Text(
-                                "${day} ",
-                                style: TextStyle(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? AppColors.profileDarkText
-                                      : Colors.black.withOpacity(0.5),
-                                  fontSize: 10,
-                                  fontFamily: FontFamily.roboto,
-                                  fontWeight: FontWeight.w400,
-                                  // height: 0.16,
-                                ),
-                              ),
-                              Text(
-                                "${month}".toUpperCase(),
-                                style: TextStyle(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? AppColors.profileDarkText
-                                      : Colors.black.withOpacity(0.5),
-                                  fontSize: 10,
-                                  fontFamily: FontFamily.roboto,
-                                  fontWeight: FontWeight.w400,
-                                  //height: 0.16,
-                                ),
-                              ),
-                             
-                              Text(
-                                " ${timePart} ${dateTime.hour < 12 ? 'am' : 'pm'}",
-                                style: TextStyle(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? AppColors.profileDarkText
-                                      : Colors.black.withOpacity(0.5),
-                                  fontSize: 10,
-                                  fontFamily: FontFamily.roboto,
-                                  fontWeight: FontWeight.w400,
-                                  // height: 0.16,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 3,
-                        ),
-                        Container(
-                          /// color: Colors.pink,
-                          height: 16,
-                          child: Row(
-                            //crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Image.asset(
-                                "assets/images/Group3.png",
-                                height: 12,
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? AppColors.profileDarkText
-                                    : Colors.black.withOpacity(0.5),
-                              ),
-                              SizedBox(
-                                width: 7,
-                              ),
-                              Text(
-                               (AppLocalizations.of(context)!.teamMem),
-                                style: TextStyle(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? AppColors.profileDarkText
-                                      : Colors.black.withOpacity(0.5),
-                                  fontSize: 10,
-                                  fontFamily: FontFamily.roboto,
-                                  fontWeight: FontWeight.w400,
-                                  // height: 0.16,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(
-                          height: 4,
-                        ),
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: 100,
-                              height: 36,
-                              child: Stack(
-                                children: [
-                                  
-                                  ...List.generate(
-                                    booking?.teamMembers.length ??
-                                        0, // Ensure the list has three items
-                                    (index) {
-                                      TeamMember teamMember =
-                                          booking!.teamMembers[index];
-                                      double leftPad =
-                                          (23 * (index + 1)).toDouble();
-                                      return Positioned(
-                                        right: leftPad,
-                                        top: 0,
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(150.0),
-                                          child: SilentErrorImage(
-                                            width: 30,
-                                            height: 30,
-                                            imageUrl: teamMember.imageUrl,
-                                          ),
-                                        ),
-                                      );
-                                    },
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  booking?.tennisCourt.name ?? "",
+                                  style: TextStyle(
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? AppColors.booklight
+                                        : AppColors.allHeadColor,
+                                    fontSize: 16,
+                                    fontFamily: FontFamily.satoshi,
+                                    fontWeight: FontWeight.w500,
+                                    height: 24 / 16,
                                   ),
-                                  Positioned(
-                                      right: 0,
-                                      top: 0,
-                                      child: ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(110.0),
-                                        child: SilentErrorImage(
-                                          width: 30,
-                                          height: 30,
-                                          imageUrl: booking?.userImage ??
-                                              'assets/images/ProfileImage.png',
-                                        ),
-                                      )),
-                                ],
+                                ),
                               ),
-                            ),
-                          ],
-                        )
-                      ],
+                              SizedBox(
+                                height: 2,
+                              ),
+                              Container(
+                                /// color: Colors.pink,
+                                height: 16,
+                                child: Row(
+                                  //crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/calender.png",
+                                      height: 12,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? AppColors.profileDarkText
+                                          : AppColors.subheadColor,
+                                    ),
+                                    SizedBox(
+                                      width: 7,
+                                    ),
+                                    Text(
+                                      "${day} ",
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : Colors.black.withOpacity(0.5),
+                                        fontSize: 10,
+                                        fontFamily: FontFamily.roboto,
+                                        fontWeight: FontWeight.w400,
+                                        // height: 0.16,
+                                      ),
+                                    ),
+                                    Text(
+                                      "${month}".toUpperCase(),
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : Colors.black.withOpacity(0.5),
+                                        fontSize: 10,
+                                        fontFamily: FontFamily.roboto,
+                                        fontWeight: FontWeight.w400,
+                                        //height: 0.16,
+                                      ),
+                                    ),
+                                    Text(
+                                      " ${timePart} ${dateTime.hour < 12 ? 'am' : 'pm'}",
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : Colors.black.withOpacity(0.5),
+                                        fontSize: 10,
+                                        fontFamily: FontFamily.roboto,
+                                        fontWeight: FontWeight.w400,
+                                        // height: 0.16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 3,
+                              ),
+                              Container(
+                                /// color: Colors.pink,
+                                height: 16,
+                                child: Row(
+                                  //crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/Group3.png",
+                                      height: 12,
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? AppColors.profileDarkText
+                                          : Colors.black.withOpacity(0.5),
+                                    ),
+                                    SizedBox(
+                                      width: 7,
+                                    ),
+                                    Text(
+                                      (AppLocalizations.of(context)!.teamMem),
+                                      style: TextStyle(
+                                        color: Theme.of(context).brightness ==
+                                                Brightness.dark
+                                            ? AppColors.profileDarkText
+                                            : Colors.black.withOpacity(0.5),
+                                        fontSize: 10,
+                                        fontFamily: FontFamily.roboto,
+                                        fontWeight: FontWeight.w400,
+                                        // height: 0.16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 4,
+                              ),
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width: 100,
+                                    height: 36,
+                                    child: Stack(
+                                      children: [
+                                        ...List.generate(
+                                          booking?.teamMembers.length ??
+                                              0, // Ensure the list has three items
+                                          (index) {
+                                            TeamMember teamMember =
+                                                booking!.teamMembers[index];
+                                            double leftPad =
+                                                (23 * (index + 1)).toDouble();
+                                            return Positioned(
+                                              right: leftPad,
+                                              top: 0,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        150.0),
+                                                child: SilentErrorImage(
+                                                  width: 30,
+                                                  height: 30,
+                                                  imageUrl: teamMember.imageUrl,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        Positioned(
+                                            right: 0,
+                                            top: 0,
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(110.0),
+                                              child: SilentErrorImage(
+                                                width: 30,
+                                                height: 30,
+                                                imageUrl: booking?.userImage ??
+                                                    'assets/images/ProfileImage.png',
+                                              ),
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
   }
 
 /*
@@ -2446,7 +2490,7 @@ class HomeScreenState extends State<HomeScreen>
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(
-                          bottom: 15, top: 40, left: 24, right: 24),
+                          bottom: 15, top: 40, left: 7, right: 24),
                       child: Row(
                         children: [
                           IconButton(
@@ -2455,9 +2499,19 @@ class HomeScreenState extends State<HomeScreen>
                               Navigator.pop(context, null);
                             },
                             icon: languageNotifier.appLocale == Locale("ar")
-                              ? Transform.flip(
-                                  flipX: true,
-                                  child: Image.asset(
+                                ? Transform.flip(
+                                    flipX: true,
+                                    child: Image.asset(
+                                      "assets/images/leftIcon.png",
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? AppColors.headingTextColor
+                                          : AppColors.profileHead,
+                                      //width: 18,
+                                      height: 26,
+                                    ),
+                                  )
+                                : Image.asset(
                                     "assets/images/leftIcon.png",
                                     color: Theme.of(context).brightness ==
                                             Brightness.dark
@@ -2466,19 +2520,9 @@ class HomeScreenState extends State<HomeScreen>
                                     //width: 18,
                                     height: 26,
                                   ),
-                                )
-                              : Image.asset(
-                                  "assets/images/leftIcon.png",
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? AppColors.headingTextColor
-                                      : AppColors.profileHead,
-                                  //width: 18,
-                                  height: 26,
-                                ),
                           ),
                           const Spacer(
-                            flex: 1,
+                            flex: 2,
                           ),
                           Text(
                             courtData.courtName,
@@ -2522,61 +2566,58 @@ class HomeScreenState extends State<HomeScreen>
                             ),
                           ),
                           languageNotifier.appLocale == Locale("en")
-                                      ? Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(
-                                            "${startTime} - ${endTime}",
-                                           style: TextStyle(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? AppColors.confirmValid
-                                      : AppColors.confirmValid,
-                                  fontSize: 12,
-                                  fontFamily: FontFamily.satoshi,
-                                  fontWeight: FontWeight.w400,
-                                  height: 16 / 12,
-                                ),
-                                          ),
-                                        )
-                                      : Align(
-                                          alignment: Alignment.centerRight,
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                "${startTime} \u2013 ",
-                                                                                       
-                                               style: TextStyle(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? AppColors.confirmValid
-                                      : AppColors.confirmValid,
+                              ? Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    "${startTime} - ${endTime}",
+                                    style: TextStyle(
+                                      color: Theme.of(context).brightness ==
+                                              Brightness.dark
+                                          ? AppColors.confirmValid
+                                          : AppColors.confirmValid,
                                       decoration: TextDecoration.none,
-                                  fontSize: 12,
-                                  fontFamily: FontFamily.satoshi,
-                                  fontWeight: FontWeight.w400,
-                                  height: 16 / 12,
-                                ),
-                                                 
-                                              ),
-                                                Text(
-                                                "${endTime}",
-                                                                                       
-                                                style: TextStyle(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? AppColors.confirmValid
-                                      : AppColors.confirmValid,
-                                       decoration: TextDecoration.none,
-                                  fontSize: 12,
-                                  fontFamily: FontFamily.satoshi,
-                                  fontWeight: FontWeight.w400,
-                                  height: 16 / 12,
-                                ),
-                                                 
-                                              ),
-                                            ],
-                                          ),
+                                      fontSize: 12,
+                                      fontFamily: FontFamily.satoshi,
+                                      fontWeight: FontWeight.w400,
+                                      height: 16 / 12,
+                                    ),
+                                  ),
+                                )
+                              : Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        "${startTime} \u2013 ",
+                                        style: TextStyle(
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? AppColors.confirmValid
+                                              : AppColors.confirmValid,
+                                          decoration: TextDecoration.none,
+                                          fontSize: 12,
+                                          fontFamily: FontFamily.satoshi,
+                                          fontWeight: FontWeight.w400,
+                                          height: 16 / 12,
                                         ),
+                                      ),
+                                      Text(
+                                        "${endTime}",
+                                        style: TextStyle(
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? AppColors.confirmValid
+                                              : AppColors.confirmValid,
+                                          decoration: TextDecoration.none,
+                                          fontSize: 12,
+                                          fontFamily: FontFamily.satoshi,
+                                          fontWeight: FontWeight.w400,
+                                          height: 16 / 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                         ],
                       ),
                     ),
@@ -2609,7 +2650,8 @@ class HomeScreenState extends State<HomeScreen>
                     Padding(
                       padding: EdgeInsets.only(left: 24, right: 24, top: 13.5),
                       child: Text(
-                          (AppLocalizations.of(context)!.availablefac),     style: TextStyle(
+                        (AppLocalizations.of(context)!.availablefac),
+                        style: TextStyle(
                           decoration: TextDecoration.none,
                           color: Theme.of(context).brightness == Brightness.dark
                               ? AppColors.headingTextColor
@@ -2631,7 +2673,10 @@ class HomeScreenState extends State<HomeScreen>
                           itemBuilder: (context, index) {
                             Facility facility = courtData.facilities[index];
                             return Padding(
-                             padding: languageNotifier.appLocale == Locale("en")?const EdgeInsets.only(right: 20):const EdgeInsets.only(left: 20),
+                                padding:
+                                    languageNotifier.appLocale == Locale("en")
+                                        ? const EdgeInsets.only(right: 20)
+                                        : const EdgeInsets.only(left: 20),
                                 child: Column(
                                   children: [
                                     Image.asset(

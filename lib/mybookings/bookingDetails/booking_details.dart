@@ -17,6 +17,7 @@ import 'package:tennis_court_booking_app/bottomnavbar/bottom_navbar.dart';
 import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/language/provider/language_change_controller.dart';
+import 'package:tennis_court_booking_app/mybookings/my_bookings.dart';
 import 'package:tennis_court_booking_app/mybookings/provider/upComing_provider.dart';
 import 'package:tennis_court_booking_app/provider/booking_response_provider.dart';
 import 'package:tennis_court_booking_app/sharedPreference/sharedPref.dart';
@@ -77,7 +78,13 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
   String name = "";
 
   Future _onWilPop() async {
-    Navigator.pop(context);
+     Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                       BottomNavBar(initial: 1)
+                  ),
+                );
   }
 
   @override
@@ -119,7 +126,13 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
                             IconButton(
                               padding: EdgeInsets.zero,
                               onPressed: () {
-                                Navigator.pop(context, null);
+                                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                     BottomNavBar(initial: 1)
+                  ),
+                );
                               },
                               icon: languageNotifier.appLocale == Locale("ar")
                                   ? Transform.flip(
@@ -534,6 +547,7 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                   height: 21.15 / 15.86,
                                 ),
                               ),
+                               widget.valid == true ?
                               GestureDetector(
                                 onTap: () {
                                   Navigator.push(
@@ -542,7 +556,9 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                       builder: (context) => EditTeamScreen(
                                           result: courtData.bookingDate,
                                           courtName:courtData.tennisCourt.name,
-                                          time:courtData.slot ),
+                                          time:courtData.slot,
+                                          teamId:courtData.teamId,
+                                          bookingId:courtData.bookingId ),
                                     ),
                                   );
                                 },
@@ -566,7 +582,7 @@ class BookingDetailsScreenState extends State<BookingDetailsScreen> {
                                     height: 21.15 / 12.34,
                                   ),
                                 ),
-                              ),
+                              ):SizedBox(),
                             ],
                           ),
                           const SizedBox(height: 18.51),

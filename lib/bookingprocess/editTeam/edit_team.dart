@@ -7,6 +7,7 @@ import 'package:motion_toast/motion_toast.dart';
 import 'package:provider/provider.dart';
 import 'package:tennis_court_booking_app/api/api.dart';
 import 'package:tennis_court_booking_app/bookingprocess/booking_court.dart';
+import 'package:tennis_court_booking_app/bookingprocess/editTeam/provider/editTeam_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/filter/filter_court_screen.dart';
 import 'package:tennis_court_booking_app/bookingprocess/final_booking_screen.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/coach_show_provider.dart';
@@ -18,6 +19,8 @@ import 'package:tennis_court_booking_app/constants/colors.dart';
 import 'package:tennis_court_booking_app/constants/font_family.dart';
 import 'package:tennis_court_booking_app/language/provider/language_change_controller.dart';
 import 'package:tennis_court_booking_app/model/repeat/repeat_freind.dart';
+import 'package:tennis_court_booking_app/mybookings/bookingDetails/booking_details.dart';
+import 'package:tennis_court_booking_app/mybookings/provider/upComing_provider.dart';
 import 'package:tennis_court_booking_app/profile/profileprovider/profile_provider.dart';
 import 'package:tennis_court_booking_app/provider/booking_response_provider.dart';
 import 'package:intl/intl.dart';
@@ -29,11 +32,15 @@ class EditTeamScreen extends StatefulWidget {
   final DateTime result;
   final String time;
   final String courtName;
+  final int teamId;
+  final int bookingId;
   const EditTeamScreen(
       {super.key,
       required this.result,
       required this.time,
-      required this.courtName});
+      required this.courtName,
+      required this.teamId,
+      required this.bookingId});
 
   @override
   EditTeamScreenState createState() => EditTeamScreenState();
@@ -47,7 +54,7 @@ class EditTeamScreenState extends State<EditTeamScreen> {
   //stores:---------------------------------------------------------------------
 
   //focus node:-----------------------------------------------------------------
-bool juniorColor = false, seniorColor = false;
+  bool juniorColor = false, seniorColor = false;
   int selectedImageIndex = -1;
 
   DateTime? dateTime;
@@ -65,6 +72,14 @@ bool juniorColor = false, seniorColor = false;
     result = widget.result;
     _fetchBookingResponse();
     profile();
+    _fetchUpcomingData();
+  }
+
+  void _fetchUpcomingData() async {
+    tokens = await SharePref.fetchAuthToken();
+    final upComingProvider =
+        Provider.of<UpcomingBookProvider>(context, listen: false);
+    upComingProvider.fetchupComingData(tokens!);
   }
 
   Future<void> profile() async {
@@ -345,7 +360,7 @@ bool juniorColor = false, seniorColor = false;
                         ),
                       ),
                       Text(
-                        "$formattedDate ,",
+                        "$formattedDate , ",
                         style: TextStyle(
                           color: Theme.of(context).brightness == Brightness.dark
                               ? AppColors.profileDarkText
@@ -412,7 +427,6 @@ bool juniorColor = false, seniorColor = false;
                   ),
                 ],
               ),
-             
             ]),
           ),
         ));
@@ -1097,7 +1111,7 @@ bool juniorColor = false, seniorColor = false;
                                   final dataIndex = rowIndex * 4 + indexInRow;
                                   if (dataIndex < friendData.length) {
                                     final court = friendData[dataIndex];
-                                     final isSelected = selectedImageUrls
+                                    final isSelected = selectedImageUrls
                                         .contains(court.imageUrl);
                                     return GestureDetector(
                                       onTap: () {
@@ -1185,8 +1199,7 @@ bool juniorColor = false, seniorColor = false;
   }
 
   Widget _buildSignInButton() {
-    final completeBookingProvider =
-        Provider.of<CompleteBookingProvider>(context);
+    final editTeamProvider = Provider.of<EditTeamProvider>(context);
     int remainingImages = 3 - selectedImageUrls.length;
     return MediaQuery(
       data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
@@ -1200,7 +1213,7 @@ bool juniorColor = false, seniorColor = false;
                 ? 70
                 : double.infinity,
             isLoading: isProcessing,
-            text: (AppLocalizations.of(context)!.confirmbooking),
+            text: (AppLocalizations.of(context)!.editTeam),
             onPressed: () async {
               setState(() {
                 isProcessing = true;
@@ -1208,22 +1221,24 @@ bool juniorColor = false, seniorColor = false;
               print("Updated friendId: $friendId");
               print("Updated coachId: $coachid");
 
-              await completeBookingProvider.completeBookingApi(
+              await editTeamProvider.editTeamApi(
                 tokens!,
-                widget.result, // Replace with your bookingDate
+                widget.bookingId,
+                widget.teamId,
                 coachid ?? 0, // Replace with your coachId
-                widget.courtName,
-                widget.time,
                 friendId, // Replace with your friendIds
               );
-              if (completeBookingProvider.finalBookModel != null) {
-                print(
-                    "API Result: ${completeBookingProvider.finalBookModel!.result}");
+              if (editTeamProvider.editTeamModel != null &&
+                  editTeamProvider.editTeamModel!.statusCode == 200) {
+                print("API Result: ${editTeamProvider.editTeamModel!.result}");
+                _fetchBookingResponse();
+                _fetchUpcomingData();
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => FinalBookingScreen(
-                        id: completeBookingProvider.finalBookModel!.result),
+                    builder: (context) =>
+                        BookingDetailsScreen(id: widget.bookingId, valid: true),
                   ),
                 );
                 setState(() {

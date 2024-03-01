@@ -190,52 +190,103 @@ class NotificationScreenState extends State<NotificationScreen> {
   }
 
   Widget _buildRightSide() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-      child: Consumer<NotificationProvider>(
-        builder: (context, provider, child) {
-          if (provider.notificationModel == null) {
-            return Center(
-              child: CircularProgressIndicator(  color: Theme.of(context).brightness == Brightness.dark
-                      ? AppColors.darkEditColor
-                      : AppColors.dotColor,),
-            );
-          } else {
-            final noticeData = provider.notificationModel!;
-            List<Notifications> notice = noticeData.result;
-           
-            return Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(
-                  height: 18,
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    itemCount: notice.length,
-                    itemBuilder: (context, index) {
-                      return _notificationsWidget(index,notice.length,notice);
-                    },
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-              ],
-            );
-          }
-        },
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+    child: Consumer<NotificationProvider>(
+      builder: (context, provider, child) {
+        if (provider.notificationModel == null) {
+          return Center(
+            child: CircularProgressIndicator(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? AppColors.darkEditColor
+                  : AppColors.dotColor,
+            ),
+          );
+        } else {
+          final noticeData = provider.notificationModel!;
+          List<Notifications> notice = noticeData.result;
+
+          // Filter notifications within the last 7 days
+          List<Notifications> last7DaysNotifications = notice.where((notification) {
+            DateTime notificationDate = DateTime.parse(notification.creationDate);
+            Duration difference = DateTime.now().difference(notificationDate);
+            return difference.inDays <= 7;
+          }).toList();
+
+          // Filter notifications within the last 30 days
+          List<Notifications> last30DaysNotifications = notice.where((notification) {
+            DateTime notificationDate = DateTime.parse(notification.creationDate);
+            Duration difference = DateTime.now().difference(notificationDate);
+            return difference.inDays <= 30;
+          }).toList();
+
+          return ListView(
+            children: [
+              _buildNotificationColumn( (AppLocalizations.of(context)!.last7Days), last7DaysNotifications),
+              _buildNotificationColumn((AppLocalizations.of(context)!.last30Days), last30DaysNotifications),
+              SizedBox(height: 20),
+            ],
+          );
+        }
+      },
+    ),
+  );
+}
+
+Widget _buildNotificationColumn(String title, List<Notifications> notifications) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Padding(
+        padding: EdgeInsets.symmetric(vertical: 20),
+        child: Text(
+          title,
+         style: TextStyle(
+                            color:  Theme.of(context).brightness == Brightness.dark
+          ? AppColors.darkSubHead
+          : AppColors.allHeadColor,
+                            fontSize: 18,
+                            fontFamily: FontFamily.satoshi,
+                            fontWeight: FontWeight.w700,
+                            height: 24 / 18,
+                          ),
+        ),
       ),
-    );
+      Column(
+        children: notifications.map((notification) {
+          return _notificationsWidget(notification );
+        }).toList(),
+      ),
+    ],
+  );
+}
+
+  Widget _notificationsWidget(Notifications notification) {
+    final languageNotifier = context.watch<LanguageChangeController>();
+   
+    // Get the current notification
+  String? imageUrl = notification.imageUrl;
+  DateTime currentDate = DateTime.now();
+  String createdDate = notification.creationDate;
+  Duration difference = currentDate.difference(DateTime.parse(createdDate));
+
+  // Define functions to check if the notification is within the last 10 days or last 30 days
+  bool isInLast10Days(DateTime date) {
+    return difference.inDays <= 7;
   }
 
-  Widget _notificationsWidget(int index, int itemCount,List<Notifications> notice) {
-    final languageNotifier = context.watch<LanguageChangeController>();
-    Notifications notification = notice[index]; // Get the current notification
-  String? imageUrl = notification.imageUrl;
+  bool isInLast30Days(DateTime date) {
+    return difference.inDays <= 30;
+  }
+   String getDateTag() {
+    if (isInLast10Days(DateTime.parse(createdDate))) {
+      return 'Last 7 Days';
+    } else if (isInLast30Days(DateTime.parse(createdDate))) {
+      return 'Last 30 Days';
+    } else {
+      return 'Older';
+    }
+  }
   Color _getNotificationTitleColor(String title) {
   if (title.contains("Successfull") || title.contains("Confirmed")) {
     return AppColors.successColor;

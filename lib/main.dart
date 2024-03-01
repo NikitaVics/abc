@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tennis_court_booking_app/announcement/provider/announcement_provider.dart';
+import 'package:tennis_court_booking_app/bookingprocess/editTeam/provider/editTeam_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/coach_show_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/complete_booking_provider.dart';
 import 'package:tennis_court_booking_app/bookingprocess/teamselect/provider/confirm_booking_provider.dart';
@@ -144,6 +145,9 @@ class _MyAppState extends State<MyApp> {
         ),
         ChangeNotifierProvider<RepeatCoachShowProvider>(
           create: (context) => RepeatCoachShowProvider(),
+        ),
+        ChangeNotifierProvider<EditTeamProvider>(
+          create: (context) => EditTeamProvider(),
         ),
       ],
       child: Builder(

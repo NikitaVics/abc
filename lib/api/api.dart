@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tennis_court_booking_app/announcement/model/announcement_model.dart';
+import 'package:tennis_court_booking_app/bookingprocess/editTeam/model/editTeam_model.dart';
 import 'package:tennis_court_booking_app/model/bookResultofUser/bookresult_of_user.dart';
 import 'package:tennis_court_booking_app/model/bookingCourt/booking_response.dart';
 import 'package:tennis_court_booking_app/model/coachshow/Coach_show_model.dart';
@@ -907,4 +908,41 @@ class Api {
 
     return RepeatCoach.fromJson(jsonDecode(response.body));
   }
+  //Edit team
+    static Future< EditTeamModel> editTeam(
+      String bearerToken,
+      int bookingId,
+      int teamId,
+      int coachId,
+      List<int> friendIds) async {
+    var url = "$baseUrl/api/Booking/Edit Team";
+     Uri uri = Uri.parse('$url?bookingId=$bookingId');
+    url = uri.toString();
+    final Map<String, dynamic> body = {
+      
+      "teamId": teamId,
+      "friendsIds": friendIds
+    };
+    if (coachId != 0) {
+      body["coachId"] = coachId;
+    }
+    print(coachId);
+    print(friendIds);
+
+    Map<String, String> headers = {
+      'Authorization': 'Bearer $bearerToken',
+      "content-Type": "application/json;  charset=UTF-8",
+    };
+    http.Response response = await http.post(
+      Uri.parse(url),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    print(response.body);
+
+    // final jsonData = json.decode(response.body);
+    return  EditTeamModel.fromJson(jsonDecode(response.body));
+  }
+
 }

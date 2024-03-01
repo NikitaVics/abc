@@ -36,7 +36,7 @@
     "male":"Male",
     "female":"Female",
     "notDisclosed":"Not Disclosed",
-    "verifyMail":"Verify Mail Id",
+    "verifyMail":"Verify Mail ID",
     "verifywithOtp":"Verify with OTP",
     "codeSent":"Code sent to ",
     "codeExpire":"This code will expired in ",
@@ -47,8 +47,8 @@
     "accountNote":"Your Account was ",
     "accountNote2":"successfully created .",
     "goHome":"Go Home",
-    "enterMail":"Enter Mail id",
-    "enterMailText":"Enter mail id of your accout to get OTP ",
+    "enterMail":"Enter Mail ID",
+    "enterMailText":"Enter mail ID of your accout to get OTP ",
     "getOtp":"Get OTP",
     "otpValidation":"Please enter OTP..Any field can't be empty.",
     "confirmPass":"Confirm Password",
@@ -76,9 +76,9 @@
 
     "bookings":"Bookings",
     "myBookings":"My Bookings",
-    "upCommingBooking":"UpComing Booking",
+    "upCommingBooking":"Upcoming Booking",
     "previousBooking":"Previous Booking",
-    "bookingId":"Booking Id",
+    "bookingId":"Booking ID",
     "team":"Team",
 
     "clubInfo":"Club Info",
@@ -169,5 +169,8 @@
     "upperCase":"Contains uppercase letter",
     "atleast1num":"Contains at least 1 number",
     "specialChar":"Contains special character",
-    "updatePass":"Update Password"
+    "updatePass":"Update Password",
+
+    "last7Days":"Last 7 Days",
+    "last30Days":"Last 30 Days"
 }
