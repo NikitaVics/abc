@@ -820,7 +820,7 @@ class HomeScreenState extends State<HomeScreen>
 
                                         // Change text color on surface
                                       ),
-                                      selectedRowColor: AppColors.dotColor,
+
                                       textButtonTheme: TextButtonThemeData(
                                         style: TextButton.styleFrom(
                                           foregroundColor: AppColors
