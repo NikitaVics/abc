@@ -29,3 +29,20 @@ tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
 
+// Define assembleDebug task
+android {
+    buildTypes {
+        debug {
+            // Debug configuration
+        }
+        release {
+            // Release configuration
+        }
+    }
+
+    tasks.whenTaskAdded { task ->
+        if (task.name.startsWith('assemble')) {
+            println "Task added: ${task.name}"
+        }
+    }
+}
